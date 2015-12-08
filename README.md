@@ -6,7 +6,8 @@ Optimal Reciprocal Collision Avoidance
 Copyright &copy; 2008-2013 University of North Carolina at Chapel Hill. All
 rights reserved.
 
-[![Build Status](https://travis-ci.org/snape/RVO2.png?branch=master)](https://travis-ci.org/snape/RVO2)
+[![Build Status](https://travis-ci.org/snape/RVO2.svg?branch=master)](https://travis-ci.org/snape/RVO2)
+[![Build status](https://ci.appveyor.com/api/projects/status/0nyp7y4di8x1gh9o/branch/master?svg=true)](https://ci.appveyor.com/project/snape/rvo2)
 
 Permission to use, copy, modify, and distribute this software and its
 documentation for educational, research, and non-profit purposes, without fee,

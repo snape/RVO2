@@ -54,7 +54,7 @@
 # <http://gamma.cs.unc.edu/RVO2/>
 #
 
-include_directories("${RVO_SOURCE_DIR}/src")
+include_directories(${RVO_SOURCE_DIR}/src)
 
 add_executable(Blocks Blocks.cpp)
 target_link_libraries(Blocks RVO)

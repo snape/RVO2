@@ -1,5 +1,5 @@
 #
-# src/CMakeLists.txt
+# CTestConfig.cmake
 # RVO2 Library
 #
 # Copyright (c) 2008-2013 University of North Carolina at Chapel Hill.
@@ -54,26 +54,10 @@
 # <http://gamma.cs.unc.edu/RVO2/>
 #
 
-set(RVO_HEADERS
-	RVO.h
-	RVOSimulator.h
-	Vector2.h)
+set(CTEST_PROJECT_NAME "RVO2")
+set(CTEST_NIGHTLY_START_TIME "01:00:00 UTC")
 
-set(RVO_SOURCES
-	Agent.cpp
-	Agent.h
-	Definitions.h
-	KdTree.cpp
-	KdTree.h
-	Obstacle.cpp
-	Obstacle.h
-	RVOSimulator.cpp)
-
-add_library(RVO ${RVO_HEADERS} ${RVO_SOURCES})
-
-if(WIN32)
-    set_target_properties(RVO PROPERTIES COMPILE_DEFINITIONS NOMINMAX)
-endif()
-
-install(FILES ${RVO_HEADERS} DESTINATION include)
-install(TARGETS RVO DESTINATION lib)
+set(CTEST_DROP_METHOD "http")
+set(CTEST_DROP_SITE "my.cdash.org")
+set(CTEST_DROP_LOCATION "/submit.php?project=RVO2")
+set(CTEST_DROP_SITE_CDASH TRUE)
