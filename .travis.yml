@@ -10,5 +10,5 @@ os:
 script:
   - mkdir _build
   - cd _build
-  - cmake ..
+  - cmake -DCMAKE_CXX_FLAGS="-DRVO_OUTPUT_TIME_AND_POSITIONS=0 -DRVO_SEED_RANDOM_NUMBER_GENERATOR=0" ..
   - ctest --extra-verbose --dashboard Experimental .
