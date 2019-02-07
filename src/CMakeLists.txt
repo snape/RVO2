@@ -46,6 +46,7 @@ set(RVO_SOURCES
 	RVOSimulator.cpp)
 
 add_library(RVO ${RVO_HEADERS} ${RVO_SOURCES})
+target_include_directories(RVO PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 if(WIN32)
     set_target_properties(RVO PROPERTIES COMPILE_DEFINITIONS NOMINMAX)
