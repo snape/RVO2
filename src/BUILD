@@ -1,0 +1,147 @@
+# -*- mode: python -*-
+# vi: set ft=python :
+
+#
+# src/BUILD
+# RVO2 Library
+#
+# Copyright 2008 University of North Carolina at Chapel Hill
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Please send all bug reports to <geom@cs.unc.edu>.
+#
+# The authors may be contacted via:
+#
+# Jur van den Berg, Stephen J. Guy, Jamie Snape, Ming C. Lin, Dinesh Manocha
+# Dept. of Computer Science
+# 201 S. Columbia St.
+# Frederick P. Brooks, Jr. Computer Science Bldg.
+# Chapel Hill, N.C. 27599-3175
+# United States of America
+#
+# <https://gamma.cs.unc.edu/RVO2/>
+#
+
+load("@rules_cc//cc:defs.bzl", "cc_library")
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
+
+licenses(["notice"])
+
+genrule(
+    name = "export",
+    outs = ["Export.h"],
+    cmd = """
+cat << 'EOF' > $@
+/*
+ * Export.h
+ * RVO2 Library
+ *
+ * Copyright 2008 University of North Carolina at Chapel Hill
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Please send all bug reports to <geom@cs.unc.edu>.
+ *
+ * The authors may be contacted via:
+ *
+ * Jur van den Berg, Stephen J. Guy, Jamie Snape, Ming C. Lin, Dinesh Manocha
+ * Dept. of Computer Science
+ * 201 S. Columbia St.
+ * Frederick P. Brooks, Jr. Computer Science Bldg.
+ * Chapel Hill, N.C. 27599-3175
+ * United States of America
+ *
+ * <https://gamma.cs.unc.edu/RVO2/>
+ */
+
+#ifndef RVO_EXPORT_H_
+#define RVO_EXPORT_H_
+
+#ifdef RVO_STATIC_DEFINE
+#define RVO_EXPORT
+#else
+#ifdef _WIN32
+#ifdef RVO_EXPORTS
+#define RVO_EXPORT __declspec(dllexport)
+#else
+#define RVO_EXPORT __declspec(dllimport)
+#endif
+#else
+#define RVO_EXPORT __attribute__((visibility("default")))
+#endif
+#endif
+
+#endif /* RVO_EXPORT_H_ */
+EOF
+""",
+    visibility = ["//visibility:private"],
+)
+
+filegroup(
+    name = "hdrs",
+    srcs = [
+        "Export.h",
+        "RVO.h",
+        "RVOSimulator.h",
+        "Vector2.h",
+    ],
+    visibility = ["//visibility:private"],
+)
+
+cc_library(
+    name = "RVO",
+    srcs = [
+        "Agent.cpp",
+        "Agent.h",
+        "Definitions.h",
+        "KdTree.cpp",
+        "KdTree.h",
+        "Obstacle.cpp",
+        "Obstacle.h",
+        "RVOSimulator.cpp",
+    ],
+    hdrs = [":hdrs"],
+    copts = [
+        "-fvisibility-inlines-hidden",
+        "-fvisibility=hidden",
+    ],
+    includes = ["."],
+    visibility = ["//visibility:public"],
+)
+
+pkg_tar(
+    name = "include",
+    srcs = [":hdrs"],
+    mode = "0644",
+    package_dir = "/usr/include/RVO",
+    visibility = ["//:__pkg__"],
+)
+
+pkg_tar(
+    name = "lib",
+    srcs = ["//src:RVO"],
+    mode = "0644",
+    package_dir = "/usr/lib",
+    visibility = ["//:__pkg__"],
+)
