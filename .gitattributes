@@ -14,7 +14,13 @@
 .editorconfig   text whitespace-2
 .gitattributes  text whitespace-2
 .gitignore      text whitespace-2
+Brewfile        text diff=ruby whitespace-4
 BUILD           text diff=python whitespace-4
 CMakeLists.txt  text whitespace-2
 LICENSE         text whitespace=trailing-space
 WORKSPACE       text diff=python whitespace-4
+
+.travis.yml     export-ignore
+Brewfile        export-ignore
+
+.github/**      export-ignore

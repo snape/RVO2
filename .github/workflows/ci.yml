@@ -1,0 +1,187 @@
+---
+name: ci
+on:
+  push:
+    branches:
+      - master
+      - actions
+  pull_request:
+    branches:
+      - master
+  schedule:
+    - cron: '0 5 * * *'
+
+jobs:
+  bazel_macos:
+    name: bazel macos latest
+    runs-on: macos-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: setup
+        run: |
+          rm -f /usr/local/bin/2to3
+          brew update
+          brew uninstall -q bazelisk
+          brew bundle install --no-lock
+        shell: zsh -efuo pipefail {0}
+      - name: build and test
+        run: bazel test ...
+        shell: zsh -efuo pipefail {0}
+
+  bazel_ubuntu:
+    name: bazel ubuntu latest
+    runs-on: ubuntu-latest
+    container: ubuntu:latest
+    steps:
+      - name: pre-checkout setup
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get update -qq
+          apt-get install -o Dpkg::Use-Pty=0 -qq --no-install-recommends \
+            ca-certificates \
+            git
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: post-checkout setup
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get update -qq
+          apt-get install -o Dpkg::Use-Pty=0 -qq --no-install-recommends \
+            g++ \
+            gnupg \
+            python-is-python3
+          export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1
+          apt-key adv -q --fetch-keys https://bazel.build/bazel-release.pub.gpg
+          echo 'deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8' \
+            > /etc/apt/sources.list.d/bazel.list
+          apt-get update -qq
+          apt-get install -o Dpkg::Use-Pty=0 -qq --no-install-recommends bazel
+        shell: bash
+      - name: build and test
+        run: bazel test ...
+        shell: bash
+
+  cmake_macos:
+    name: cmake macos latest
+    runs-on: macos-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: setup
+        run: |
+          rm -f /usr/local/bin/2to3
+          brew update
+          brew uninstall -q bazelisk
+          brew bundle install --no-lock
+        shell: zsh -efuo pipefail {0}
+      - name: build and test
+        run: |
+          mkdir _build
+          cd _build
+          cmake \
+            -DBUILD_DOCUMENTATION:BOOL=ON \
+            -DBUILD_TESTING:BOOL=ON \
+            -DCMAKE_INSTALL_PREFIX:PATH=_install \
+            -DENABLE_HARDENING:BOOL=ON \
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
+            -DENABLE_OPENMP:BOOL=OFF \
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
+            -DWARNINGS_AS_ERRORS:BOOL=ON \
+            --warn-uninitialized \
+            ..
+          cmake --build .
+          ctest .
+          cmake --install .
+        shell: zsh -efuo pipefail {0}
+
+  cmake_ubuntu:
+    name: cmake ubuntu latest
+    runs-on: ubuntu-latest
+    container: ubuntu:latest
+    steps:
+      - name: pre-checkout setup
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get update -qq
+          apt-get install -o Dpkg::Use-Pty=0 -qq --no-install-recommends \
+            ca-certificates \
+            git
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: post-checkout setup
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get update -qq
+          apt-get install -o Dpkg::Use-Pty=0 -qq --no-install-recommends \
+            doxygen \
+            g++ \
+            gnupg \
+            graphviz \
+            lsb-release \
+            make \
+            pkg-config
+          export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1
+          apt-key adv -q --fetch-keys \
+            https://apt.kitware.com/keys/kitware-archive-latest.asc
+          echo "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main" \
+            > /etc/apt/sources.list.d/kitware.list
+          apt-get update -qq
+          apt-get install -o Dpkg::Use-Pty=0 -qq --no-install-recommends cmake
+        shell: bash
+      - name: build and test
+        run: |
+          mkdir _build
+          cd _build
+          cmake \
+            -DBUILD_DOCUMENTATION:BOOL=ON \
+            -DBUILD_TESTING:BOOL=ON \
+            -DCMAKE_INSTALL_PREFIX:PATH=_install \
+            -DENABLE_HARDENING:BOOL=ON \
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
+            -DENABLE_OPENMP:BOOL=ON \
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
+            -DWARNINGS_AS_ERRORS:BOOL=ON \
+            --warn-uninitialized \
+            ..
+          cmake --build .
+          ctest .
+          cmake --install .
+        shell: bash
+
+  cmake_windows:
+    name: cmake windows latest
+    runs-on: windows-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: setup
+        run: |
+          cinst cmake.install -f -r -y `
+            --install-arguments='ADD_CMAKE_TO_PATH=System'
+          cinst doxygen.install -f -r -y
+        shell: powershell
+      - name: build and test
+        run: |
+          mkdir _build
+          cd _build
+          cmake `
+            -DBUILD_DOCUMENTATION:BOOL=ON `
+            -DBUILD_TESTING:BOOL=ON `
+            -DCMAKE_INSTALL_PREFIX:PATH=_install `
+            -DENABLE_HARDENING:BOOL=ON `
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON `
+            -DENABLE_OPENMP:BOOL=OFF `
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF `
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF `
+            -DWARNINGS_AS_ERRORS:BOOL=ON `
+            --warn-uninitialized `
+            ..
+          cmake --build . --config Release
+          ctest . --build-config Release
+          cmake --install .
+        shell: powershell
