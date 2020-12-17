@@ -1,0 +1,20 @@
+[attr]whitespace-2  whitespace=tab-in-indent,tabwidth=2,trailing-space
+[attr]whitespace-4  whitespace=tab-in-indent,tabwidth=4,trailing-space
+
+*               text=auto
+
+*.cmake         text whitespace-2
+*.cmake.in      text whitespace-2
+*.cpp           text diff=cpp whitespace=tabwidth=2,trailing-space
+*.h             text diff=cpp whitespace=tabwidth=2,trailing-space
+*.md            text whitespace=-blank-at-eol,blank-at-eof,tab-in-indent
+*.pc.in         text whitespace-2
+*.yml           text whitespace-2
+
+.editorconfig   text whitespace-2
+.gitattributes  text whitespace-2
+.gitignore      text whitespace-2
+BUILD           text diff=python whitespace-4
+CMakeLists.txt  text whitespace-2
+LICENSE         text whitespace=trailing-space
+WORKSPACE       text diff=python whitespace-4
