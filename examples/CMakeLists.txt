@@ -1,3 +1,6 @@
+# -*- mode: cmake -*-
+# vi: set ft=cmake :
+
 #
 # examples/CMakeLists.txt
 # RVO2 Library
@@ -30,18 +33,67 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
-include_directories(${RVO_SOURCE_DIR}/src)
+if(BUILD_TESTING)
+  option(OUTPUT_TIME_AND_POSITIONS "Output time and positions" ON)
 
-add_executable(Blocks Blocks.cpp)
-target_link_libraries(Blocks RVO)
-add_test(Blocks Blocks)
+  if(OUTPUT_TIME_AND_POSITIONS)
+    set(RVO_EXAMPLES_COMPILE_DEFINITIONS RVO_OUTPUT_TIME_AND_POSITIONS=1)
+  else()
+    set(RVO_EXAMPLES_COMPILE_DEFINITIONS RVO_OUTPUT_TIME_AND_POSITIONS=0)
+  endif()
 
-add_executable(Circle Circle.cpp)
-target_link_libraries(Circle RVO)
-add_test(Circle Circle)
+  option(SEED_RANDOM_NUMBER_GENERATOR "Seed random number generator" ON)
 
-add_executable(Roadmap Roadmap.cpp)
-target_link_libraries(Roadmap RVO)
-add_test(Roadmap Roadmap)
+  if(SEED_RANDOM_NUMBER_GENERATOR)
+    list(APPEND RVO_EXAMPLES_COMPILE_DEFINITIONS
+      RVO_SEED_RANDOM_NUMBER_GENERATOR=1)
+  else()
+    list(APPEND RVO_EXAMPLES_COMPILE_DEFINITIONS
+      RVO_SEED_RANDOM_NUMBER_GENERATOR=0)
+  endif()
 
-install(TARGETS Blocks Circle Roadmap DESTINATION bin)
+  if(ENABLE_OPENMP AND OpenMP_FOUND)
+    set(RVO_EXAMPLES_COMPILE_OPTIONS ${OpenMP_CXX_FLAGS})
+    set(RVO_EXAMPLES_LINK_FLAGS "${OpenMP_CXX_FLAGS}")
+  else()
+    set(RVO_EXAMPLES_COMPILE_OPTIONS)
+    set(RVO_EXAMPLES_LINK_FLAGS)
+  endif()
+
+  if(ENABLE_INTERPROCEDURAL_OPTIMIZATION
+      AND RVO_INTERPROCEDURAL_OPTIMIZATION_SUPPORTED)
+    set(RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION ON)
+  else()
+    set(RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION OFF)
+  endif()
+
+  add_executable(Blocks Blocks.cpp)
+  target_compile_definitions(Blocks PRIVATE
+    ${RVO_EXAMPLES_COMPILE_DEFINITIONS})
+  target_link_libraries(Blocks PRIVATE ${RVO_LIBRARY})
+  target_compile_options(Blocks PRIVATE ${RVO_EXAMPLES_COMPILE_OPTIONS})
+  set_target_properties(Blocks PROPERTIES
+    INTERPROCEDURAL_OPTIMIZATION ${RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION}
+    LINK_FLAGS "${RVO_EXAMPLES_LINK_FLAGS}")
+  add_test(NAME Blocks COMMAND Blocks)
+
+  add_executable(Circle Circle.cpp)
+  target_compile_definitions(Circle PRIVATE
+    ${RVO_EXAMPLES_COMPILE_DEFINITIONS})
+  target_link_libraries(Circle PRIVATE ${RVO_LIBRARY})
+  target_compile_options(Circle PRIVATE ${RVO_EXAMPLES_COMPILE_OPTIONS})
+  set_target_properties(Circle PROPERTIES
+    INTERPROCEDURAL_OPTIMIZATION ${RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION}
+    LINK_FLAGS "${RVO_EXAMPLES_LINK_FLAGS}")
+  add_test(NAME Circle COMMAND Circle)
+
+  add_executable(Roadmap Roadmap.cpp)
+  target_compile_definitions(Roadmap PRIVATE
+    ${RVO_EXAMPLES_COMPILE_DEFINITIONS})
+  target_link_libraries(Roadmap PRIVATE ${RVO_LIBRARY})
+  target_compile_options(Roadmap PRIVATE ${RVO_EXAMPLES_COMPILE_OPTIONS})
+  set_target_properties(Roadmap PROPERTIES
+    INTERPROCEDURAL_OPTIMIZATION ${RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION}
+    LINK_FLAGS "${RVO_EXAMPLES_LINK_FLAGS}")
+  add_test(NAME Roadmap COMMAND Roadmap)
+endif()

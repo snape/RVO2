@@ -41,11 +41,13 @@
 #include <cmath>
 #include <ostream>
 
+#include "Export.h"
+
 namespace RVO {
 	/**
 	 * \brief      Defines a two-dimensional vector.
 	 */
-	class Vector2 {
+	class RVO_EXPORT Vector2 {
 	public:
 		/**
 		 * \brief      Constructs and initializes a two-dimensional vector instance
@@ -253,7 +255,7 @@ namespace RVO {
 	 * \return     The scalar multiplication of the two-dimensional vector with the
 	 *             scalar value.
 	 */
-	inline Vector2 operator*(float s, const Vector2 &vector)
+	RVO_EXPORT inline Vector2 operator*(float s, const Vector2 &vector)
 	{
 		return Vector2(s * vector.x(), s * vector.y());
 	}
@@ -268,7 +270,8 @@ namespace RVO {
 	 *                             the output stream.
 	 * \return     A reference to the output stream.
 	 */
-	inline std::ostream &operator<<(std::ostream &os, const Vector2 &vector)
+	RVO_EXPORT inline std::ostream &operator<<(std::ostream &os,
+											   const Vector2 &vector)
 	{
 		os << "(" << vector.x() << "," << vector.y() << ")";
 
@@ -282,7 +285,7 @@ namespace RVO {
 	 *                             computed.
 	 * \return     The length of the two-dimensional vector.
 	 */
-	inline float abs(const Vector2 &vector)
+	RVO_EXPORT inline float abs(const Vector2 &vector)
 	{
 		return std::sqrt(vector * vector);
 	}
@@ -295,7 +298,7 @@ namespace RVO {
 	 *                             is to be computed.
 	 * \return     The squared length of the two-dimensional vector.
 	 */
-	inline float absSq(const Vector2 &vector)
+	RVO_EXPORT inline float absSq(const Vector2 &vector)
 	{
 		return vector * vector;
 	}
@@ -310,7 +313,7 @@ namespace RVO {
 	 *                             matrix.
 	 * \return     The determinant of the two-dimensional square matrix.
 	 */
-	inline float det(const Vector2 &vector1, const Vector2 &vector2)
+	RVO_EXPORT inline float det(const Vector2 &vector1, const Vector2 &vector2)
 	{
 		return vector1.x() * vector2.y() - vector1.y() * vector2.x();
 	}
@@ -323,7 +326,7 @@ namespace RVO {
 	 *                             is to be computed.
 	 * \return     The normalization of the two-dimensional vector.
 	 */
-	inline Vector2 normalize(const Vector2 &vector)
+	RVO_EXPORT inline Vector2 normalize(const Vector2 &vector)
 	{
 		return vector / abs(vector);
 	}
