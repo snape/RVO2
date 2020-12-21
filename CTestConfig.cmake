@@ -30,10 +30,10 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
-set(CTEST_PROJECT_NAME "RVO2")
+set(CTEST_PROJECT_NAME RVO2)
 set(CTEST_NIGHTLY_START_TIME "01:00:00 UTC")
 
-set(CTEST_DROP_METHOD "http")
-set(CTEST_DROP_SITE "my.cdash.org")
-set(CTEST_DROP_LOCATION "/submit.php?project=RVO2")
-set(CTEST_DROP_SITE_CDASH TRUE)
+set(CTEST_DROP_METHOD https)
+set(CTEST_DROP_SITE my.cdash.org)
+set(CTEST_DROP_LOCATION "/submit.php?project=${CTEST_PROJECT_NAME}")
+set(CTEST_DROP_SITE_CDASH ON)
