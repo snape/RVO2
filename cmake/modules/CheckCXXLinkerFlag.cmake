@@ -35,19 +35,29 @@ include_guard(GLOBAL)
 include(CMakeCheckCompilerFlagCommonPatterns)
 
 function(check_cxx_linker_flag _FLAG _VAR)
-  _check_cxx_linker_flag(-Wl,--fatal-warnings
-    RVO_LINKER_SUPPORTS__FATAL_WARNINGS)
+  if(MSVC)
+    _check_cxx_linker_flag(/WX HRVO_LINKER_SUPPORTS_WX)
 
-  if(RVO_LINKER_SUPPORTS__FATAL_WARNINGS)
-    set(_FATAL_WARNINGS_FLAG -Wl,--fatal-warnings)
-  else()
-    _check_cxx_linker_flag(-Wl,-fatal_warnings
-      RVO_LINKER_SUPPORTS_FATAL_WARNINGS)
-
-    if(RVO_LINKER_SUPPORTS_FATAL_WARNINGS)
-      set(_FATAL_WARNINGS_FLAG -Wl,-fatal_warnings)
+    if(HRVO_LINKER_SUPPORTS_WX)
+      set(_FATAL_WARNINGS_FLAG /WX)
     else()
       set(_FATAL_WARNINGS_FLAG)
+    endif()
+  else()
+    _check_cxx_linker_flag(-Wl,--fatal-warnings
+      HRVO_LINKER_SUPPORTS__FATAL_WARNINGS)
+
+    if(HRVO_LINKER_SUPPORTS__FATAL_WARNINGS)
+      set(_FATAL_WARNINGS_FLAG -Wl,--fatal-warnings)
+    else()
+      _check_cxx_linker_flag(-Wl,-fatal_warnings
+        HRVO_LINKER_SUPPORTS_FATAL_WARNINGS)
+
+      if(HRVO_LINKER_SUPPORTS_FATAL_WARNINGS)
+        set(_FATAL_WARNINGS_FLAG -Wl,-fatal_warnings)
+      else()
+        set(_FATAL_WARNINGS_FLAG)
+      endif()
     endif()
   endif()
 
