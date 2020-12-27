@@ -30,10 +30,42 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
+#.rst:
+#
+# CheckCXXLinkerFlag
+# ------------------
+#
+# Check whether the CXX compiler supports a given link flag.
+#
+# .. command:: check_cxx linker_flag
+#
+#   .. code-block:: cmake
+#
+#     check_cxx_linker_flag(<flag> <var>)
+#
+# Check that the link flag ``<flag>`` is accepted by the CXX compiler without a
+# diagnostic or error message. Stores the result in an internal cache entry
+# named ``<var>``.
+#
+# This command temporarily sets either the ``CMAKE_REQUIRED_LIBRARIES`` or`
+# ``CMAKE_REQUIRED_LINK_OPTIONS`` variable depending on ``CMAKE_VERSION`` and
+# calls the ``check_cxx_source_compiles`` command from the
+# ``CheckCXXSourceCompiles`` module.
+#
+# A positive result from this check indicates only that the CXX compiler did not
+# issue a diagnostic or error message when given the link flag. Whether the flag
+# has any effect or even a specific one is beyond the scope of this module.
+#
+# .. note::
+#   Since the ``try_compile`` command forwards flags from variables like
+#   ``CMAKE_CXX_FLAGS``, unknown flags in such variables may cause a false
+#   negative for this check.
+
 include_guard(GLOBAL)
 
 include(CMakeCheckCompilerFlagCommonPatterns)
 
+# cmake-lint: disable=C0111
 function(check_cxx_linker_flag _FLAG _VAR)
   if(MSVC)
     _check_cxx_linker_flag(/WX HRVO_LINKER_SUPPORTS_WX)
@@ -66,14 +98,17 @@ function(check_cxx_linker_flag _FLAG _VAR)
   set(${_VAR} "${${_VAR}}" PARENT_SCOPE)
 endfunction()
 
+# cmake-lint: disable=C0111
 function(_check_cxx_linker_flag _FLAG _VAR)
   if(ARGC GREATER 2)
     list(INSERT _FLAG 0 "${ARGV2}")
   endif()
 
   if(CMAKE_VERSION VERSION_LESS 3.14)
+    # cmake-lint: disable=C0103
     set(CMAKE_REQUIRED_LIBRARIES "${_FLAG}")
   else()
+    # cmake-lint: disable=C0103
     set(CMAKE_REQUIRED_LINK_OPTIONS "${_FLAG}")
   endif()
 
@@ -81,6 +116,7 @@ function(_check_cxx_linker_flag _FLAG _VAR)
     set(_LC_VARS LANG LC_ALL LC_MESSAGES)
     foreach(_LC_VAR IN LISTS _LC_VARS)
       set(_SAVED_ENV_${_LC_VAR} "$ENV{${_LC_VAR}}")
+      # cmake-lint: disable=C0103
       set(ENV{${_LC_VAR}} C)
     endforeach()
   endif()
@@ -94,6 +130,7 @@ function(_check_cxx_linker_flag _FLAG _VAR)
 
   if(NOT WIN32)
     foreach(_LC_VAR IN LISTS _LC_VARS)
+      # cmake-lint: disable=C0103
       set(ENV{${_LC_VAR}} ${_SAVED_ENV_${_LC_VAR}})
     endforeach()
   endif()

@@ -37,7 +37,10 @@ load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
 
 licenses(["notice"])
 
-exports_files(["LICENSE"])
+exports_files(
+    ["LICENSE"],
+    visibility = ["//visibility:public"],
+)
 
 pkg_tar(
     name = "doc",

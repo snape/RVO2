@@ -13,6 +13,8 @@
 *.pc.in         text whitespace-2
 *.yml           text whitespace-2
 
+.bazelignore    text whitespace-4
+.bazelrc        text whitespace-4
 .editorconfig   text whitespace-2
 .gitattributes  text whitespace-2
 .gitignore      text whitespace-2
@@ -22,6 +24,8 @@ CMakeLists.txt  text whitespace-2
 LICENSE         text whitespace=trailing-space
 WORKSPACE       text diff=python whitespace-4
 
+.gitattributes  export-ignore
+.gitignore      export-ignore
 .travis.yml     export-ignore
 Brewfile        export-ignore
 
