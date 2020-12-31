@@ -62,6 +62,57 @@ jobs:
         run: bazel test ...
         shell: bash
 
+  cmake_centos:
+    name: cmake centos latest
+    runs-on: ubuntu-latest
+    container: centos:latest
+    steps:
+      - name: pre-checkout setup
+        run: |
+          dnf install -q -y \
+            ca-certificates \
+            glibc-langpack-en \
+            git
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: post-checkout setup
+        run: |
+          dnf install -q -y \
+            cmake \
+            dnf-plugins-core \
+            gcc-c++ \
+            graphviz \
+            make \
+            pkgconf-pkg-config \
+            redhat-lsb-core \
+            rpm-build
+          dnf config-manager --set-enabled powertools
+          dnf install -q -y doxygen
+        shell: bash
+      - name: build test package
+        run: |
+          mkdir _build
+          cd _build
+          cmake \
+            -DBUILD_DOCUMENTATION:BOOL=ON \
+            -DBUILD_TESTING:BOOL=ON \
+            -DCMAKE_INSTALL_PREFIX:PATH=install \
+            -DENABLE_HARDENING:BOOL=ON \
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
+            -DENABLE_OPENMP:BOOL=ON \
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
+            -DWARNINGS_AS_ERRORS:BOOL=ON \
+            --warn-uninitialized \
+            ..
+          cmake --build .
+          ctest .
+          cmake --install .
+          cpack -G RPM
+          cpack -G RPM --config CPackSourceConfig.cmake
+        shell: bash
+
   cmake_macos:
     name: cmake macos latest
     runs-on: macos-latest
