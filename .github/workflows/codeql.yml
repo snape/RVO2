@@ -1,0 +1,27 @@
+---
+name: codeql
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  schedule:
+    - cron: '0 6 * * 3'
+
+jobs:
+  analyze:
+    name: analyze
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: initialize codeql
+      uses: github/codeql-action/init@v1
+      with:
+        languages: cpp
+    - name: autobuild
+      uses: github/codeql-action/autobuild@v1
+    - name: perform codeql analysis
+      uses: github/codeql-action/analyze@v1
