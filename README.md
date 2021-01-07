@@ -23,8 +23,8 @@ simulation is fully accessible and manipulable during runtime. The library
 exploits multiple processors if they are available using OpenMP for efficient
 parallelization of the simulation.
 
-![Build Status](https://github.com/snape/RVO2/workflows/ci/badge.svg?branch=master)
-[![Build Status](https://travis-ci.com/snape/RVO2.svg?branch=master)](https://travis-ci.com/snape/RVO2)
+![Build Status](https://github.com/snape/RVO2/workflows/ci/badge.svg?branch=main)
+[![Build Status](https://travis-ci.com/snape/RVO2.svg?branch=main)](https://travis-ci.com/snape/RVO2)
 
 Copyright 2008 University of North Carolina at Chapel Hill
 
