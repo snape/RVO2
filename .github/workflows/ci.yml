@@ -20,6 +20,8 @@ jobs:
       - name: setup
         run: |
           rm -f /usr/local/bin/2to3
+          brew unlink gcc@8
+          brew unlink gcc@9
           brew update
           brew uninstall -q bazelisk
           brew bundle install --no-lock
@@ -122,6 +124,8 @@ jobs:
       - name: setup
         run: |
           rm -f /usr/local/bin/2to3
+          brew unlink gcc@8
+          brew unlink gcc@9
           brew update
           brew uninstall -q bazelisk
           brew bundle install --no-lock
