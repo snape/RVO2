@@ -205,6 +205,18 @@ namespace RVO {
 		size_t addObstacle(const std::vector<Vector2> &vertices);
 
 		/**
+		 * \brief      Clear all the obstacles .
+		 */
+		void clearObstacle();
+
+		/**
+		 * \brief      Remove a specified obstacle.
+		 * \param      agentNo         The number of the agent who want to remove.
+		 */
+		void removeObstacle(size_t ObstacleNo);
+
+
+		/**
 		 * \brief      Lets the simulator perform a simulation step and updates the
 		 *             two-dimensional position and two-dimensional velocity of
 		 *             each agent.
