@@ -76,6 +76,9 @@ if(BUILD_TESTING)
     INTERPROCEDURAL_OPTIMIZATION ${RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION}
     LINK_FLAGS "${RVO_EXAMPLES_LINK_FLAGS}")
   add_test(NAME Blocks COMMAND Blocks)
+  set_tests_properties(Blocks PROPERTIES
+    LABELS medium
+    TIMEOUT 60)
 
   add_executable(Circle Circle.cpp)
   target_compile_definitions(Circle PRIVATE
@@ -86,6 +89,9 @@ if(BUILD_TESTING)
     INTERPROCEDURAL_OPTIMIZATION ${RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION}
     LINK_FLAGS "${RVO_EXAMPLES_LINK_FLAGS}")
   add_test(NAME Circle COMMAND Circle)
+  set_tests_properties(Circle PROPERTIES
+    LABELS medium
+    TIMEOUT 60)
 
   add_executable(Roadmap Roadmap.cpp)
   target_compile_definitions(Roadmap PRIVATE
@@ -96,4 +102,7 @@ if(BUILD_TESTING)
     INTERPROCEDURAL_OPTIMIZATION ${RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION}
     LINK_FLAGS "${RVO_EXAMPLES_LINK_FLAGS}")
   add_test(NAME Roadmap COMMAND Roadmap)
+  set_tests_properties(Roadmap PROPERTIES
+    LABELS medium
+    TIMEOUT 60)
 endif()

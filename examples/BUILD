@@ -39,7 +39,8 @@ licenses(["notice"])
 
 cc_test(
     name = "Blocks",
-    size = "small",
+    size = "medium",
+    timeout = "short",
     srcs = ["Blocks.cpp"],
     defines = [
         "RVO_OUTPUT_TIME_AND_POSITIONS=0",
@@ -51,7 +52,8 @@ cc_test(
 
 cc_test(
     name = "Circle",
-    size = "small",
+    size = "medium",
+    timeout = "short",
     srcs = ["Circle.cpp"],
     defines = [
         "RVO_OUTPUT_TIME_AND_POSITIONS=0",
@@ -63,7 +65,8 @@ cc_test(
 
 cc_test(
     name = "Roadmap",
-    size = "small",
+    size = "medium",
+    timeout = "short",
     srcs = ["Roadmap.cpp"],
     defines = [
         "RVO_OUTPUT_TIME_AND_POSITIONS=0",
