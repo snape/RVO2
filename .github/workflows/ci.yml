@@ -11,6 +11,38 @@ on:
     - cron: '0 5 * * *'
 
 jobs:
+  bazel_arch:
+    name: bazel arch latest
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - name: pre-checkout setup
+        run: |
+          pacman --noconfirm -S -u -y
+          pacman --noconfirm -S \
+            ca-certificates \
+            git
+          rm -rf \
+            /var/cache/pacman/pkg/* \
+            /var/lib/pacman/sync/*
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: post-checkout setup
+        run: |
+          pacman --noconfirm -S -y \
+            bazel \
+            gcc \
+            python \
+            which
+          rm -rf \
+            /var/cache/pacman/pkg/* \
+            /var/lib/pacman/sync/*
+        shell: bash
+      - name: build test package
+        run: bazel test ...
+        shell: bash
+
   bazel_macos:
     name: bazel macos latest
     runs-on: macos-latest
@@ -42,6 +74,7 @@ jobs:
           apt-get install -o Dpkg::Use-Pty=0 -qq --no-install-recommends \
             ca-certificates \
             git
+          rm -rf /var/lib/apt/lists/*
         shell: bash
       - name: checkout
         uses: actions/checkout@v2
@@ -59,9 +92,109 @@ jobs:
             > /etc/apt/sources.list.d/bazel.list
           apt-get update -qq
           apt-get install -o Dpkg::Use-Pty=0 -qq --no-install-recommends bazel
+          rm -rf /var/lib/apt/lists/*
         shell: bash
       - name: build test package
         run: bazel test ...
+        shell: bash
+
+  cmake_alpine:
+    name: cmake alpine latest
+    runs-on: ubuntu-latest
+    container: alpine:latest
+    steps:
+      - name: pre-checkout setup
+        run: |
+          apk add --no-cache \
+            ca-certificates \
+            git
+        shell: sh
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: post-checkout setup
+        run: |
+          apk add --no-cache \
+            cmake \
+            doxygen \
+            g++ \
+            graphviz \
+            make \
+            pkgconf
+        shell: sh
+      - name: build test package
+        run: |
+          mkdir _build
+          cd _build
+          cmake \
+            -DBUILD_DOCUMENTATION:BOOL=ON \
+            -DBUILD_TESTING:BOOL=ON \
+            -DCMAKE_INSTALL_PREFIX:PATH=install \
+            -DENABLE_HARDENING:BOOL=ON \
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
+            -DENABLE_OPENMP:BOOL=ON \
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
+            -DWARNINGS_AS_ERRORS:BOOL=ON \
+            --warn-uninitialized \
+            ..
+          cmake --build .
+          ctest .
+          cmake --install .
+          cpack -G TGZ
+          cpack -G TGZ --config CPackSourceConfig.cmake
+        shell: sh
+
+  cmake_arch:
+    name: cmake arch latest
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - name: pre-checkout setup
+        run: |
+          pacman --noconfirm -S -u -y
+          pacman --noconfirm -S \
+            ca-certificates \
+            git
+          rm -rf \
+            /var/cache/pacman/pkg/* \
+            /var/lib/pacman/sync/*
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: post-checkout setup
+        run: |
+          pacman --noconfirm -S -y \
+            cmake \
+            doxygen \
+            gcc \
+            graphviz \
+            make \
+            pkgconf
+          rm -rf \
+            /var/cache/pacman/pkg/* \
+            /var/lib/pacman/sync/*
+        shell: bash
+      - name: build test package
+        run: |
+          mkdir _build
+          cd _build
+          cmake \
+            -DBUILD_DOCUMENTATION:BOOL=ON \
+            -DBUILD_TESTING:BOOL=ON \
+            -DCMAKE_INSTALL_PREFIX:PATH=install \
+            -DENABLE_HARDENING:BOOL=ON \
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
+            -DENABLE_OPENMP:BOOL=ON \
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
+            -DWARNINGS_AS_ERRORS:BOOL=ON \
+            --warn-uninitialized \
+            ..
+          cmake --build .
+          ctest .
+          cmake --install .
+          cpack -G TGZ
+          cpack -G TGZ --config CPackSourceConfig.cmake
         shell: bash
 
   cmake_centos:
@@ -75,6 +208,8 @@ jobs:
             ca-certificates \
             glibc-langpack-en \
             git
+          dnf clean all
+          rm -rf /var/cache/yum
         shell: bash
       - name: checkout
         uses: actions/checkout@v2
@@ -91,6 +226,8 @@ jobs:
             rpm-build
           dnf config-manager --set-enabled powertools
           dnf install -q -y doxygen
+          dnf clean all
+          rm -rf /var/cache/yum
         shell: bash
       - name: build test package
         run: |
@@ -165,6 +302,7 @@ jobs:
           apt-get install -o Dpkg::Use-Pty=0 -qq --no-install-recommends \
             ca-certificates \
             git
+          rm -rf /var/lib/apt/lists/*
         shell: bash
       - name: checkout
         uses: actions/checkout@v2
@@ -190,6 +328,7 @@ jobs:
             > /etc/apt/sources.list.d/kitware.list
           apt-get update -qq
           apt-get install -o Dpkg::Use-Pty=0 -qq --no-install-recommends cmake
+          rm -rf /var/lib/apt/lists/*
         shell: bash
       - name: build test package
         run: |
@@ -245,6 +384,6 @@ jobs:
           cmake --build . --config Release
           ctest . --build-config Release
           cmake --install .
-          cpack -C Release -G DEB
-          cpack -C Release -G DEB --config CPackSourceConfig.cmake
+          cpack -C Release -G ZIP
+          cpack -C Release -G ZIP --config CPackSourceConfig.cmake
         shell: powershell
