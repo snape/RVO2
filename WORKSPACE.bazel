@@ -1,5 +1,5 @@
-# -*- mode: python -*-
-# vi: set ft=python :
+# -*- mode: bazel; -*-
+# vi: set ft=bazel:
 
 #
 # WORKSPACE

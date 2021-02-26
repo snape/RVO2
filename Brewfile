@@ -1,5 +1,5 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
+# -*- mode: ruby; -*-
+# vi: set ft=ruby:
 
 brew 'bazel'
 brew 'cmake'

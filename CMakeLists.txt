@@ -1,5 +1,5 @@
-# -*- mode: cmake -*-
-# vi: set ft=cmake :
+# -*- mode: cmake; -*-
+# vi: set ft=cmake:
 
 #
 # CMakeLists.txt
