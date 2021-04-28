@@ -12,29 +12,29 @@ on:  # yamllint disable-line rule:truthy
     - cron: '0 5 * * *'
 
 jobs:
-#  bazel_arch:
-#    name: bazel arch latest
-#    runs-on: ubuntu-20.04
-#    container: archlinux:latest
-#    steps:
-#      - name: setup
-#        run: |
-#          pacman --needed --noconfirm --noprogressbar -S -u -y \
-#            bazel \
-#            ca-certificates \
-#            gcc \
-#            git \
-#            python \
-#            which
-#          rm -rf \
-#            /var/cache/pacman/pkg/* \
-#            /var/lib/pacman/sync/*
-#        shell: bash
-#      - name: checkout
-#        uses: actions/checkout@v2
-#      - name: build test package
-#        run: bazel test ...
-#        shell: bash
+  bazel_arch:
+    name: bazel arch latest
+    runs-on: ubuntu-20.04
+    container: archlinux:latest
+    steps:
+      - name: setup
+        run: |
+          pacman --needed --noconfirm --noprogressbar -S -u -y \
+            bazel \
+            ca-certificates \
+            gcc \
+            git \
+            python \
+            which
+          rm -rf \
+            /var/cache/pacman/pkg/* \
+            /var/lib/pacman/sync/*
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: build test package
+        run: bazel test ...
+        shell: bash
 
   bazel_macos:
     name: bazel macos latest
@@ -127,50 +127,50 @@ jobs:
           cpack -G TGZ --config CPackSourceConfig.cmake
         shell: sh
 
-#  cmake_arch:
-#    name: cmake arch latest
-#    runs-on: ubuntu-20.04
-#    container: archlinux:latest
-#    steps:
-#      - name: setup
-#        run: |
-#          pacman --needed --noconfirm --noprogressbar -S -u -y \
-#            ca-certificates \
-#            cmake \
-#            doxygen \
-#            gcc \
-#            git \
-#            graphviz \
-#            make \
-#            pkgconf
-#          rm -rf \
-#            /var/cache/pacman/pkg/* \
-#            /var/lib/pacman/sync/*
-#        shell: bash
-#      - name: checkout
-#        uses: actions/checkout@v2
-#      - name: build test package
-#        run: |
-#          mkdir _build
-#          cd _build
-#          cmake \
-#            -DBUILD_DOCUMENTATION:BOOL=ON \
-#            -DBUILD_TESTING:BOOL=ON \
-#            -DCMAKE_INSTALL_PREFIX:PATH=install \
-#            -DENABLE_HARDENING:BOOL=ON \
-#            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
-#            -DENABLE_OPENMP:BOOL=ON \
-#            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
-#            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
-#            -DWARNINGS_AS_ERRORS:BOOL=ON \
-#            --warn-uninitialized \
-#            ..
-#          cmake --build .
-#          ctest .
-#          cmake --install .
-#          cpack -G TGZ
-#          cpack -G TGZ --config CPackSourceConfig.cmake
-#        shell: bash
+  cmake_arch:
+    name: cmake arch latest
+    runs-on: ubuntu-20.04
+    container: archlinux:latest
+    steps:
+      - name: setup
+        run: |
+          pacman --needed --noconfirm --noprogressbar -S -u -y \
+            ca-certificates \
+            cmake \
+            doxygen \
+            gcc \
+            git \
+            graphviz \
+            make \
+            pkgconf
+          rm -rf \
+            /var/cache/pacman/pkg/* \
+            /var/lib/pacman/sync/*
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: build test package
+        run: |
+          mkdir _build
+          cd _build
+          cmake \
+            -DBUILD_DOCUMENTATION:BOOL=ON \
+            -DBUILD_TESTING:BOOL=ON \
+            -DCMAKE_INSTALL_PREFIX:PATH=install \
+            -DENABLE_HARDENING:BOOL=ON \
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
+            -DENABLE_OPENMP:BOOL=ON \
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
+            -DWARNINGS_AS_ERRORS:BOOL=ON \
+            --warn-uninitialized \
+            ..
+          cmake --build .
+          ctest .
+          cmake --install .
+          cpack -G TGZ
+          cpack -G TGZ --config CPackSourceConfig.cmake
+        shell: bash
 
   cmake_centos:
     name: cmake centos latest
@@ -193,6 +193,53 @@ jobs:
             rpm-build
           dnf config-manager --set-enabled powertools
           dnf install -q -y doxygen
+          dnf clean all
+          rm -rf /var/cache/yum
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: build test package
+        run: |
+          mkdir _build
+          cd _build
+          cmake \
+            -DBUILD_DOCUMENTATION:BOOL=ON \
+            -DBUILD_TESTING:BOOL=ON \
+            -DCMAKE_INSTALL_PREFIX:PATH=install \
+            -DENABLE_HARDENING:BOOL=ON \
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
+            -DENABLE_OPENMP:BOOL=ON \
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
+            -DWARNINGS_AS_ERRORS:BOOL=ON \
+            --warn-uninitialized \
+            ..
+          cmake --build .
+          ctest .
+          cmake --install .
+          cpack -G RPM
+          cpack -G RPM --config CPackSourceConfig.cmake
+        shell: bash
+
+  cmake_fedora:
+    name: cmake fedora latest
+    runs-on: ubuntu-20.04
+    container: fedora:latest
+    steps:
+      - name: setup
+        run: |
+          dnf install -q -y \
+            ca-certificates \
+            cmake \
+            doxygen \
+            gcc-c++ \
+            git \
+            glibc-langpack-en \
+            graphviz \
+            make \
+            pkgconf-pkg-config \
+            redhat-lsb-core \
+            rpm-build
           dnf clean all
           rm -rf /var/cache/yum
         shell: bash
