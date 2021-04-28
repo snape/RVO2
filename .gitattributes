@@ -29,6 +29,6 @@ CODEOWNERS           text whitespace-2
 LICENSE              text linguist-documentation linguist-vendored whitespace=trailing-space
 README.md            linguist-documentation
 
-.travis.yml          export-ignore
+.circleci/**         export-ignore
 .github/**           export-ignore
 .github/**/*.md      linguist-documentation

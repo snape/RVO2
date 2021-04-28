@@ -1,0 +1,73 @@
+---
+version: 2.1
+
+jobs:
+  ubuntu:
+    machine:
+      image: ubuntu-2004:202101-01
+    resource_class: arm.medium
+    steps:
+      - run:
+          name: setup
+          command: |
+            sudo -E apt-get -qq update
+            sudo -E apt-get -qq -o Dpkg::Use-Pty=0 --no-install-recommends install \
+              make \
+              g++ \
+              git \
+              gnupg \
+              make \
+              pkg-config \
+              wget
+            wget -qO- https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null \
+              | gpg --dearmor - \
+              | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
+            echo 'deb https://apt.kitware.com/ubuntu/ focal main' \
+              | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
+            sudo -E apt-get -qq update
+            sudo -E apt-get -qq -o Dpkg::Use-Pty=0 --no-install-recommends install \
+              cmake
+            sudo rm -rf /var/lib/apt/lists/*
+          environment:
+            DEBIAN_FRONTEND: noninteractive
+      - checkout
+      - run:
+          name: build test
+          command: |
+            mkdir _build
+            cd _build
+            cmake \
+              -DBUILD_DOCUMENTATION:BOOL=OFF \
+              -DBUILD_TESTING:BOOL=ON \
+              -DCMAKE_INSTALL_PREFIX:PATH=install \
+              -DENABLE_HARDENING:BOOL=OFF \
+              -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=OFF \
+              -DENABLE_OPENMP:BOOL=OFF \
+              -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
+              -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
+              -DWARNINGS_AS_ERRORS:BOOL=ON \
+              --warn-uninitialized \
+              ..
+            cmake --build .
+            ctest -E Roadmap .
+            cmake --install .
+
+workflows:
+  version: 2
+  continuous:
+    jobs:
+      - ubuntu:
+          filters:
+            branches:
+              only:
+                - main
+  weekly:
+    triggers:
+      - schedule:
+          cron: '0 0 * * 4'
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - ubuntu
