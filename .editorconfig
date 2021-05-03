@@ -12,10 +12,13 @@ insert_final_newline = true
 max_line_length = 80
 trim_trailing_whitespace = true
 
-[*.h]
-indent_style = tab
+[*.bazel]
+indent_size = 4
 
 [*.cpp]
+indent_style = tab
+
+[*.h]
 indent_style = tab
 
 [*.md]
@@ -28,10 +31,4 @@ indent_size = 4
 indent_size = 4
 
 [Brewfile]
-indent_size = 4
-
-[BUILD]
-indent_size = 4
-
-[WORKSPACE]
 indent_size = 4

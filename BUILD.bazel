@@ -2,7 +2,7 @@
 # vi: set ft=bazel:
 
 #
-# BUILD
+# BUILD.bazel
 # RVO2 Library
 #
 # Copyright 2008 University of North Carolina at Chapel Hill
