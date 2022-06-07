@@ -1,6 +1,40 @@
 # -*- mode: gitattributes; -*-
 # vi: set ft=gitattributes:
 
+#
+# .gitattributes
+# RVO2 Library
+#
+# SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Please send all bug reports to <geom@cs.unc.edu>.
+#
+# The authors may be contacted via:
+#
+# Jur van den Berg, Stephen J. Guy, Jamie Snape, Ming C. Lin, Dinesh Manocha
+# Dept. of Computer Science
+# 201 S. Columbia St.
+# Frederick P. Brooks, Jr. Computer Science Bldg.
+# Chapel Hill, N.C. 27599-3175
+# United States of America
+#
+# <https://gamma.cs.unc.edu/RVO2/>
+#
+
+[attr]whitespace-0   whitespace=tab-in-indent,trailing-space
 [attr]whitespace-2   whitespace=tab-in-indent,tabwidth=2,trailing-space
 [attr]whitespace-4   whitespace=tab-in-indent,tabwidth=4,trailing-space
 [attr]whitespace-md  whitespace=-blank-at-eol,blank-at-eof,tab-in-indent
@@ -14,8 +48,10 @@
 *.css                text diff=css linguist-documentation whitespace=trailing-space
 *.h                  text diff=cpp linguist-language=c++ whitespace=tabwidth=2,trailing-space
 *.html               text diff=html linguist-documentation whitespace=trailing-space
+*.license            text linguist-documentation whitespace-0
 *.md                 text diff=markdown whitespace-md
 *.pc.in              text whitespace-2
+*.txt                text
 *.yml                text whitespace-2
 
 .bazelignore         text whitespace-4
@@ -23,12 +59,14 @@
 .editorconfig        text whitespace-2
 .gitattributes       text export-ignore whitespace-2
 .gitignore           text export-ignore whitespace-2
-Brewfile             text export-ignore diff=ruby whitespace-4
-CMakeLists.txt       text whitespace-2
+Brewfile             text diff=ruby export-ignore whitespace-4
+CMakeLists.txt       whitespace-2
 CODEOWNERS           text whitespace-2
-LICENSE              text linguist-documentation linguist-vendored whitespace=trailing-space
+dep5                 text linguist-documentation whitespace=trailing-space
+LICENSE              text linguist-documentation linguist-vendored whitespace-0
 README.md            linguist-documentation
 
 .circleci/**         export-ignore
 .github/**           export-ignore
 .github/**/*.md      linguist-documentation
+LICENSES/**/*.txt    linguist-documentation linguist-vendored whitespace-0

@@ -5,7 +5,8 @@
 # src/BUILD.bazel
 # RVO2 Library
 #
-# Copyright 2008 University of North Carolina at Chapel Hill
+# SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
+# SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -38,6 +39,7 @@ load("@rules_pkg//:pkg.bzl", "pkg_tar")
 
 licenses(["notice"])
 
+# REUSE-IgnoreStart
 genrule(
     name = "export",
     outs = ["Export.h"],
@@ -47,7 +49,8 @@ cat << 'EOF' > $@
  * Export.h
  * RVO2 Library
  *
- * Copyright 2008 University of North Carolina at Chapel Hill
+ * SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
+ * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,6 +100,7 @@ EOF
 """,
     visibility = ["//visibility:private"],
 )
+# REUSE-IgnoreEnd
 
 filegroup(
     name = "hdrs",
