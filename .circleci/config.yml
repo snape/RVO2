@@ -37,7 +37,7 @@ version: 2.1
 jobs:
   ubuntu:
     machine:
-      image: ubuntu-2004:202101-01
+      image: ubuntu-2004:202201-02
     resource_class: arm.medium
     steps:
       - run:
@@ -45,17 +45,17 @@ jobs:
           command: |
             sudo -E apt-get -qq update
             sudo -E apt-get -qq -o Dpkg::Use-Pty=0 --no-install-recommends install \
-              make \
+              ca-certificates \
               g++ \
               git \
               gnupg \
               make \
-              pkg-config \
+              pkgconf \
               wget
             wget -qO- https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null \
               | gpg --dearmor - \
-              | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
-            echo 'deb https://apt.kitware.com/ubuntu/ focal main' \
+              | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
+            echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main' \
               | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
             sudo -E apt-get -qq update
             sudo -E apt-get -qq -o Dpkg::Use-Pty=0 --no-install-recommends install \

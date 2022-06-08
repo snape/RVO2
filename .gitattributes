@@ -65,6 +65,7 @@ CODEOWNERS           text whitespace-2
 dep5                 text linguist-documentation whitespace=trailing-space
 LICENSE              text linguist-documentation linguist-vendored whitespace-0
 README.md            linguist-documentation
+requirements.txt     whitespace-2
 
 .circleci/**         export-ignore
 .github/**           export-ignore

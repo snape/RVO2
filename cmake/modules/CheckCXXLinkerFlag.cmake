@@ -66,6 +66,7 @@ include_guard(GLOBAL)
 
 include(CMakeCheckCompilerFlagCommonPatterns)
 
+# cmake-lint: disable=C0103
 # cmake-lint: disable=C0111
 function(check_cxx_linker_flag _FLAG _VAR)
   if(MSVC)

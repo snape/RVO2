@@ -1,8 +1,5 @@
-# -*- mode: gitignore; -*-
-# vi: set ft=gitignore:
-
 #
-# .bazelignore
+# requirements.txt
 # RVO2 Library
 #
 # SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
@@ -34,10 +31,5 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
-_build/
-.circleci/
-.github/
-.idea/
-.reuse/
-cmake-build-*/
-cmake/
+cmakelang
+reuse

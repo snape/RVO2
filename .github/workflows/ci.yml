@@ -101,9 +101,11 @@ jobs:
             g++ \
             git \
             gnupg \
-            python-is-python3
-          apt-key adv -q --fetch-keys https://bazel.build/bazel-release.pub.gpg
-          echo 'deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8' \
+            python-is-python3 \
+            wget
+          wget -qO - https://bazel.build/bazel-release.pub.gpg 2>/dev/null | gpg --dearmor - \
+            > /usr/share/keyrings/bazel-archive-keyring.gpg
+          echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/bazel-archive-keyring.gpg] https://storage.googleapis.com/bazel-apt stable jdk1.8' \
             > /etc/apt/sources.list.d/bazel.list
           apt-get -qq update
           apt-get -qq -o Dpkg::Use-Pty=0 --no-install-recommends install bazel
@@ -358,7 +360,7 @@ jobs:
             git \
             graphviz \
             make \
-            pkg-config
+            pkgconf
           rm -rf /var/lib/apt/lists/*
         env:
           DEBIAN_FRONTEND: noninteractive

@@ -35,9 +35,10 @@
 #
 
 brew 'bazel'
+brew 'buildifier'
 brew 'cmake'
 brew 'doxygen'
 brew 'gcc'
 brew 'graphviz'
 brew 'ninja'
-brew 'pkg-config'
+brew 'pkgconf'
