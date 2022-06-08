@@ -79,15 +79,15 @@ function(check_cxx_linker_flag _FLAG _VAR)
     endif()
   else()
     _check_cxx_linker_flag(-Wl,--fatal-warnings
-      HRVO_LINKER_SUPPORTS__FATAL_WARNINGS)
+      CHECK_CXX_LINKER_FLAG_LINKER_SUPPORTS__FATAL_WARNINGS)
 
-    if(HRVO_LINKER_SUPPORTS__FATAL_WARNINGS)
+    if(CHECK_CXX_LINKER_FLAG_LINKER_SUPPORTS__FATAL_WARNINGS)
       set(_FATAL_WARNINGS_FLAG -Wl,--fatal-warnings)
     else()
       _check_cxx_linker_flag(-Wl,-fatal_warnings
-        HRVO_LINKER_SUPPORTS_FATAL_WARNINGS)
+        CHECK_CXX_LINKER_FLAG_LINKER_SUPPORTS_FATAL_WARNINGS)
 
-      if(HRVO_LINKER_SUPPORTS_FATAL_WARNINGS)
+      if(CHECK_CXX_LINKER_FLAG_LINKER_SUPPORTS_FATAL_WARNINGS)
         set(_FATAL_WARNINGS_FLAG -Wl,-fatal_warnings)
       else()
         set(_FATAL_WARNINGS_FLAG)
