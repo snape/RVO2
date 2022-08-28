@@ -34,11 +34,19 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
-brew 'bazel'
+brew 'bazel', conflicts_with: ['bazelisk']
 brew 'buildifier'
 brew 'cmake'
+brew 'cppcheck'
+brew 'cpplint'
 brew 'doxygen'
 brew 'gcc'
 brew 'graphviz'
+brew 'include-what-you-use'
+brew 'jsonlint'
+brew 'llvm'
+brew 'markdownlint-cli'
 brew 'ninja'
-brew 'pkgconf'
+brew 'pkgconf', conflicts_with: ['pkg-config']
+brew 'python'
+brew 'yamllint'
