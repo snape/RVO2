@@ -60,6 +60,8 @@ Optimal Reciprocal Collision Avoidance
 
 <https://gamma.cs.unc.edu/RVO2/>
 
+[![DOI](https://zenodo.org/badge/10926872.svg)](https://zenodo.org/badge/latestdoi/10926872)
+
 We present a formal approach to reciprocal collision avoidance, where multiple
 independent mobile robots or agents need to avoid collisions with each other
 without communication among agents while moving in a common workspace. Our

@@ -1,0 +1,55 @@
+{
+  "upload_type": "software",
+  "title": "Optimal Reciprocal Collision Avoidance",
+  "creators": [
+    {
+      "name": "Van den Berg, Jur",
+      "affiliation": "University of North Carolina at Chapel Hill",
+    },
+    {
+      "name": "Guy, Stephen J.",
+      "affiliation": "University of North Carolina at Chapel Hill",
+      "orcid": "0000-0001-8986-5817"
+    },
+    {
+      "name": "Snape, Jamie",
+      "affiliation": "University of North Carolina at Chapel Hill",
+      "orcid": "0000-0002-3326-9765",
+    },
+    {
+      "name": "Lin, Ming C.",
+      "affiliation": "University of North Carolina at Chapel Hill",
+      "orcid": "0000-0003-3736-6949"
+    },
+    {
+      "name": "Manocha, Dinesh",
+      "affiliation": "University of North Carolina at Chapel Hill",
+      "orcid": "0000-0001-7047-9801"
+    }
+  ],
+  "description": "We present a formal approach to reciprocal collision avoidance, where multiple independent mobile robots or agents need to avoid collisions with each other without communication among agents while moving in a common workspace. Our formulation, optimal reciprocal collision avoidance (ORCA), provides sufficient conditions for collision-free motion by letting each agent take half of the responsibility of avoiding pairwise collisions. Selecting the optimal action for each agent is reduced to solving a low-dimensional linear program, and we prove that the resulting motions are smooth. We test our optimal reciprocal collision avoidance approach on several dense and complex simulation scenarios workspaces involving thousands of agents, and compute collision-free actions for all of them in only a few milliseconds. RVO2 Library is an open-source C++98 implementation of our algorithm in two dimensions. It has a simple API for third-party applications. The user specifies static obstacles, agents, and the preferred velocities of the agents. The simulation is performed step-by-step via a simple call to the library. The simulation is fully accessible and manipulable during runtime. The library exploits multiple processors if they are available using OpenMP for efficient parallelization of the simulation.",
+  "access_right": "open",
+  "license": {
+    "id": "Apache-2.0",
+    "title": "Apache License 2.0",
+    "url": "https://www.apache.org/licenses/LICENSE-2.0"
+  },
+  "keywords": [
+    "collision avoidance",
+    "mobile robots",
+    "motion planning",
+    "multi-robot systems",
+    "navigation"
+  ],
+  "grants": [
+    {
+      "id": "10.13039/100000001::0636208"
+    },
+    {
+      "id": "10.13039/100000001::0917040"
+    },
+    {
+      "id": "10.13039/100000001::0904990"
+    }
+  ]
+}

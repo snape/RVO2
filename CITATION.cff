@@ -1,0 +1,408 @@
+# -*- mode: yaml; -*-
+# vi: set ft=yaml:
+
+#
+# CITATION.cff
+# RVO2 Library
+#
+# SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
+# SPDX-License-Identifier: CC-BY-SA-4.0
+#
+# Creative Commons Attribution-ShareAlike 4.0 International Public License
+#
+# You are free to:
+#
+# * Share -- copy and redistribute the material in any medium or format
+#
+# * ShareAlike -- If you remix, transform, or build upon the material, you must
+#   distribute your contributions under the same license as the original
+#
+# * Adapt -- remix, transform, and build upon the material for any purpose, even
+#   commercially.
+#
+# The licensor cannot revoke these freedoms as long as you follow the license
+# terms.
+#
+# Under the following terms:
+#
+# * Attribution -- You must give appropriate credit, provide a link to the
+#   license, and indicate if changes were made. You may do so in any reasonable
+#   manner, but not in any way that suggests the licensor endorses you or your
+#   use.
+#
+# * No additional restrictions -- You may not apply legal terms or technological
+#   measures that legally restrict others from doing anything the license
+#   permits.
+#
+# Notices:
+#
+# * You do not have to comply with the license for elements of the material in
+#   the public domain or where your use is permitted by an applicable exception
+#   or limitation.
+#
+# * No warranties are given. The license may not give you all of the permissions
+#   necessary for your intended use. For example, other rights such as
+#   publicity, privacy, or moral rights may limit how you use the material.
+#
+# Please send all bug reports to <geom@cs.unc.edu>.
+#
+# The authors may be contacted via:
+#
+# Jur van den Berg, Stephen J. Guy, Jamie Snape, Ming C. Lin, Dinesh Manocha
+# Dept. of Computer Science
+# 201 S. Columbia St.
+# Frederick P. Brooks, Jr. Computer Science Bldg.
+# Chapel Hill, N.C. 27599-3175
+# United States of America
+#
+# <https://gamma.cs.unc.edu/RVO2/>
+#
+
+---
+cff-version: 1.2.0
+abstract: >-
+  We present a formal approach to reciprocal collision avoidance, where
+  multiple independent mobile robots or agents need to avoid collisions with
+  each other without communication among agents while moving in a common
+  workspace. Our formulation, optimal reciprocal collision avoidance (ORCA),
+  provides sufficient conditions for collision-free motion by letting each
+  agent take half of the responsibility of avoiding pairwise collisions.
+  Selecting the optimal action for each agent is reduced to solving a
+  low-dimensional linear program, and we prove that the resulting motions are
+  smooth. We test our optimal reciprocal collision avoidance approach on
+  several dense and complex simulation scenarios workspaces involving thousands
+  of agents, and compute collision-free actions for all of them in only a few
+  milliseconds.
+
+  RVO2 Library is an open-source C++98 implementation of our algorithm in two
+  dimensions. It has a simple API for third-party applications. The user
+  specifies static obstacles, agents, and the preferred velocities of the
+  agents. The simulation is performed step-by-step via a simple call to the
+  library. The simulation is fully accessible and manipulable during runtime.
+  The library exploits multiple processors if they are available using OpenMP
+  for efficient parallelization of the simulation.
+authors:
+  - address: >-
+      201 S Columbia St, Frederick P. Brooks, Jr. Computer Science Bldg
+    affiliation: 'University of North Carolina at Chapel Hill'
+    city: 'Chapel Hill'
+    country: US
+    family-names: Berg
+    given-names: Jur
+    name-particle: 'van den'
+    post-code: 27599
+    region: NC
+  - address: >-
+      201 S Columbia St, Frederick P. Brooks, Jr. Computer Science Bldg
+    affiliation: 'University of North Carolina at Chapel Hill'
+    city: 'Chapel Hill'
+    country: US
+    family-names: Guy
+    given-names: 'Stephen J.'
+    orcid: 'https://orcid.org/0000-0001-8986-5817'
+    post-code: 27599
+    region: NC
+    website: 'https://www-users.cse.umn.edu/~sjguy/'
+  - address: >-
+      201 S Columbia St, Frederick P. Brooks, Jr. Computer Science Bldg
+    affiliation: 'University of North Carolina at Chapel Hill'
+    city: 'Chapel Hill'
+    country: US
+    family-names: Snape
+    given-names: Jamie
+    orcid: 'https://orcid.org/0000-0002-3326-9765'
+    post-code: 27599
+    region: NC
+    website: 'https://www.jamiesnape.io/'
+  - address: >-
+      201 S Columbia St, Frederick P. Brooks, Jr. Computer Science Bldg
+    affiliation: 'University of North Carolina at Chapel Hill'
+    city: 'Chapel Hill'
+    country: US
+    family-names: Lin
+    given-names: 'Ming C.'
+    orcid: 'https://orcid.org/0000-0003-3736-6949'
+    post-code: 27599
+    region: NC
+    website: 'https://www.cs.umd.edu/people/lin/'
+  - address: >-
+      201 S Columbia St, Frederick P. Brooks, Jr. Computer Science Bldg
+    affiliation: 'University of North Carolina at Chapel Hill'
+    city: 'Chapel Hill'
+    country: US
+    family-names: Manocha
+    given-names: Dinesh
+    orcid: 'https://orcid.org/0000-0001-7047-9801'
+    post-code: 27599
+    region: NC
+    website: 'https://www.cs.umd.edu/people/dmanocha/'
+identifiers:
+  - type: doi
+    value: '10.5281/zenodo.7039667'
+keywords:
+  - 'collision avoidance'
+  - 'mobile robots'
+  - 'motion planning'
+  - 'multi-robot systems'
+  - navigation
+license: 'Apache-2.0'
+message: >-
+  If you use this software, please cite it using the metadata from this file.
+references:
+  - abstract: >-
+      We present a formal approach to reciprocal collision avoidance, where
+      multiple independent mobile robots or agents need to avoid collisions
+      with each other without communication among agents while moving in a
+      common workspace. Our formulation, optimal reciprocal collision avoidance
+      (ORCA), provides sufficient conditions for collision-free motion by
+      letting each agent take half of the responsibility of avoiding pairwise
+      collisions. Selecting the optimal action for each agent is reduced to
+      solving a low-dimensional linear program, and we prove that the resulting
+      motions are smooth. We test our optimal reciprocal collision avoidance
+      approach on several dense and complex simulation scenarios workspaces
+      involving thousands of agents, and compute collision-free actions for all
+      of them in only a few milliseconds.
+    authors:
+      - address: >-
+          201 S Columbia St, Frederick P. Brooks, Jr. Computer Science Bldg
+        affiliation: 'University of North Carolina at Chapel Hill'
+        city: 'Chapel Hill'
+        country: US
+        family-names: Berg
+        given-names: Jur
+        name-particle: 'van den'
+        post-code: 27599
+        region: NC
+      - address: >-
+          201 S Columbia St, Frederick P. Brooks, Jr. Computer Science Bldg
+        affiliation: 'University of North Carolina at Chapel Hill'
+        city: 'Chapel Hill'
+        country: US
+        family-names: Guy
+        given-names: 'Stephen J.'
+        orcid: 'https://orcid.org/0000-0001-8986-5817'
+        post-code: 27599
+        region: NC
+        website: 'https://www-users.cse.umn.edu/~sjguy/'
+      - address: >-
+          201 S Columbia St, Frederick P. Brooks, Jr. Computer Science Bldg
+        affiliation: 'University of North Carolina at Chapel Hill'
+        city: 'Chapel Hill'
+        country: US
+        family-names: Lin
+        given-names: 'Ming C.'
+        orcid: 'https://orcid.org/0000-0003-3736-6949'
+        post-code: 27599
+        region: NC
+        website: 'https://www.cs.umd.edu/people/lin/'
+      - address: >-
+          201 S Columbia St, Frederick P. Brooks, Jr. Computer Science Bldg
+        affiliation: 'University of North Carolina at Chapel Hill'
+        city: 'Chapel Hill'
+        country: US
+        family-names: Manocha
+        given-names: Dinesh
+        orcid: 'https://orcid.org/0000-0001-7047-9801'
+        post-code: 27599
+        region: NC
+        website: 'https://www.cs.umd.edu/people/dmanocha/'
+    conference:
+      address: 'Hotel Astoria, Pilatusstrasse 29'
+      city: Lucerne
+      country: CH
+      date-end: '2009-09-03'
+      date-start: '2009-08-31'
+      name: '14th International Symposium of Robotics Research (ISRR)'
+      post-code: 6002
+    contact:
+      - address: >-
+          201 S Columbia St, Frederick P. Brooks, Jr. Computer Science Bldg
+        affiliation: 'University of North Carolina at Chapel Hill'
+        city: 'Chapel Hill'
+        country: US
+        family-names: Guy
+        given-names: 'Stephen J.'
+        orcid: 'https://orcid.org/0000-0001-8986-5817'
+        post-code: 27599
+        region: NC
+        website: 'https://www-users.cse.umn.edu/~sjguy/'
+    collection-doi: '10.1007/978-3-642-19457-3'
+    collection-title: >-
+      Robotics Research: The 14th International Symposium ISRR
+    collection-type: proceedings
+    copyright: >-
+      Copyright © 2011 Springer Verlag
+    editors:
+      - address: >-
+          Institute of Robotics and Intelligent Systems (IRIS), Autonomous
+          Systems Lab, Leonhardstrasse 21
+        affiliation: ETH Zürich
+        city: Zürich
+        country: CH
+        family-names: Pradalier
+        given-names: Cédric
+        orcid: 'https://orcid.org/0000-0002-1746-2733'
+        post-code: 8092
+      - address: >-
+          Institute of Robotics and Intelligent Systems (IRIS), Autonomous
+          Systems Lab, Leonhardstrasse 21
+        affiliation: ETH Zürich
+        city: Zürich
+        country: CH
+        family-names: Siegwart
+        given-names: Roland
+        orcid: 'https://orcid.org/0000-0002-2760-7983'
+        post-code: 8092
+      - address: >-
+          Deutsches Zentrum für Luft und Raumfahrt (DLR), Institut für Robotik
+          und Mechatronik, Münchener Straße 20
+        affiliation: German Aerospace Center
+        city: 'Oberpfaffenhofen-Weßling'
+        country: DE
+        family-names: Hirzinger
+        given-names: Gerhard
+        post-code: 82234
+    end: 19
+    identifiers:
+      - type: doi
+        value: '10.1007/978-3-642-19457-3_1'
+    isbn: '978-3-642-19456-6'
+    keywords:
+      - 'collision avoidance'
+      - 'mobile robots'
+      - 'motion planning'
+      - 'multi-robot systems'
+      - navigation
+    publisher:
+      address: 'Tiergartenstraße 17'
+      city: Heidelberg
+      country: DE
+      name: 'Springer Verlag'
+      post-code: 69121
+    languages:
+      - en
+    month: 5
+    pages: 17
+    start: 3
+    title: 'Reciprocal n-body collision avoidance'
+    type: 'conference-paper'
+    url: 'https://gamma.cs.unc.edu/ORCA/'
+    volume: 70
+    year: 2011
+  - abstract: >-
+      We present a method for smooth and collision-free navigation for multiple
+      independent robots under differential-drive constraints. Our algorithm is
+      based on the optimal reciprocal collision avoidance (ORCA) formulation
+      and guarantees both smoothness in the trajectories of the robots and
+      locally collision-free paths. We provide proofs of these guarantees and
+      demonstrate the effectiveness of our method in experimental scenarios
+      using iRobot Create mobile robots navigating amongst each other.
+    authors:
+      - address: >-
+          201 S Columbia St, Frederick P. Brooks, Jr. Computer Science Bldg
+        affiliation: 'University of North Carolina at Chapel Hill'
+        city: 'Chapel Hill'
+        country: US
+        family-names: Snape
+        given-names: Jamie
+        orcid: 'https://orcid.org/0000-0002-3326-9765'
+        post-code: 27599
+        region: NC
+        website: 'https://www.jamiesnape.io/'
+      - address: >-
+          201 S Columbia St, Frederick P. Brooks, Jr. Computer Science Bldg
+        affiliation: 'University of North Carolina at Chapel Hill'
+        city: 'Chapel Hill'
+        country: US
+        family-names: Berg
+        given-names: Jur
+        name-particle: 'van den'
+        post-code: 27599
+        region: NC
+      - address: >-
+          201 S Columbia St, Frederick P. Brooks, Jr. Computer Science Bldg
+        affiliation: 'University of North Carolina at Chapel Hill'
+        city: 'Chapel Hill'
+        country: US
+        family-names: Guy
+        given-names: 'Stephen J.'
+        orcid: 'https://orcid.org/0000-0001-8986-5817'
+        post-code: 27599
+        region: NC
+        website: 'https://www-users.cse.umn.edu/~sjguy/'
+      - address: >-
+          201 S Columbia St, Frederick P. Brooks, Jr. Computer Science Bldg
+        affiliation: 'University of North Carolina at Chapel Hill'
+        city: 'Chapel Hill'
+        country: US
+        family-names: Manocha
+        given-names: Dinesh
+        orcid: 'https://orcid.org/0000-0001-7047-9801'
+        post-code: 27599
+        region: NC
+        website: 'https://www.cs.umd.edu/people/dmanocha/'
+    conference:
+      address: >-
+        Taipei International Convention Center (TICC), 1 Hsin-Yi Rd, Sec 5
+      city: 'Taipei City'
+      country: TW
+      date-end: '2010-10-22'
+      date-start: '2010-10-18'
+      name: >-
+        2010 IEEE/RSJ International Conference on Intelligent Robots and
+        Systems (IROS)
+      post-code: 11049
+    contact:
+      - address: >-
+          201 S Columbia St, Frederick P. Brooks, Jr. Computer Science Bldg
+        affiliation: 'University of North Carolina at Chapel Hill'
+        city: 'Chapel Hill'
+        country: US
+        family-names: Snape
+        given-names: Jamie
+        orcid: 'https://orcid.org/0000-0002-3326-9765'
+        post-code: 27599
+        region: NC
+        website: 'https://www.jamiesnape.io/'
+    collection-doi: '10.1109/IROS15713.2010'
+    collection-title: >-
+      Proceedings of the 2010 IEEE/RSJ International Conference on Intelligent
+      Robots and Systems (IROS)
+    collection-type: proceedings
+    copyright: >-
+      Copyright © 2010 Institute of Electrical and Electronics Engineers
+    date-published: '2010-12-03'
+    end: 4589
+    identifiers:
+      - type: doi
+        value: '10.1109/IROS.2010.5652073'
+    isbn: '978-1-4244-6674-0'
+    issn: '2153-0858'
+    keywords:
+      - 'collision avoidance'
+      - 'mobile robots'
+      - 'motion planning'
+      - 'multi-robot systems'
+      - navigation
+    publisher:
+      address: '3 Park Ave 17th Fl'
+      city: 'New York'
+      country: US
+      name: 'Institute of Electrical and Electronics Engineers'
+      post-code: 10016
+      region: NY
+    languages:
+      - en
+    month: 10
+    pages: 6
+    start: 4584
+    title: >-
+      Smooth and collision-free navigation for multiple robots under
+      differential-drive constraints
+    type: 'conference-paper'
+    url: 'https://gamma.cs.unc.edu/ORCA-DD/'
+    year: 2010
+repository-code: 'https://github.com/snape/RVO2'
+title: 'Optimal Reciprocal Collision Avoidance'
+type: software
+url: 'https://gamma.cs.unc.edu/RVO2/'
