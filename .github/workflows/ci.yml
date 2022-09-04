@@ -77,8 +77,8 @@ jobs:
         uses: actions/checkout@v3
       - name: setup
         run: |
-          brew update
-          brew bundle install --no-lock
+          brew update -q
+          brew bundle install -q --no-lock
         shell: zsh -efuo pipefail {0}
       - name: build test package
         run: bazel test ...
@@ -91,8 +91,10 @@ jobs:
     steps:
       - name: setup
         run: |
-          apt-get -qq update
-          apt-get -qq -o Dpkg::Use-Pty=0 --no-install-recommends install \
+          apt-get -qq -o APT::Acquire::Retries=4 update \
+            || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
+          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
+              --no-install-recommends install \
             ca-certificates \
             g++ \
             git \
@@ -103,11 +105,13 @@ jobs:
             > /usr/share/keyrings/bazel-archive-keyring.gpg
           echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/bazel-archive-keyring.gpg] https://storage.googleapis.com/bazel-apt stable jdk1.8' \
             > /etc/apt/sources.list.d/bazel.list
-          apt-get -qq update
-          apt-get -qq -o Dpkg::Use-Pty=0 --no-install-recommends install bazel
+          apt-get -qq -o APT::Acquire::Retries=4 update \
+            || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
+          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
+              --no-install-recommends install \
+            bazel
           rm -rf /var/lib/apt/lists/*
         env:
-          APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE: 1
           DEBIAN_FRONTEND: noninteractive
         shell: bash
       - name: checkout
@@ -203,55 +207,6 @@ jobs:
           cpack -G TGZ --config CPackSourceConfig.cmake
         shell: bash
 
-  cmake_rockylinux:
-    name: cmake rockylinux 9
-    runs-on: ubuntu-22.04
-    container: rockylinux:9
-    steps:
-      - name: setup
-        run: |
-          dnf makecache -q --refresh
-          dnf install -q -y \
-            ca-certificates \
-            cmake \
-            dnf-plugins-core \
-            gcc-c++ \
-            git \
-            glibc-langpack-en \
-            graphviz \
-            make \
-            pkgconf-pkg-config \
-            rpm-build
-          dnf config-manager --set-enabled crb
-          dnf install -q -y doxygen
-          dnf clean all
-          rm -rf /var/cache/yum
-        shell: bash
-      - name: checkout
-        uses: actions/checkout@v3
-      - name: build test package
-        run: |
-          mkdir _build
-          cd _build
-          cmake \
-            -DBUILD_DOCUMENTATION:BOOL=ON \
-            -DBUILD_TESTING:BOOL=ON \
-            -DCMAKE_INSTALL_PREFIX:PATH=install \
-            -DENABLE_HARDENING:BOOL=ON \
-            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
-            -DENABLE_OPENMP:BOOL=ON \
-            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
-            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
-            -DWARNINGS_AS_ERRORS:BOOL=ON \
-            --warn-uninitialized \
-            ..
-          cmake --build .
-          ctest .
-          cmake --install .
-          cpack -G RPM
-          cpack -G RPM --config CPackSourceConfig.cmake
-        shell: bash
-
   cmake_fedora:
     name: cmake fedora latest
     runs-on: ubuntu-22.04
@@ -259,7 +214,7 @@ jobs:
     steps:
       - name: setup
         run: |
-          dnf makecache -q --refresh
+          dnf makecache -q --refresh || (sleep 15; dnf makecache -q --refresh)
           dnf install -q -y \
             ca-certificates \
             cmake \
@@ -307,8 +262,12 @@ jobs:
         uses: actions/checkout@v3
       - name: setup
         run: |
-          brew update
-          brew bundle install --no-lock
+          brew update -q
+          brew bundle install -q --no-lock
+        env:
+          HOMEBREW_NO_ANALYTICS: 1
+          HOMEBREW_NO_AUTO_UPDATE: 1
+          HOMEBREW_NO_INSTALL_CLEANUP: 1
         shell: zsh -efuo pipefail {0}
       - name: build test package
         run: |
@@ -333,6 +292,55 @@ jobs:
           cpack -G TGZ --config CPackSourceConfig.cmake
         shell: zsh -efuo pipefail {0}
 
+  cmake_rockylinux:
+    name: cmake rockylinux 9
+    runs-on: ubuntu-22.04
+    container: rockylinux:9
+    steps:
+      - name: setup
+        run: |
+          dnf makecache -q --refresh || (sleep 15; dnf makecache -q --refresh)
+          dnf install -q -y \
+            ca-certificates \
+            cmake \
+            dnf-plugins-core \
+            gcc-c++ \
+            git \
+            glibc-langpack-en \
+            graphviz \
+            make \
+            pkgconf-pkg-config \
+            rpm-build
+          dnf config-manager --set-enabled crb
+          dnf install -q -y doxygen
+          dnf clean all
+          rm -rf /var/cache/yum
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: build test package
+        run: |
+          mkdir _build
+          cd _build
+          cmake \
+            -DBUILD_DOCUMENTATION:BOOL=ON \
+            -DBUILD_TESTING:BOOL=ON \
+            -DCMAKE_INSTALL_PREFIX:PATH=install \
+            -DENABLE_HARDENING:BOOL=ON \
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
+            -DENABLE_OPENMP:BOOL=ON \
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
+            -DWARNINGS_AS_ERRORS:BOOL=ON \
+            --warn-uninitialized \
+            ..
+          cmake --build .
+          ctest .
+          cmake --install .
+          cpack -G RPM
+          cpack -G RPM --config CPackSourceConfig.cmake
+        shell: bash
+
   cmake_ubuntu:
     name: cmake ubuntu 22.04
     runs-on: ubuntu-22.04
@@ -340,8 +348,10 @@ jobs:
     steps:
       - name: setup
         run: |
-          apt-get -qq update
-          apt-get -qq -o Dpkg::Use-Pty=0 --no-install-recommends install \
+          apt-get -qq -o APT::Acquire::Retries=4 update \
+            || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
+          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
+              --no-install-recommends install \
             ca-certificates \
             cmake \
             doxygen \
@@ -350,9 +360,19 @@ jobs:
             file \
             g++ \
             git \
+            gnupg \
             graphviz \
             make \
-            pkgconf
+            pkgconf \
+            wget
+          wget -qO- https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null \
+            | gpg --dearmor - > /usr/share/keyrings/kitware-archive-keyring.gpg
+          echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main' \
+            > /etc/apt/sources.list.d/kitware.list
+          apt-get -qq -o APT::Acquire::Retries=4 update \
+            || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
+          apt-get -qq -o Dpkg::Use-Pty=0 --no-install-recommends --no-install-recommends install \
+            cmake
           rm -rf /var/lib/apt/lists/*
         env:
           DEBIAN_FRONTEND: noninteractive
@@ -390,9 +410,9 @@ jobs:
         uses: actions/checkout@v3
       - name: setup
         run: |
-          cup cmake.install -r -y --install-arguments=ADD_CMAKE_TO_PATH=System `
+          choco update cmake.install -r -y --install-arguments=ADD_CMAKE_TO_PATH=System `
             --no-progress
-          cinst doxygen.install -f -r -y
+          choco install doxygen.install -f -r -y --no-progress
         shell: pwsh
       - name: build test package
         run: |

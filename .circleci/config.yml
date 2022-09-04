@@ -43,8 +43,9 @@ jobs:
       - run:
           name: setup
           command: |
-            sudo -E apt-get -qq update
-            sudo -E apt-get -qq -o Dpkg::Use-Pty=0 --no-install-recommends install \
+            sudo apt-get -qq -o APT::Acquire::Retries=4 update \
+              || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
+            sudo apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 --no-install-recommends install \
               ca-certificates \
               g++ \
               git \
@@ -55,10 +56,11 @@ jobs:
             wget -qO- https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null \
               | gpg --dearmor - \
               | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
-            echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main' \
+            echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main' \
               | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
-            sudo -E apt-get -qq update
-            sudo -E apt-get -qq -o Dpkg::Use-Pty=0 --no-install-recommends install \
+            sudo apt-get -qq -o APT::Acquire::Retries=4 update \
+              || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
+            sudo apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 --no-install-recommends install \
               cmake
             sudo rm -rf /var/lib/apt/lists/*
           environment:

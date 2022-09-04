@@ -34,20 +34,48 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
-load("@rules_pkg//:pkg.bzl", "pkg_deb", "pkg_tar")
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+load("@rules_license//rules:license.bzl", "license")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_attributes", "pkg_files")
+load("@rules_pkg//pkg:pkg.bzl", "pkg_deb", "pkg_tar")
 
-licenses(["notice"])
+package(default_applicable_licenses = [":license"])
+
+licenses(["notice"])  # Apache-2.0
+
+license(
+    name = "license",
+    copyright_notice = "2008 University of North Carolina at Chapel Hill",
+    license_kinds = ["@rules_license//licenses/spdx:Apache-2.0"],
+    license_text = "LICENSE",
+    visibility = ["//visibility:public"],
+)
 
 exports_files(
     ["LICENSE"],
     visibility = ["//visibility:public"],
 )
 
-pkg_tar(
+pkg_files(
     name = "doc",
     srcs = ["LICENSE"],
-    mode = "0644",
-    package_dir = "/usr/share/doc/RVO",
+    attributes = pkg_attributes(mode = "0644"),
+    prefix = "usr/share/doc/RVO",
+    visibility = ["//visibility:private"],
+)
+
+cc_binary(
+    name = "libRVO.so",
+    linkshared = True,
+    visibility = ["//visibility:private"],
+    deps = ["//src:RVO"],
+)
+
+pkg_files(
+    name = "lib",
+    srcs = [":libRVO.so"],
+    attributes = pkg_attributes(mode = "0644"),
+    prefix = "usr/lib",
     visibility = ["//visibility:private"],
 )
 
@@ -107,24 +135,24 @@ EOF
 )
 # REUSE-IgnoreEnd
 
-pkg_tar(
+pkg_files(
     name = "pkgconfig",
     srcs = ["RVO.pc"],
-    mode = "0644",
-    package_dir = "/usr/lib/pkgconfig",
+    attributes = pkg_attributes(mode = "0644"),
+    prefix = "usr/lib/pkgconfig",
     visibility = ["//visibility:private"],
 )
 
 pkg_tar(
     name = "RVO",
-    extension = "tar.gz",
-    visibility = ["//visibility:public"],
-    deps = [
+    srcs = [
         ":doc",
+        ":lib",
         ":pkgconfig",
         "//src:include",
-        "//src:lib",
     ],
+    extension = "tar.gz",
+    visibility = ["//visibility:private"],
 )
 
 pkg_deb(
@@ -133,13 +161,15 @@ pkg_deb(
     data = ":RVO",
     depends = [
         "libc6",
-        "libgcc1",
+        "libgcc-s1",
         "libstdc++6",
     ],
     description = "Optimal Reciprocal Collision Avoidance",
     homepage = "https://gamma.cs.unc.edu/RVO2/",
     maintainer = "Jamie Snape",
     package = "rvo",
+    priority = "optional",
+    section = "libdevel",
     version = "2.0.3",
-    visibility = ["//visibility:public"],
+    visibility = ["//visibility:private"],
 )

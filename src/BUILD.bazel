@@ -35,9 +35,11 @@
 #
 
 load("@rules_cc//cc:defs.bzl", "cc_library")
-load("@rules_pkg//:pkg.bzl", "pkg_tar")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_attributes", "pkg_files")
 
-licenses(["notice"])
+package(default_applicable_licenses = ["//:license"])
+
+licenses(["notice"])  # Apache-2.0
 
 # REUSE-IgnoreStart
 genrule(
@@ -134,18 +136,10 @@ cc_library(
     visibility = ["//visibility:public"],
 )
 
-pkg_tar(
+pkg_files(
     name = "include",
     srcs = [":hdrs"],
-    mode = "0644",
-    package_dir = "/usr/include/RVO",
-    visibility = ["//:__pkg__"],
-)
-
-pkg_tar(
-    name = "lib",
-    srcs = ["//src:RVO"],
-    mode = "0644",
-    package_dir = "/usr/lib",
+    attributes = pkg_attributes(mode = "0644"),
+    prefix = "usr/include/RVO",
     visibility = ["//:__pkg__"],
 )

@@ -1,8 +1,5 @@
-# -*- mode: gitignore; -*-
-# vi: set ft=gitignore:
-
 #
-# .gitignore
+# .bazelrc
 # RVO2 Library
 #
 # SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
@@ -34,8 +31,11 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
-/_build/
-/.idea/
-/.user.bazelrc
-/bazel-*
-/cmake-build-*/
+build --enable_platform_specific_config=true
+build --force_pic=true
+build --legacy_external_runfiles=false
+
+build:macos --apple_generate_dsym=true
+build:macos --apple_platform_type=macos
+
+try-import %workspace%/.user.bazelrc
