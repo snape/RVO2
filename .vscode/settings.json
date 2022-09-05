@@ -1,0 +1,7 @@
+{
+  "cmake.buildDirectory": "${workspaceFolder}/_build",
+  "cmake.preferredGenerators": [
+    "Ninja Multi-Config",
+    "Ninja"
+  ]
+}

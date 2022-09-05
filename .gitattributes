@@ -55,10 +55,12 @@
 *.md                 text diff=markdown whitespace-md
 *.pc.in              text whitespace-2
 *.txt                text
+*.yaml               text whitespace-2
 *.yml                text whitespace-2
 
 .bazelignore         text whitespace-4
 .bazelrc             text whitespace-4
+.dockerignore        text whitespace-2
 .editorconfig        text whitespace-2
 .gitattributes       text export-ignore whitespace-2
 .gitignore           text export-ignore whitespace-2
@@ -67,6 +69,7 @@ Brewfile             text diff=ruby export-ignore whitespace-4
 CMakeLists.txt       whitespace-2
 CODEOWNERS           text whitespace-2
 dep5                 text linguist-documentation whitespace=trailing-space
+Dockerfile           text whitespace-2
 LICENSE              text linguist-documentation linguist-vendored whitespace-0
 README.md            linguist-documentation
 requirements.txt     whitespace-2

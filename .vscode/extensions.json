@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "bazelbuild.vscode-bazel",
+    "editorconfig.editorconfig",
+    "ms-vscode.cmake-tools",
+    "ms-vscode.cpptools",
+    "ms-vscode.vscode-markdown-notebook",
+    "ms-vscode-remote.remote-containers",
+    "redhat.vscode-yaml"
+  ]
+}
