@@ -48,7 +48,6 @@
 
 #include <cmath>
 #include <cstdlib>
-
 #include <vector>
 
 #if RVO_OUTPUT_TIME_AND_POSITIONS
@@ -63,7 +62,7 @@
 #include <omp.h>
 #endif
 
-#include <RVO.h>
+#include "RVO.h"
 
 #ifndef M_PI
 const float M_PI = 3.14159265358979323846f;

@@ -49,7 +49,11 @@
 #include <cmath>
 #include <cstdlib>
 #include <map>
+#include <utility>
 #include <vector>
+
+#include "RVOSimulator.h"
+#include "Vector2.h"
 
 #if RVO_OUTPUT_TIME_AND_POSITIONS
 #include <iostream>
@@ -62,8 +66,6 @@
 #if _OPENMP
 #include <omp.h>
 #endif
-
-#include <RVO.h>
 
 #ifndef M_PI
 const float M_PI = 3.14159265358979323846f;

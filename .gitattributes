@@ -49,6 +49,7 @@
 *.css                text diff=css linguist-documentation whitespace=trailing-space
 *.h                  text diff=cpp linguist-language=c++ whitespace=tabwidth=2,trailing-space
 *.html               text diff=html linguist-documentation whitespace=trailing-space
+*.imp                text linguist-language=json whitespace-2
 *.json               text whitespace-2
 *.license            text linguist-documentation whitespace-0
 *.md                 text diff=markdown whitespace-md

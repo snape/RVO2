@@ -39,12 +39,6 @@
  * \brief      Contains functions and constants used in multiple classes.
  */
 
-#include <algorithm>
-#include <cmath>
-#include <cstddef>
-#include <limits>
-#include <vector>
-
 #include "Vector2.h"
 
 /**
@@ -53,10 +47,6 @@
 const float RVO_EPSILON = 0.00001f;
 
 namespace RVO {
-	class Agent;
-	class Obstacle;
-	class RVOSimulator;
-
 	/**
 	 * \brief      Computes the squared distance from a line segment with the
 	 *             specified endpoints to a specified point.

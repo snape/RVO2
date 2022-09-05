@@ -53,7 +53,7 @@
 #include <omp.h>
 #endif
 
-#include <RVO.h>
+#include "RVO.h"
 
 #ifndef M_PI
 const float M_PI = 3.14159265358979323846f;

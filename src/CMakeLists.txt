@@ -42,12 +42,15 @@ set(RVO_HEADERS
 set(RVO_SOURCES
   Agent.cpp
   Agent.h
+  Definitions.cpp
   Definitions.h
+  Export.cpp
   KdTree.cpp
   KdTree.h
   Obstacle.cpp
   Obstacle.h
-  RVOSimulator.cpp)
+  RVOSimulator.cpp
+  Vector2.cpp)
 
 add_library(${RVO_LIBRARY} ${RVO_HEADERS} ${RVO_SOURCES})
 

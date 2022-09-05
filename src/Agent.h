@@ -39,10 +39,16 @@
  * \brief      Contains the Agent class.
  */
 
-#include "Definitions.h"
+#include <cstddef>
+#include <utility>
+#include <vector>
+
 #include "RVOSimulator.h"
+#include "Vector2.h"
 
 namespace RVO {
+class Obstacle;
+
 	/**
 	 * \brief      Defines an agent in the simulation.
 	 */

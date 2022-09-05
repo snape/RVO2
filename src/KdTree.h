@@ -39,9 +39,15 @@
  * \brief      Contains the KdTree class.
  */
 
-#include "Definitions.h"
+#include <cstddef>
+#include <vector>
 
 namespace RVO {
+class Agent;
+class Obstacle;
+class RVOSimulator;
+class Vector2;
+
 	/**
 	 * \brief      Defines <i>k</i>d-trees for agents and static obstacles in the
 	 *             simulation.

@@ -33,7 +33,10 @@
 
 #include "RVOSimulator.h"
 
+#include <utility>
+
 #include "Agent.h"
+#include "Definitions.h"
 #include "KdTree.h"
 #include "Obstacle.h"
 

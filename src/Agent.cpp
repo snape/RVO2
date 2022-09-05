@@ -33,6 +33,11 @@
 
 #include "Agent.h"
 
+#include <algorithm>
+#include <cmath>
+#include <limits>
+
+#include "Definitions.h"
 #include "KdTree.h"
 #include "Obstacle.h"
 

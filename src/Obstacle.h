@@ -39,7 +39,9 @@
  * \brief      Contains the Obstacle class.
  */
 
-#include "Definitions.h"
+#include <cstddef>
+
+#include "Vector2.h"
 
 namespace RVO {
 	/**

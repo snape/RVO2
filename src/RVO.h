@@ -34,9 +34,11 @@
 #ifndef RVO_RVO_H_
 #define RVO_RVO_H_
 
+/* IWYU pragma: begin_exports */
 #include "Export.h"
 #include "RVOSimulator.h"
 #include "Vector2.h"
+/* IWYU pragma: end_exports */
 
 /**
 

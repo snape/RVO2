@@ -33,9 +33,14 @@
 
 #include "KdTree.h"
 
+#include <algorithm>
+#include <utility>
+
 #include "Agent.h"
-#include "RVOSimulator.h"
+#include "Definitions.h"
 #include "Obstacle.h"
+#include "RVOSimulator.h"
+#include "Vector2.h"
 
 namespace RVO {
 	KdTree::KdTree(RVOSimulator *sim) : obstacleTree_(NULL), sim_(sim) { }
