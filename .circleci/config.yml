@@ -84,7 +84,7 @@ jobs:
               --warn-uninitialized \
               ..
             cmake --build .
-            ctest -E Roadmap .
+            ctest -E Roadmap --repeat after-timeout:3 .
             cmake --install .
 
 workflows:
