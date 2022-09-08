@@ -35,6 +35,7 @@
 #
 
 [attr]whitespace-0   whitespace=tab-in-indent,trailing-space
+[attr]whitespace-1   whitespace=tab-in-indent,tabwidth=1,trailing-space
 [attr]whitespace-2   whitespace=tab-in-indent,tabwidth=2,trailing-space
 [attr]whitespace-4   whitespace=tab-in-indent,tabwidth=4,trailing-space
 [attr]whitespace-md  whitespace=-blank-at-eol,blank-at-eof,tab-in-indent
@@ -68,7 +69,7 @@
 Brewfile             text diff=ruby export-ignore whitespace-4
 CMakeLists.txt       whitespace-2
 CODEOWNERS           text whitespace-2
-dep5                 text linguist-documentation whitespace=trailing-space
+dep5                 text linguist-documentation whitespace-1
 Dockerfile           text whitespace-2
 LICENSE              text linguist-documentation linguist-vendored whitespace-0
 README.md            linguist-documentation
