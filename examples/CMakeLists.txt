@@ -68,7 +68,7 @@ if(BUILD_TESTING)
     set(RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION OFF)
   endif()
 
-  add_executable(Blocks Blocks.cpp)
+  add_executable(Blocks Blocks.cc)
   target_compile_definitions(Blocks PRIVATE
     ${RVO_EXAMPLES_COMPILE_DEFINITIONS})
   target_link_libraries(Blocks PRIVATE ${RVO_LIBRARY})
@@ -81,7 +81,7 @@ if(BUILD_TESTING)
     LABELS medium
     TIMEOUT 60)
 
-  add_executable(Circle Circle.cpp)
+  add_executable(Circle Circle.cc)
   target_compile_definitions(Circle PRIVATE
     ${RVO_EXAMPLES_COMPILE_DEFINITIONS})
   target_link_libraries(Circle PRIVATE ${RVO_LIBRARY})
@@ -94,7 +94,7 @@ if(BUILD_TESTING)
     LABELS medium
     TIMEOUT 60)
 
-  add_executable(Roadmap Roadmap.cpp)
+  add_executable(Roadmap Roadmap.cc)
   target_compile_definitions(Roadmap PRIVATE
     ${RVO_EXAMPLES_COMPILE_DEFINITIONS})
   target_link_libraries(Roadmap PRIVATE ${RVO_LIBRARY})

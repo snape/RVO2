@@ -1,5 +1,5 @@
 /*
- * Definitions.cpp
+ * Obstacle.cc
  * RVO2 Library
  *
  * SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
@@ -31,4 +31,8 @@
  * <https://gamma.cs.unc.edu/RVO2/>
  */
 
- #include "Definitions.h"
+#include "Obstacle.h"
+
+namespace RVO {
+	Obstacle::Obstacle() : isConvex_(false), nextObstacle_(NULL), prevObstacle_(NULL), id_(0) { }
+}

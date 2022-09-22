@@ -1,5 +1,5 @@
 /*
- * Roadmap.cpp
+ * Roadmap.cc
  * RVO2 Library
  *
  * SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill

@@ -44,7 +44,7 @@ cc_test(
     name = "Blocks",
     size = "medium",
     timeout = "short",
-    srcs = ["Blocks.cpp"],
+    srcs = ["Blocks.cc"],
     defines = [
         "RVO_OUTPUT_TIME_AND_POSITIONS=0",
         "RVO_SEED_RANDOM_NUMBER_GENERATOR=0",
@@ -58,7 +58,7 @@ cc_test(
     name = "Circle",
     size = "medium",
     timeout = "short",
-    srcs = ["Circle.cpp"],
+    srcs = ["Circle.cc"],
     defines = [
         "RVO_OUTPUT_TIME_AND_POSITIONS=0",
         "RVO_SEED_RANDOM_NUMBER_GENERATOR=0",
@@ -72,7 +72,7 @@ cc_test(
     name = "Roadmap",
     size = "medium",
     timeout = "short",
-    srcs = ["Roadmap.cpp"],
+    srcs = ["Roadmap.cc"],
     defines = [
         "RVO_OUTPUT_TIME_AND_POSITIONS=0",
         "RVO_SEED_RANDOM_NUMBER_GENERATOR=0",

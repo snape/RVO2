@@ -43,10 +43,10 @@
 *                    text=auto
 
 *.bazel              text diff=python linguist-language=starlark whitespace-4
+*.cc                 text diff=cpp linguist-language=c++ whitespace=tabwidth=2,trailing-space
 *.cff                text linguist-documentation whitespace-2
 *.cmake              text whitespace-2
 *.cmake.in           text whitespace-2
-*.cpp                text diff=cpp linguist-language=c++ whitespace=tabwidth=2,trailing-space
 *.css                text diff=css linguist-documentation whitespace=trailing-space
 *.h                  text diff=cpp linguist-language=c++ whitespace=tabwidth=2,trailing-space
 *.html               text diff=html linguist-documentation whitespace=trailing-space

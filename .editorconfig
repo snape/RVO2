@@ -48,7 +48,7 @@ trim_trailing_whitespace = true
 [*.bazel]
 indent_size = 4
 
-[*.cpp]
+[*.cc]
 indent_style = tab
 
 [*.h]
