@@ -257,16 +257,16 @@
  \code
  void setupScenario(RVO::RVOSimulator* sim) {
  // Specify global time step of the simulation.
- sim->setTimeStep(0.25f);
+ sim->setTimeStep(0.25F);
 
  // Specify default parameters for agents that are subsequently added.
- sim->setAgentDefaults(15.0f, 10, 10.0f, 5.0f, 2.0f, 2.0f);
+ sim->setAgentDefaults(15.0F, 10, 10.0F, 5.0F, 2.0F, 2.0F);
 
  // Add agents, specifying their start position.
- sim->addAgent(RVO::Vector2(-50.0f, -50.0f));
- sim->addAgent(RVO::Vector2(50.0f, -50.0f));
- sim->addAgent(RVO::Vector2(50.0f, 50.0f));
- sim->addAgent(RVO::Vector2(-50.0f, 50.0f));
+ sim->addAgent(RVO::Vector2(-50.0F, -50.0F));
+ sim->addAgent(RVO::Vector2(50.0F, -50.0F));
+ sim->addAgent(RVO::Vector2(50.0F, 50.0F));
+ sim->addAgent(RVO::Vector2(-50.0F, 50.0F));
 
  // Create goals (simulator is unaware of these).
  for (size_t i = 0; i < sim->getNumAgents(); ++i) {
@@ -275,10 +275,10 @@
 
  // Add (polygonal) obstacle(s), specifying vertices in counterclockwise order.
  std::vector<RVO::Vector2> vertices;
- vertices.push_back(RVO::Vector2(-7.0f, -20.0f));
- vertices.push_back(RVO::Vector2(7.0f, -20.0f));
- vertices.push_back(RVO::Vector2(7.0f, 20.0f));
- vertices.push_back(RVO::Vector2(-7.0f, 20.0f));
+ vertices.push_back(RVO::Vector2(-7.0F, -20.0F));
+ vertices.push_back(RVO::Vector2(7.0F, -20.0F));
+ vertices.push_back(RVO::Vector2(7.0F, 20.0F));
+ vertices.push_back(RVO::Vector2(-7.0F, 20.0F));
 
  sim->addObstacle(vertices);
 
@@ -366,7 +366,7 @@
  if (absSq(goals[i] - sim->getAgentPosition(i)) < sim->getAgentRadius(i) *
  sim->getAgentRadius(i) ) {
  // Agent is within one radius of its goal, set preferred velocity to zero
- sim->setAgentPrefVelocity(i, RVO::Vector2(0.0f, 0.0f));
+ sim->setAgentPrefVelocity(i, RVO::Vector2(0.0F, 0.0F));
  } else {
  // Agent is far away from its goal, set preferred velocity as unit vector
  towards agent's goal. sim->setAgentPrefVelocity(i, normalize(goals[i] -

@@ -60,6 +60,11 @@ class KdTree {
   class AgentTreeNode {
    public:
     /**
+     * \brief      Constructs an agent <i>k</i>d-ree node instance.
+     */
+    AgentTreeNode();
+
+    /**
      * \brief      The beginning node number.
      */
     size_t begin;
@@ -106,6 +111,16 @@ class KdTree {
   class ObstacleTreeNode {
    public:
     /**
+     * @brief Constructs an obstacle k-D tree node instance.
+     */
+    ObstacleTreeNode();
+
+    /**
+     * @brief Destroys this obstacle k-D tree node instance.
+     */
+    ~ObstacleTreeNode();
+
+    /**
      * \brief      The left obstacle tree node.
      */
     ObstacleTreeNode *left;
@@ -119,6 +134,13 @@ class KdTree {
      * \brief      The right obstacle tree node.
      */
     ObstacleTreeNode *right;
+
+   private:
+    /* Not implemented. */
+    ObstacleTreeNode(const ObstacleTreeNode &other);
+
+    /* Not implemented. */
+    ObstacleTreeNode &operator=(const ObstacleTreeNode &other);
   };
 
   /**
@@ -195,6 +217,12 @@ class KdTree {
   bool queryVisibilityRecursive(const Vector2 &q1, const Vector2 &q2,
                                 float radius,
                                 const ObstacleTreeNode *node) const;
+
+  /* Not implemented. */
+  KdTree(const KdTree &other);
+
+  /* Not implemented. */
+  KdTree &operator=(const KdTree &other);
 
   std::vector<Agent *> agents_;
   std::vector<AgentTreeNode> agentTree_;

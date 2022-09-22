@@ -61,6 +61,11 @@ const size_t RVO_ERROR = std::numeric_limits<size_t>::max();
 class RVO_EXPORT Line {
  public:
   /**
+   * \brief     Constructs a directed line instance.
+   */
+  Line();
+
+  /**
    * \brief     A point on the directed line.
    */
   Vector2 point;
@@ -437,7 +442,7 @@ class RVO_EXPORT RVOSimulator {
    *             processed.
    */
   bool queryVisibility(const Vector2 &point1, const Vector2 &point2,
-                       float radius = 0.0f) const;
+                       float radius = 0.0F) const;
 
   /**
    * \brief      Sets the default properties for any new agent that is
@@ -576,6 +581,12 @@ class RVO_EXPORT RVOSimulator {
   void setTimeStep(float timeStep);
 
  private:
+  /* Not implemented. */
+  RVOSimulator(const RVOSimulator &other);
+
+  /* Not implemented. */
+  RVOSimulator &operator=(const RVOSimulator &other);
+
   std::vector<Agent *> agents_;
   Agent *defaultAgent_;
   float globalTime_;

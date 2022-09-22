@@ -63,6 +63,7 @@
 .bazelignore         text whitespace-4
 .bazelrc             text whitespace-4
 .clang-format        text whitespace-2
+.clang-tidy          text whitespace-2
 .dockerignore        text whitespace-2
 .editorconfig        text whitespace-2
 .gitattributes       text export-ignore whitespace-2

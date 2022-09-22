@@ -44,7 +44,7 @@
 /**
  * \brief       A sufficiently small positive number.
  */
-const float RVO_EPSILON = 0.00001f;
+const float RVO_EPSILON = 0.00001F;
 
 namespace RVO {
 /**
@@ -60,13 +60,13 @@ inline float distSqPointLineSegment(const Vector2 &a, const Vector2 &b,
                                     const Vector2 &c) {
   const float r = ((c - a) * (b - a)) / absSq(b - a);
 
-  if (r < 0.0f) {
+  if (r < 0.0F) {
     return absSq(c - a);
-  } else if (r > 1.0f) {
-    return absSq(c - b);
-  } else {
-    return absSq(c - (a + r * (b - a)));
   }
+  if (r > 1.0F) {
+    return absSq(c - b);
+  }
+  return absSq(c - (a + r * (b - a)));
 }
 
 /**

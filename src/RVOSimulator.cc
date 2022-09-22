@@ -45,22 +45,22 @@
 #endif
 
 namespace RVO {
+Line::Line() {}
+
 RVOSimulator::RVOSimulator()
-    : defaultAgent_(NULL), globalTime_(0.0f), kdTree_(NULL), timeStep_(0.0f) {
-  kdTree_ = new KdTree(this);
-}
+    : defaultAgent_(NULL),
+      globalTime_(0.0F),
+      kdTree_(new KdTree(this)),
+      timeStep_(0.0F) {}
 
 RVOSimulator::RVOSimulator(float timeStep, float neighborDist,
                            size_t maxNeighbors, float timeHorizon,
                            float timeHorizonObst, float radius, float maxSpeed,
                            const Vector2 &velocity)
-    : defaultAgent_(NULL),
-      globalTime_(0.0f),
-      kdTree_(NULL),
+    : defaultAgent_(new Agent(this)),
+      globalTime_(0.0F),
+      kdTree_(new KdTree(this)),
       timeStep_(timeStep) {
-  kdTree_ = new KdTree(this);
-  defaultAgent_ = new Agent(this);
-
   defaultAgent_->maxNeighbors_ = maxNeighbors;
   defaultAgent_->maxSpeed_ = maxSpeed;
   defaultAgent_->neighborDist_ = neighborDist;
@@ -160,7 +160,7 @@ size_t RVOSimulator::addObstacle(const std::vector<Vector2> &vertices) {
     } else {
       obstacle->isConvex_ =
           (leftOf(vertices[(i == 0 ? vertices.size() - 1 : i - 1)], vertices[i],
-                  vertices[(i == vertices.size() - 1 ? 0 : i + 1)]) >= 0.0f);
+                  vertices[(i == vertices.size() - 1 ? 0 : i + 1)]) >= 0.0F);
     }
 
     obstacle->id_ = obstacles_.size();

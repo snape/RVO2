@@ -54,7 +54,7 @@ class RVO_EXPORT Vector2 {
    * \brief      Constructs and initializes a two-dimensional vector instance
    *             to (0.0, 0.0).
    */
-  inline Vector2() : x_(0.0f), y_(0.0f) {}
+  inline Vector2() : x_(0.0F), y_(0.0F) {}
 
   /**
    * \brief      Constructs and initializes a two-dimensional vector from
@@ -115,7 +115,7 @@ class RVO_EXPORT Vector2 {
    *             specified scalar value.
    */
   inline Vector2 operator/(float s) const {
-    const float invS = 1.0f / s;
+    const float invS = 1.0F / s;
 
     return Vector2(x_ * invS, y_ * invS);
   }
@@ -188,7 +188,7 @@ class RVO_EXPORT Vector2 {
    * \return     A reference to this two-dimensional vector.
    */
   inline Vector2 &operator/=(float s) {
-    const float invS = 1.0f / s;
+    const float invS = 1.0F / s;
     x_ *= invS;
     y_ *= invS;
 

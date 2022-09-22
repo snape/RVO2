@@ -54,6 +54,17 @@ class Obstacle {
    */
   Obstacle();
 
+  /**
+   * \brief      Destroys this static obstacle instance.
+   */
+  ~Obstacle();
+
+  /* Not implemented. */
+  Obstacle(const Obstacle &other);
+
+  /* Not implemented. */
+  Obstacle &operator=(const Obstacle &other);
+
   bool isConvex_;
   Obstacle *nextObstacle_;
   Vector2 point_;
