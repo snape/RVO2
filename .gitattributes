@@ -43,12 +43,13 @@
 *                    text=auto
 
 *.bazel              text diff=python linguist-language=starlark whitespace-4
-*.cc                 text diff=cpp linguist-language=c++ whitespace=tabwidth=2,trailing-space
+*.cc                 text diff=cpp linguist-language=c++ whitespace-2
 *.cff                text linguist-documentation whitespace-2
+*.cfg                text whitespace-2
 *.cmake              text whitespace-2
 *.cmake.in           text whitespace-2
 *.css                text diff=css linguist-documentation whitespace=trailing-space
-*.h                  text diff=cpp linguist-language=c++ whitespace=tabwidth=2,trailing-space
+*.h                  text diff=cpp linguist-language=c++ whitespace-2
 *.html               text diff=html linguist-documentation whitespace=trailing-space
 *.imp                text linguist-language=json whitespace-2
 *.json               text whitespace-2
@@ -61,6 +62,7 @@
 
 .bazelignore         text whitespace-4
 .bazelrc             text whitespace-4
+.clang-format        text whitespace-2
 .dockerignore        text whitespace-2
 .editorconfig        text whitespace-2
 .gitattributes       text export-ignore whitespace-2

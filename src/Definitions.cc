@@ -31,4 +31,4 @@
  * <https://gamma.cs.unc.edu/RVO2/>
  */
 
- #include "Definitions.h"
+#include "Definitions.h"

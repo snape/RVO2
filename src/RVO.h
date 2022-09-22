@@ -54,11 +54,11 @@
  Dinesh Manocha
 
  <b>RVO2 Library</b> is an easy-to-use C++ implementation of the
- <a href="http://gamma.cs.unc.edu/ORCA/">Optimal Reciprocal Collision Avoidance</a>
- (ORCA) formulation for multi-agent simulation. <b>RVO2 Library</b> automatically
- uses parallelism for computing the motion of the agents if your machine has
- multiple processors and your compiler supports <a href="http://www.openmp.org/">
- OpenMP</a>.
+ <a href="http://gamma.cs.unc.edu/ORCA/">Optimal Reciprocal Collision
+ Avoidance</a> (ORCA) formulation for multi-agent simulation. <b>RVO2
+ Library</b> automatically uses parallelism for computing the motion of the
+ agents if your machine has multiple processors and your compiler supports <a
+ href="http://www.openmp.org/"> OpenMP</a>.
 
  Please follow the following steps to install and use <b>RVO2 Library</b>.
 
@@ -81,66 +81,68 @@
 
  The main difference between <b>RVO2 Library</b> and %RVO Library 1.x is the
  local collision avoidance technique used. <b>RVO2 Library</b> uses
- <a href="http://gamma.cs.unc.edu/CA/">Optimal Reciprocal Collision Avoidance</a>
- (ORCA), whereas %RVO Library 1.x uses <a href="http://gamma.cs.unc.edu/RVO/">
- Reciprocal Velocity Obstacles</a> (%RVO). For legacy reasons, and since both
- techniques are based on the same principles of reciprocal collision avoidance
- and relative velocity, we did not change the name of the library.
+ <a href="http://gamma.cs.unc.edu/CA/">Optimal Reciprocal Collision
+ Avoidance</a> (ORCA), whereas %RVO Library 1.x uses <a
+ href="http://gamma.cs.unc.edu/RVO/"> Reciprocal Velocity Obstacles</a> (%RVO).
+ For legacy reasons, and since both techniques are based on the same principles
+ of reciprocal collision avoidance and relative velocity, we did not change the
+ name of the library.
 
- A major consequence of the change of local collision avoidance technique is that
- the simulation has become much faster in <b>RVO2 Library</b>. ORCA defines
- velocity constraints with respect to other agents as half-planes, and an optimal
- velocity is efficiently found using (two-dimensional) linear programming. In
- contrast, %RVO Library 1.x uses random sampling to find a good velocity. Also,
- the behavior of the agents is smoother in <b>RVO2 Library</b>. It is proven
- mathematically that ORCA lets the velocity of agents evolve continuously over
- time, whereas %RVO Library 1.x occasionally showed oscillations and reciprocal
- dances. Furthermore, ORCA provides stronger guarantees with respect to collision
- avoidance.
+ A major consequence of the change of local collision avoidance technique is
+ that the simulation has become much faster in <b>RVO2 Library</b>. ORCA defines
+ velocity constraints with respect to other agents as half-planes, and an
+ optimal velocity is efficiently found using (two-dimensional) linear
+ programming. In contrast, %RVO Library 1.x uses random sampling to find a good
+ velocity. Also, the behavior of the agents is smoother in <b>RVO2 Library</b>.
+ It is proven mathematically that ORCA lets the velocity of agents evolve
+ continuously over time, whereas %RVO Library 1.x occasionally showed
+ oscillations and reciprocal dances. Furthermore, ORCA provides stronger
+ guarantees with respect to collision avoidance.
 
  \section    global      Global Path Planning
 
- Local collision avoidance as provided by <b>RVO2 Library</b> should in principle
- be accompanied by global path planning that determines the preferred velocity of
- each agent in each time step of the simulation. %RVO Library 1.x has a built-in
- roadmap infrastructure to guide agents around obstacles to fixed goals.
- However, besides roadmaps, other techniques for global planning, such as
+ Local collision avoidance as provided by <b>RVO2 Library</b> should in
+ principle be accompanied by global path planning that determines the preferred
+ velocity of each agent in each time step of the simulation. %RVO Library 1.x
+ has a built-in roadmap infrastructure to guide agents around obstacles to fixed
+ goals. However, besides roadmaps, other techniques for global planning, such as
  navigation fields, cell decompositions, etc. exist. Therefore, <b>RVO2
  Library</b> does not provide global planning infrastructure anymore. Instead,
  it is the responsibility of the external application to set the preferred
- velocity of each agent ahead of each time step of the simulation. This makes the
- library more flexible to use in varying application domains. In one of the
+ velocity of each agent ahead of each time step of the simulation. This makes
+ the library more flexible to use in varying application domains. In one of the
  example applications that comes with <b>RVO2 Library</b>, we show how a roadmap
- similar to %RVO Library 1.x is used externally to guide the global navigation of
- the agents. As a consequence of this change, <b>RVO2 Library</b> does not have a
- concept of a &quot;goal position&quot; or &quot;preferred speed&quot; for each
- agent, but only relies on the preferred velocities of the agents set by the
- external application.
+ similar to %RVO Library 1.x is used externally to guide the global navigation
+ of the agents. As a consequence of this change, <b>RVO2 Library</b> does not
+ have a concept of a &quot;goal position&quot; or &quot;preferred speed&quot;
+ for each agent, but only relies on the preferred velocities of the agents set
+ by the external application.
 
  \section    structure   Structure of RVO2 Library
 
  The structure of <b>RVO2 Library</b> is similar to that of %RVO Library 1.x.
- Users familiar with %RVO Library 1.x should find little trouble in using <b>RVO2
- Library</b>. However, <b>RVO2 Library</b> is not backwards compatible with %RVO
- Library 1.x. The main reason for this is that the ORCA technique requires
- different (and fewer) parameters to be set than %RVO. Also, the way obstacles
- are represented is different. In %RVO Library 1.x, obstacles are represented by
- an arbitrary collection of line segments. In <b>RVO2 Library</b>, obstacles are
- non-intersecting polygons, specified by lists of vertices in counterclockwise
- order. Further, in %RVO Library 1.x agents cannot be added to the simulation
- after the simulation is initialized. In <b>RVO2 Library</b> this restriction is
- removed. Obstacles still need to be processed before the simulation starts,
- though. Lastly, in %RVO Library 1.x an instance of the simulator is a singleton.
- This restriction is removed in <b>RVO2 Library</b>.
+ Users familiar with %RVO Library 1.x should find little trouble in using
+ <b>RVO2 Library</b>. However, <b>RVO2 Library</b> is not backwards compatible
+ with %RVO Library 1.x. The main reason for this is that the ORCA technique
+ requires different (and fewer) parameters to be set than %RVO. Also, the way
+ obstacles are represented is different. In %RVO Library 1.x, obstacles are
+ represented by an arbitrary collection of line segments. In <b>RVO2
+ Library</b>, obstacles are non-intersecting polygons, specified by lists of
+ vertices in counterclockwise order. Further, in %RVO Library 1.x agents cannot
+ be added to the simulation after the simulation is initialized. In <b>RVO2
+ Library</b> this restriction is removed. Obstacles still need to be processed
+ before the simulation starts, though. Lastly, in %RVO Library 1.x an instance
+ of the simulator is a singleton. This restriction is removed in <b>RVO2
+ Library</b>.
 
  \section    smaller     Smaller Changes
 
  With <b>RVO2 Library</b>, we have adopted the philosophy that anything that is
  not part of the core local collision avoidance technique is to be stripped from
- the library. Therefore, besides the roadmap infrastructure, we have also removed
- acceleration constraints of agents, orientation of agents, and the unused
- &quot;class&quot; of agents. Each of these can be implemented external of the
- library if needed. We did maintain a <i>k</i>d-tree infrastructure for
+ the library. Therefore, besides the roadmap infrastructure, we have also
+ removed acceleration constraints of agents, orientation of agents, and the
+ unused &quot;class&quot; of agents. Each of these can be implemented external
+ of the library if needed. We did maintain a <i>k</i>d-tree infrastructure for
  efficiently finding other agents and obstacles nearby each agent.
 
  Also, <b>RVO2 Library</b> allows accessing information about the simulation,
@@ -162,10 +164,10 @@
 
  \section    cmake       CMake
 
- Create and switch to your chosen build directory, e.g. <tt>$RVO_ROOT/build</tt>.
- Run <tt>cmake</tt> inside the build directory on the source directory, e.g.
- <tt>cmake $RVO_ROOT/src</tt>. Build files for the default generator for your
- platform will be generated in the build directory.
+ Create and switch to your chosen build directory, e.g.
+ <tt>$RVO_ROOT/build</tt>. Run <tt>cmake</tt> inside the build directory on the
+ source directory, e.g. <tt>cmake $RVO_ROOT/src</tt>. Build files for the
+ default generator for your platform will be generated in the build directory.
 
  \section    make        GNU Make
 
@@ -226,22 +228,23 @@
  In the above example program, simulation steps are taken until all
  the agents have reached some predefined goals. Prior to each simulation step,
  we set the preferred velocity for each agent, i.e. the
- velocity the agent would have taken if there were no other agents around, in the
- method setPreferredVelocities(...). The simulator computes the actual velocities
- of the agents and attempts to follow the preferred velocities as closely as
- possible while guaranteeing collision avoidance at the same time. During the
- simulation, the user may want to retrieve information from the simulation for
- instance to visualize the simulation. In the above example program, this is done
- in the method updateVisualization(...), which we will discuss below. It is also
- possible to manipulate the simulation during the simulation, for instance by
- changing positions, radii, velocities, etc. of the agents.
+ velocity the agent would have taken if there were no other agents around, in
+ the method setPreferredVelocities(...). The simulator computes the actual
+ velocities of the agents and attempts to follow the preferred velocities as
+ closely as possible while guaranteeing collision avoidance at the same time.
+ During the simulation, the user may want to retrieve information from the
+ simulation for instance to visualize the simulation. In the above example
+ program, this is done in the method updateVisualization(...), which we will
+ discuss below. It is also possible to manipulate the simulation during the
+ simulation, for instance by changing positions, radii, velocities, etc. of the
+ agents.
 
  \section    spec        Setting up the Simulation Scenario
 
- A scenario that is to be simulated can be set up as follows. A scenario consists
- of two types of objects: agents and obstacles. Each of them can be manually
- specified. Agents may be added anytime before or during the simulation.
- Obstacles, however, need to be defined prior to the simulation, and
+ A scenario that is to be simulated can be set up as follows. A scenario
+ consists of two types of objects: agents and obstacles. Each of them can be
+ manually specified. Agents may be added anytime before or during the
+ simulation. Obstacles, however, need to be defined prior to the simulation, and
  RVO::RVOSimulator::processObstacles() need to be called in order for the
  obstacles to be accounted for in the simulation.
  The user may also want to define goal positions of the agents, or a
@@ -294,8 +297,9 @@
  the simulation. In the example program above, visualization is done in the
  updateVisualization(...) method. Below we give an example that simply writes
  the positions of each agent in each time step to the standard output. The
- termination condition is checked in the reachedGoal(...) method. Here we give an
- example that returns true if all agents are within one radius of their goals.
+ termination condition is checked in the reachedGoal(...) method. Here we give
+ an example that returns true if all agents are within one radius of their
+ goals.
 
  \code
  void updateVisualization(RVO::RVOSimulator* sim) {
@@ -315,7 +319,8 @@
  bool reachedGoal(RVO::RVOSimulator* sim) {
  // Check whether all agents have arrived at their goals.
  for (size_t i = 0; i < sim->getNumAgents(); ++i) {
- if (absSq(goals[i] - sim->getAgentPosition(i)) > sim->getAgentRadius(i) * sim->getAgentRadius(i)) {
+ if (absSq(goals[i] - sim->getAgentPosition(i)) > sim->getAgentRadius(i) *
+ sim->getAgentRadius(i)) {
  // Agent is further away from its goal than one radius.
  return false;
  }
@@ -334,35 +339,38 @@
 
  During the simulation, the user can manipulate the simulation, for instance by
  changing the global parameters, or changing the parameters of the agents
- (potentially causing abrupt different behavior). It is also possible to give the
- agents a new position, which make them jump through the scene.
- New agents can be added to the simulation at any time, but it is not allowed to
- add obstacles to the simulation after they have been processed by calling
+ (potentially causing abrupt different behavior). It is also possible to give
+ the agents a new position, which make them jump through the scene. New agents
+ can be added to the simulation at any time, but it is not allowed to add
+ obstacles to the simulation after they have been processed by calling
  RVO::RVOSimulator::processObstacles(). Also, it is impossible to change the
  position of the vertices of the obstacles.
 
  See the documentation of the class RVO::RVOSimulator for an exhaustive list of
  public functions for manipulating the simulation.
 
- To provide global guidance to the agents, the preferred velocities of the agents
- can be changed ahead of each simulation step. In the above example program, this
- happens in the method setPreferredVelocities(...). Here we give an example that
- simply sets the preferred velocity to the unit vector towards the agent's goal
- for each agent (i.e., the preferred speed is 1.0). Note that this may not give
- convincing results with respect to global navigation around the obstacles. For
- this a roadmap or other global planning techniques may be used (see one of the
- \ref example "example programs" that accompanies <b>RVO2 Library</b>).
+ To provide global guidance to the agents, the preferred velocities of the
+ agents can be changed ahead of each simulation step. In the above example
+ program, this happens in the method setPreferredVelocities(...). Here we give
+ an example that simply sets the preferred velocity to the unit vector towards
+ the agent's goal for each agent (i.e., the preferred speed is 1.0). Note that
+ this may not give convincing results with respect to global navigation around
+ the obstacles. For this a roadmap or other global planning techniques may be
+ used (see one of the \ref example "example programs" that accompanies <b>RVO2
+ Library</b>).
 
  \code
  void setPreferredVelocities(RVO::RVOSimulator* sim) {
  // Set the preferred velocity for each agent.
  for (size_t i = 0; i < sim->getNumAgents(); ++i) {
- if (absSq(goals[i] - sim->getAgentPosition(i)) < sim->getAgentRadius(i) * sim->getAgentRadius(i) ) {
+ if (absSq(goals[i] - sim->getAgentPosition(i)) < sim->getAgentRadius(i) *
+ sim->getAgentRadius(i) ) {
  // Agent is within one radius of its goal, set preferred velocity to zero
  sim->setAgentPrefVelocity(i, RVO::Vector2(0.0f, 0.0f));
  } else {
- // Agent is far away from its goal, set preferred velocity as unit vector towards agent's goal.
- sim->setAgentPrefVelocity(i, normalize(goals[i] - sim->getAgentPosition(i)));
+ // Agent is far away from its goal, set preferred velocity as unit vector
+ towards agent's goal. sim->setAgentPrefVelocity(i, normalize(goals[i] -
+ sim->getAgentPosition(i)));
  }
  }
  }
@@ -370,9 +378,9 @@
 
  \section    example     Example Programs
 
- <b>RVO2 Library</b> is accompanied by three example programs, which can be found in the
- <tt>$RVO_ROOT/examples</tt> directory. The examples are named Blocks, Circle, and
- Roadmap, and contain the following demonstration scenarios:
+ <b>RVO2 Library</b> is accompanied by three example programs, which can be
+ found in the <tt>$RVO_ROOT/examples</tt> directory. The examples are named
+ Blocks, Circle, and Roadmap, and contain the following demonstration scenarios:
  <table border="0" cellpadding="3" width="100%">
  <tr>
  <td valign="top" width="100"><b>Blocks</b></td>
@@ -389,8 +397,9 @@
  </tr>
  <tr>
  <td valign="top" width="100"><b>Roadmap</b></td>
- <td valign="top">The same scenario as ExampleBlocks, but now the preferred velocities
- of the agents are determined using a roadmap guiding the agents around the obstacles.</td>
+ <td valign="top">The same scenario as ExampleBlocks, but now the preferred
+ velocities of the agents are determined using a roadmap guiding the agents
+ around the obstacles.</td>
  </tr>
  </table>
 

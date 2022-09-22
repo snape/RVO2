@@ -44,28 +44,28 @@
 #include "Vector2.h"
 
 namespace RVO {
-	/**
-	 * \brief      Defines static obstacles in the simulation.
-	 */
-	class Obstacle {
-	private:
-		/**
-		 * \brief      Constructs a static obstacle instance.
-		 */
-		Obstacle();
+/**
+ * \brief      Defines static obstacles in the simulation.
+ */
+class Obstacle {
+ private:
+  /**
+   * \brief      Constructs a static obstacle instance.
+   */
+  Obstacle();
 
-		bool isConvex_;
-		Obstacle *nextObstacle_;
-		Vector2 point_;
-		Obstacle *prevObstacle_;
-		Vector2 unitDir_;
+  bool isConvex_;
+  Obstacle *nextObstacle_;
+  Vector2 point_;
+  Obstacle *prevObstacle_;
+  Vector2 unitDir_;
 
-		size_t id_;
+  size_t id_;
 
-		friend class Agent;
-		friend class KdTree;
-		friend class RVOSimulator;
-	};
-}
+  friend class Agent;
+  friend class KdTree;
+  friend class RVOSimulator;
+};
+}  // namespace RVO
 
 #endif /* RVO_OBSTACLE_H_ */

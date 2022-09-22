@@ -31,4 +31,4 @@
  * <https://gamma.cs.unc.edu/RVO2/>
  */
 
- #include "Vector2.h"
+#include "Vector2.h"
