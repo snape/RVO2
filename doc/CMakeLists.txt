@@ -50,6 +50,9 @@ if(BUILD_DOCUMENTATION)
 
     set(DOXYGEN_EXTRACT_ALL YES)
 
+    set(DOXYGEN_WARN_NO_PARAMDOC YES)
+    set(DOXYGEN_WARN_AS_ERROR YES)
+
     set(DOXYGEN_FILE_PATTERNS "*.h")
     set(DOXYGEN_EXAMPLE_PATH "${PROJECT_SOURCE_DIR}/examples")
     set(DOXYGEN_EXAMPLE_PATTERNS "*.cc")
@@ -79,6 +82,7 @@ if(BUILD_DOCUMENTATION)
 
     doxygen_add_docs(documentation
       "${PROJECT_BINARY_DIR}/src/Export.h"
+      "${PROJECT_SOURCE_DIR}/src/Line.h"
       "${PROJECT_SOURCE_DIR}/src/RVO.h"
       "${PROJECT_SOURCE_DIR}/src/RVOSimulator.h"
       "${PROJECT_SOURCE_DIR}/src/Vector2.h"

@@ -56,11 +56,12 @@
 
 @mainpage  RVO2 Library Documentation
 @author    Jur van den Berg
-@author    Stephen J. Guy
-@author    Jamie Snape
-@author    Ming C. Lin
-@author    Dinesh Manocha
-@copyright 2008 University of North Carolina at Chapel Hill.
+@author    <a href="https://www-users.cs.umn.edu/~sjguy/">Stephen J. Guy</a>
+@author    <a href="https://www.jamiesnape.io/">Jamie Snape</a>
+@author    <a href="https://www.cs.umd.edu/people/lin/">Ming C. Lin</a>
+@author    <a href="https://www.cs.umd.edu/people/dmanocha/">Dinesh Manocha</a>
+@copyright 2008 <a href="https://www.unc.edu/">University of North Carolina at
+           Chapel Hill</a>
 
 We present a formal approach to reciprocal collision avoidance, where multiple
 independent mobile robots or agents need to avoid collisions with each other
@@ -86,33 +87,34 @@ using <a href="https://www.openmp.org/">OpenMP</a> for efficient parallelization
 of the simulation.
 
 The creation of <b>RVO2 Library</b> was supported by the
-<a ref="https://www.arl.army.mil/who-we-are/directorates/aro/">United States
+<a href="https://www.arl.army.mil/who-we-are/directorates/aro/">United States
 Army Research Office</a> (ARO) under Contract W911NF‑04‑1‑0088, by the
-<a ref="https://www.nsf.gov">National Science Foundation</a> (NSF) under Award
+<a href="https://www.nsf.gov">National Science Foundation</a> (NSF) under Award
 0636208, Award 0917040, and Award 0904990, by the
 <a href="https://www.darpa.mil">Defense Advanced Research Projects Agency</a>
 (DARPA) and the United States Army Research, Development, and Engineering
 Command (RDECOM) under Contract WR91CRB‑08‑C‑0137, and by
-<a ref="https://www.intel.com/">Intel Corporation</a>. Any opinions, findings,
+<a href="https://www.intel.com/">Intel Corporation</a>. Any opinions, findings,
 and conclusions or recommendations expressed herein are those of the authors and
 do not necessarily reflect the views of ARO, NSF, DARPA, RDECOM, or Intel.
 
 Please follow the following steps to install and use <b>RVO2 Library</b>.
 
-@li @subpage whatsnew
-@li @subpage building
-@li @subpage using
-@li @subpage params
+@li @subpage what_is_new_in_rvo2_library
+@li @subpage building_rvo2_library
+@li @subpage using_rvo2_library
+@li @subpage parameter_overview
 
 See the documentation of the RVO::RVOSimulator class for an exhaustive list of
 public functions of <b>RVO2 Library</b>.
 
 <b>RVO2 Library</b>, accompanying example code, and this documentation is
-released under the following @subpage terms "terms and conditions".
+released under the following @subpage terms_and_conditions
+"terms and conditions".
 
-@page whatsnew What Is New in RVO2 Library
+@page what_is_new_in_rvo2_library What Is New in RVO2 Library
 
-@section localca Local Collision Avoidance
+@section local_collision_avoidance Local Collision Avoidance
 
 The main difference between <b>RVO2 Library</b> and %RVO Library 1.x is the
 local collision avoidance technique used. <b>RVO2 Library</b> uses <a
@@ -134,7 +136,7 @@ avoidance lets the velocity of agents evolve continuously over time, whereas
 Furthermore, optimal reciprocal collision avoidance provides stronger guarantees
 with respect to collision avoidance.
 
-@section global Global Path Planning
+@section global_path_planning Global Path Planning
 
 Local collision avoidance as provided by <b>RVO2 Library</b> should in principle
 be accompanied by global path planning that determines the preferred velocity of
@@ -153,7 +155,7 @@ concept of a &quot;goal position&quot; or &quot;preferred speed&quot; for each
 agent, but only relies on the preferred velocities of the agents set by the
 external application.
 
-@section structure Structure of RVO2 Library
+@section structure_of_rvo2_library Structure of RVO2 Library
 
 The structure of <b>RVO2 Library</b> is similar to that of %RVO Library 1.x.
 Users familiar with %RVO Library 1.x should find little trouble in using <b>RVO2
@@ -170,7 +172,7 @@ processed before the simulation starts, though. Lastly, in %RVO Library 1.x an
 instance of the simulator is a singleton. This restriction is removed in <b>RVO2
 Library</b>.
 
-@section smaller Smaller Changes
+@section smaller_changes Smaller Changes
 
 With <b>RVO2 Library</b>, we have adopted the philosophy that anything that is
 not part of the core local collision avoidance technique is to be stripped from
@@ -184,7 +186,7 @@ Also, <b>RVO2 Library</b> allows accessing information about the simulation,
 such as the neighbors and the collision-avoidance constraints of each agent,
 that is hidden from the user in %RVO Library 1.x.
 
-@page building Building RVO2 Library
+@page building_rvo2_library Building RVO2 Library
 
 @section cmake CMake
 
@@ -206,7 +208,7 @@ cd RVO2
 bazel test ...
 @endcode
 
-@page using Using RVO2 Library
+@page using_rvo2_library Using RVO2 Library
 
 @section structure Structure
 
@@ -258,7 +260,7 @@ updateVisualization(...), which we will discuss below. It is also possible to
 manipulate the simulation during the simulation, for instance by changing
 positions, radii, velocities, etc. of the agents.
 
-@section spec Setting up the Simulation Scenario
+@section setting_up_the_simulation_scenario Setting up the Simulation Scenario
 
 A scenario that is to be simulated can be set up as follows. A scenario consists
 of two types of objects: agents and obstacles. Each of them can be manually
@@ -315,7 +317,8 @@ void setupScenario(RVO::RVOSimulator *sim) {
 See the documentation on RVO::RVOSimulator for a full overview of the
 functionality to specify scenarios.
 
-@section ret Retrieving Information from the Simulation
+@section retrieving_information_from_the_simulation Retrieving Information from
+                                                    the Simulation
 
 During the simulation, the user can extract information from the simulation for
 instance for visualization purposes, or to determine termination conditions of
@@ -371,7 +374,7 @@ parameters, and the obstacles. See the documentation of the class
 RVO::RVOSimulator for an exhaustive list of public functions for retrieving
 simulation information.
 
-@section manip Manipulating the Simulation
+@section manipulating_the_simulation Manipulating the Simulation
 
 During the simulation, the user can manipulate the simulation, for instance by
 changing the global parameters, or changing the parameters of the agents
@@ -392,7 +395,7 @@ simply sets the preferred velocity to the unit vector towards the agent's goal
 for each agent (i.e., the preferred speed is 1.0). Note that this may not give
 convincing results with respect to global navigation around the obstacles. For
 this a roadmap or other global planning techniques may be used (see one of the
-@ref example "example programs" that accompanies <b>RVO2 Library</b>).
+@ref example_programs "example programs" that accompanies <b>RVO2 Library</b>).
 
 @code{.cc}
 #include <RVO.h>
@@ -418,7 +421,7 @@ void setPreferredVelocities(RVO::RVOSimulator *sim) {
 }  // namespace
 @endcode
 
-@section example Example Programs
+@section example_programs Example Programs
 
 <b>RVO2 Library</b> is accompanied by three example programs, which can be found
 in the <tt>$RVO_ROOT/examples</tt> directory. The examples are named Blocks,
@@ -446,9 +449,9 @@ around the obstacles.</td>
 </tr>
 </table>
 
-@page params Parameter Overview
+@page parameter_overview Parameter Overview
 
-@section globalp Global Parameters
+@section global_parameters Global Parameters
 
 <table border="0" cellpadding="3" width="100%">
 <tr>
@@ -463,7 +466,7 @@ around the obstacles.</td>
 </tr>
 </table>
 
-@section agent Agent Parameters
+@section agent_parameters Agent Parameters
 
 <table border="0" cellpadding="3" width="100%">
 <tr>
@@ -535,15 +538,15 @@ be positive.</td>
 </tr>
 </table>
 
-@page terms Terms and Conditions
+@page terms_and_conditions Terms and Conditions
 
-@section code Source Code License
+@section source_code_license Source Code License
 
 Source code is licensed under the
 <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License,
 Version 2.0</a>.
 
-@code{.txt}
+@verbatim
 RVO2 Library
 
 SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
@@ -560,15 +563,15 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-@endcode
+@endverbatim
 
-@section documentation Documentation Licence
+@section documentation_license Documentation Licence
 
 Documentation is licensed under the
 <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons
 Attribution-ShareAlike 4.0 International (CC-BY-SA-4.0) Public License</a>.
 
-@code{.txt}
+@verbatim
 RVO2 Library
 
 SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
@@ -609,8 +612,9 @@ Notices:
 * No warranties are given. The license may not give you all of the permissions
   necessary for your intended use. For example, other rights such as publicity,
   privacy, or moral rights may limit how you use the material.
+@endverbatim
 
-@section other Other Licenses
+@section other_licenses Other Licenses
 
 Selected files are licensed under the
 <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0 Universal
