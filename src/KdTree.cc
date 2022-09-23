@@ -44,7 +44,7 @@
 
 namespace RVO {
 namespace {
-const size_t RVO_MAX_LEAF_SIZE = 10;
+const std::size_t RVO_MAX_LEAF_SIZE = 10U;
 }  // namespace
 
 /**
@@ -60,17 +60,17 @@ class KdTree::AgentTreeNode {
   /**
    * \brief      The beginning node number.
    */
-  size_t begin;
+  std::size_t begin;
 
   /**
    * \brief      The ending node number.
    */
-  size_t end;
+  std::size_t end;
 
   /**
    * \brief      The left node number.
    */
-  size_t left;
+  std::size_t left;
 
   /**
    * \brief      The maximum x-coordinate.
@@ -95,18 +95,18 @@ class KdTree::AgentTreeNode {
   /**
    * \brief      The right node number.
    */
-  size_t right;
+  std::size_t right;
 };
 
 KdTree::AgentTreeNode::AgentTreeNode()
-    : begin(0),
-      end(0),
-      left(0),
+    : begin(0U),
+      end(0U),
+      left(0U),
       maxX(0.0F),
       maxY(0.0F),
       minX(0.0F),
       minY(0.0F),
-      right(0) {}
+      right(0U) {}
 
 /**
  * \brief      Defines an obstacle <i>k</i>d-tree node.
@@ -157,25 +157,26 @@ KdTree::~KdTree() { deleteObstacleTree(obstacleTree_); }
 
 void KdTree::buildAgentTree() {
   if (agents_.size() < sim_->agents_.size()) {
-    for (size_t i = agents_.size(); i < sim_->agents_.size(); ++i) {
+    for (std::size_t i = agents_.size(); i < sim_->agents_.size(); ++i) {
       agents_.push_back(sim_->agents_[i]);
     }
 
-    agentTree_.resize(2 * agents_.size() - 1);
+    agentTree_.resize(2U * agents_.size() - 1U);
   }
 
   if (!agents_.empty()) {
-    buildAgentTreeRecursive(0, agents_.size(), 0);
+    buildAgentTreeRecursive(0U, agents_.size(), 0U);
   }
 }
 
-void KdTree::buildAgentTreeRecursive(size_t begin, size_t end, size_t node) {
+void KdTree::buildAgentTreeRecursive(std::size_t begin, std::size_t end,
+                                     std::size_t node) {
   agentTree_[node].begin = begin;
   agentTree_[node].end = end;
   agentTree_[node].minX = agentTree_[node].maxX = agents_[begin]->position_.x();
   agentTree_[node].minY = agentTree_[node].maxY = agents_[begin]->position_.y();
 
-  for (size_t i = begin + 1; i < end; ++i) {
+  for (std::size_t i = begin + 1U; i < end; ++i) {
     agentTree_[node].maxX =
         std::max(agentTree_[node].maxX, agents_[i]->position_.x());
     agentTree_[node].minX =
@@ -194,8 +195,8 @@ void KdTree::buildAgentTreeRecursive(size_t begin, size_t end, size_t node) {
         (isVertical ? 0.5F * (agentTree_[node].maxX + agentTree_[node].minX)
                     : 0.5F * (agentTree_[node].maxY + agentTree_[node].minY));
 
-    size_t left = begin;
-    size_t right = end;
+    std::size_t left = begin;
+    std::size_t right = end;
 
     while (left < right) {
       while (left < right &&
@@ -205,13 +206,13 @@ void KdTree::buildAgentTreeRecursive(size_t begin, size_t end, size_t node) {
       }
 
       while (right > left &&
-             (isVertical ? agents_[right - 1]->position_.x()
-                         : agents_[right - 1]->position_.y()) >= splitValue) {
+             (isVertical ? agents_[right - 1U]->position_.x()
+                         : agents_[right - 1U]->position_.y()) >= splitValue) {
         --right;
       }
 
       if (left < right) {
-        std::swap(agents_[left], agents_[right - 1]);
+        std::swap(agents_[left], agents_[right - 1U]);
         ++left;
         --right;
       }
@@ -222,8 +223,8 @@ void KdTree::buildAgentTreeRecursive(size_t begin, size_t end, size_t node) {
       ++right;
     }
 
-    agentTree_[node].left = node + 1;
-    agentTree_[node].right = node + 2 * (left - begin);
+    agentTree_[node].left = node + 1U;
+    agentTree_[node].right = node + 2U * (left - begin);
 
     buildAgentTreeRecursive(begin, left, agentTree_[node].left);
     buildAgentTreeRecursive(left, end, agentTree_[node].right);
@@ -235,7 +236,7 @@ void KdTree::buildObstacleTree() {
 
   std::vector<Obstacle *> obstacles(sim_->obstacles_.size());
 
-  for (size_t i = 0; i < sim_->obstacles_.size(); ++i) {
+  for (std::size_t i = 0U; i < sim_->obstacles_.size(); ++i) {
     obstacles[i] = sim_->obstacles_[i];
   }
 
@@ -249,19 +250,19 @@ KdTree::ObstacleTreeNode *KdTree::buildObstacleTreeRecursive(
   }
   ObstacleTreeNode *const node = new ObstacleTreeNode;
 
-  size_t optimalSplit = 0;
-  size_t minLeft = obstacles.size();
-  size_t minRight = obstacles.size();
+  std::size_t optimalSplit = 0U;
+  std::size_t minLeft = obstacles.size();
+  std::size_t minRight = obstacles.size();
 
-  for (size_t i = 0; i < obstacles.size(); ++i) {
-    size_t leftSize = 0;
-    size_t rightSize = 0;
+  for (std::size_t i = 0U; i < obstacles.size(); ++i) {
+    std::size_t leftSize = 0U;
+    std::size_t rightSize = 0U;
 
     const Obstacle *const obstacleI1 = obstacles[i];
     const Obstacle *const obstacleI2 = obstacleI1->nextObstacle_;
 
     /* Compute optimal split node. */
-    for (size_t j = 0; j < obstacles.size(); ++j) {
+    for (std::size_t j = 0U; j < obstacles.size(); ++j) {
       if (i == j) {
         continue;
       }
@@ -305,14 +306,14 @@ KdTree::ObstacleTreeNode *KdTree::buildObstacleTreeRecursive(
   std::vector<Obstacle *> leftObstacles(minLeft);
   std::vector<Obstacle *> rightObstacles(minRight);
 
-  size_t leftCounter = 0;
-  size_t rightCounter = 0;
-  const size_t i = optimalSplit;
+  std::size_t leftCounter = 0U;
+  std::size_t rightCounter = 0U;
+  const std::size_t i = optimalSplit;
 
   const Obstacle *const obstacleI1 = obstacles[i];
   const Obstacle *const obstacleI2 = obstacleI1->nextObstacle_;
 
-  for (size_t j = 0; j < obstacles.size(); ++j) {
+  for (std::size_t j = 0U; j < obstacles.size(); ++j) {
     if (i == j) {
       continue;
     }
@@ -370,7 +371,7 @@ KdTree::ObstacleTreeNode *KdTree::buildObstacleTreeRecursive(
 }
 
 void KdTree::computeAgentNeighbors(Agent *agent, float &rangeSq) const {
-  queryAgentTreeRecursive(agent, rangeSq, 0);
+  queryAgentTreeRecursive(agent, rangeSq, 0U);
 }
 
 void KdTree::computeObstacleNeighbors(Agent *agent, float rangeSq) const {
@@ -386,9 +387,10 @@ void KdTree::deleteObstacleTree(ObstacleTreeNode *node) {
 }
 
 void KdTree::queryAgentTreeRecursive(Agent *agent, float &rangeSq,
-                                     size_t node) const {
+                                     std::size_t node) const {
   if (agentTree_[node].end - agentTree_[node].begin <= RVO_MAX_LEAF_SIZE) {
-    for (size_t i = agentTree_[node].begin; i < agentTree_[node].end; ++i) {
+    for (std::size_t i = agentTree_[node].begin; i < agentTree_[node].end;
+         ++i) {
       agent->insertAgentNeighbor(agents_[i], rangeSq);
     }
   } else {

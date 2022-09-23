@@ -173,14 +173,14 @@ void setupScenario(
   roadmap.push_back(v);
 
   /* Specify the default parameters for agents that are subsequently added. */
-  sim->setAgentDefaults(15.0F, 10, 5.0F, 5.0F, 2.0F, 2.0F);
+  sim->setAgentDefaults(15.0F, 10U, 5.0F, 5.0F, 2.0F, 2.0F);
 
   /*
    * Add agents, specifying their start position, and store goals on the
    * opposite side of the environment (roadmap vertices).
    */
-  for (size_t i = 0; i < 5; ++i) {
-    for (size_t j = 0; j < 5; ++j) {
+  for (std::size_t i = 0U; i < 5U; ++i) {
+    for (std::size_t j = 0U; j < 5U; ++j) {
       sim->addAgent(RVO::Vector2(55.0F + static_cast<float>(i) * 10.0F,
                                  55.0F + static_cast<float>(j) * 10.0F));
       goals.push_back(0);
@@ -206,7 +206,7 @@ void updateVisualization(RVO::RVOSimulator *sim) {
   std::cout << sim->getGlobalTime();
 
   /* Output the current position of all the agents. */
-  for (size_t i = 0; i < sim->getNumAgents(); ++i) {
+  for (std::size_t i = 0U; i < sim->getNumAgents(); ++i) {
     std::cout << " " << sim->getAgentPosition(i);
   }
 
@@ -224,7 +224,7 @@ void buildRoadmap(
   for (int i = 0; i < static_cast<int>(roadmap.size()); ++i) {
     for (int j = 0; j < static_cast<int>(roadmap.size()); ++j) {
       if (sim->queryVisibility(roadmap[i].position, roadmap[j].position,
-                               sim->getAgentRadius(0))) {
+                               sim->getAgentRadius(0U))) {
         roadmap[i].neighbors.push_back(j);
       }
     }
@@ -233,7 +233,7 @@ void buildRoadmap(
      * Initialize the distance to each of the four goal vertices at infinity
      * (9.0E9F).
      */
-    roadmap[i].distToGoal.resize(4, 9.0E9F);
+    roadmap[i].distToGoal.resize(4U, 9.0E9F);
   }
 
   /*
@@ -339,7 +339,7 @@ bool reachedGoal(RVO::RVOSimulator *sim,
                  const std::vector<RoadmapVertex> &roadmap,
                  const std::vector<int> &goals) {
   /* Check if all agents have reached their goals. */
-  for (size_t i = 0; i < sim->getNumAgents(); ++i) {
+  for (std::size_t i = 0U; i < sim->getNumAgents(); ++i) {
     if (RVO::absSq(sim->getAgentPosition(i) - roadmap[goals[i]].position) >
         20.0F * 20.0F) {
       return false;

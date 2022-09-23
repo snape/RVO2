@@ -261,7 +261,7 @@
  sim->setTimeStep(0.25F);
 
  // Specify default parameters for agents that are subsequently added.
- sim->setAgentDefaults(15.0F, 10, 10.0F, 5.0F, 2.0F, 2.0F);
+ sim->setAgentDefaults(15.0F, 10U, 10.0F, 5.0F, 2.0F, 2.0F);
 
  // Add agents, specifying their start position.
  sim->addAgent(RVO::Vector2(-50.0F, -50.0F));
@@ -270,7 +270,7 @@
  sim->addAgent(RVO::Vector2(-50.0F, 50.0F));
 
  // Create goals (simulator is unaware of these).
- for (size_t i = 0; i < sim->getNumAgents(); ++i) {
+ for (std::size_t i = 0U; i < sim->getNumAgents(); ++i) {
  goals.push_back(-sim->getAgentPosition(i));
  }
 
@@ -308,7 +308,7 @@
  std::cout << sim->getGlobalTime() << " ";
 
  // Output the position for all the agents.
- for (size_t i = 0; i < sim->getNumAgents(); ++i) {
+ for (std::size_t i = 0U; i < sim->getNumAgents(); ++i) {
  std::cout << sim->getAgentPosition(i) << " ";
  }
 
@@ -319,7 +319,7 @@
  \code
  bool reachedGoal(RVO::RVOSimulator* sim) {
  // Check whether all agents have arrived at their goals.
- for (size_t i = 0; i < sim->getNumAgents(); ++i) {
+ for (std::size_t i = 0U; i < sim->getNumAgents(); ++i) {
  if (absSq(goals[i] - sim->getAgentPosition(i)) > sim->getAgentRadius(i) *
  sim->getAgentRadius(i)) {
  // Agent is further away from its goal than one radius.
@@ -363,7 +363,7 @@
  \code
  void setPreferredVelocities(RVO::RVOSimulator* sim) {
  // Set the preferred velocity for each agent.
- for (size_t i = 0; i < sim->getNumAgents(); ++i) {
+ for (std::size_t i = 0U; i < sim->getNumAgents(); ++i) {
  if (absSq(goals[i] - sim->getAgentPosition(i)) < sim->getAgentRadius(i) *
  sim->getAgentRadius(i) ) {
  // Agent is within one radius of its goal, set preferred velocity to zero
@@ -432,7 +432,7 @@
  </tr>
  <tr>
  <td valign="top">maxNeighbors</td>
- <td valign="top">size_t</td>
+ <td valign="top">std::size_t</td>
  <td valign="top">The maximum number of other agents the agent takes into
  account in the navigation. The larger this number, the
  longer the running time of the simulation. If the number is

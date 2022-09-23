@@ -57,8 +57,8 @@ namespace {
  * \param      result        A reference to the result of the linear program.
  * \return     True if successful.
  */
-bool linearProgram1(const std::vector<Line> &lines, size_t lineNo, float radius,
-                    const Vector2 &optVelocity, bool directionOpt,
+bool linearProgram1(const std::vector<Line> &lines, std::size_t lineNo,
+                    float radius, const Vector2 &optVelocity, bool directionOpt,
                     Vector2 &result) { /* NOLINT(runtime/references) */
   const float dotProduct = lines[lineNo].point * lines[lineNo].direction;
   const float discriminant =
@@ -73,7 +73,7 @@ bool linearProgram1(const std::vector<Line> &lines, size_t lineNo, float radius,
   float tLeft = -dotProduct - sqrtDiscriminant;
   float tRight = -dotProduct + sqrtDiscriminant;
 
-  for (size_t i = 0; i < lineNo; ++i) {
+  for (std::size_t i = 0U; i < lineNo; ++i) {
     const float denominator = det(lines[lineNo].direction, lines[i].direction);
     const float numerator =
         det(lines[i].direction, lines[lineNo].point - lines[i].point);
@@ -139,9 +139,9 @@ bool linearProgram1(const std::vector<Line> &lines, size_t lineNo, float radius,
  * \return     The number of the line it fails on, and the number of lines if
  * successful.
  */
-size_t linearProgram2(const std::vector<Line> &lines, float radius,
-                      const Vector2 &optVelocity, bool directionOpt,
-                      Vector2 &result) { /* NOLINT(runtime/references) */
+std::size_t linearProgram2(const std::vector<Line> &lines, float radius,
+                           const Vector2 &optVelocity, bool directionOpt,
+                           Vector2 &result) { /* NOLINT(runtime/references) */
   if (directionOpt) {
     /*
      * Optimize direction. Note that the optimization velocity is of unit
@@ -156,7 +156,7 @@ size_t linearProgram2(const std::vector<Line> &lines, float radius,
     result = optVelocity;
   }
 
-  for (size_t i = 0; i < lines.size(); ++i) {
+  for (std::size_t i = 0U; i < lines.size(); ++i) {
     if (det(lines[i].direction, lines[i].point - result) > 0.0F) {
       /* Result does not satisfy constraint i. Compute new optimal result. */
       const Vector2 tempResult = result;
@@ -182,18 +182,18 @@ size_t linearProgram2(const std::vector<Line> &lines, float radius,
  * \param      radius        The radius of the circular constraint.
  * \param      result        A reference to the result of the linear program.
  */
-void linearProgram3(const std::vector<Line> &lines, size_t numObstLines,
-                    size_t beginLine, float radius,
+void linearProgram3(const std::vector<Line> &lines, std::size_t numObstLines,
+                    std::size_t beginLine, float radius,
                     Vector2 &result) { /* NOLINT(runtime/references) */
   float distance = 0.0F;
 
-  for (size_t i = beginLine; i < lines.size(); ++i) {
+  for (std::size_t i = beginLine; i < lines.size(); ++i) {
     if (det(lines[i].direction, lines[i].point - result) > distance) {
       /* Result does not satisfy constraint of line i. */
       std::vector<Line> projLines(
           lines.begin(), lines.begin() + static_cast<ptrdiff_t>(numObstLines));
 
-      for (size_t j = numObstLines; j < i; ++j) {
+      for (std::size_t j = numObstLines; j < i; ++j) {
         Line line;
 
         float determinant = det(lines[i].direction, lines[j].direction);
@@ -238,14 +238,14 @@ void linearProgram3(const std::vector<Line> &lines, size_t numObstLines,
 }  // namespace
 
 Agent::Agent(RVOSimulator *sim)
-    : maxNeighbors_(0),
+    : maxNeighbors_(0U),
       maxSpeed_(0.0F),
       neighborDist_(0.0F),
       radius_(0.0F),
       sim_(sim),
       timeHorizon_(0.0F),
       timeHorizonObst_(0.0F),
-      id_(0) {}
+      id_(0U) {}
 
 void Agent::computeNeighbors() {
   obstacleNeighbors_.clear();
@@ -254,7 +254,7 @@ void Agent::computeNeighbors() {
 
   agentNeighbors_.clear();
 
-  if (maxNeighbors_ > 0) {
+  if (maxNeighbors_ > 0U) {
     rangeSq = sqr(neighborDist_);
     sim_->kdTree_->computeAgentNeighbors(this, rangeSq);
   }
@@ -267,7 +267,7 @@ void Agent::computeNewVelocity() {
   const float invTimeHorizonObst = 1.0F / timeHorizonObst_;
 
   /* Create obstacle ORCA lines. */
-  for (size_t i = 0; i < obstacleNeighbors_.size(); ++i) {
+  for (std::size_t i = 0U; i < obstacleNeighbors_.size(); ++i) {
     const Obstacle *obstacle1 = obstacleNeighbors_[i].second;
     const Obstacle *obstacle2 = obstacle1->nextObstacle_;
 
@@ -280,7 +280,7 @@ void Agent::computeNewVelocity() {
      */
     bool alreadyCovered = false;
 
-    for (size_t j = 0; j < orcaLines_.size(); ++j) {
+    for (std::size_t j = 0U; j < orcaLines_.size(); ++j) {
       if (det(invTimeHorizonObst * relativePosition1 - orcaLines_[j].point,
               orcaLines_[j].direction) -
                   invTimeHorizonObst * radius_ >=
@@ -538,12 +538,12 @@ void Agent::computeNewVelocity() {
     orcaLines_.push_back(line);
   }
 
-  const size_t numObstLines = orcaLines_.size();
+  const std::size_t numObstLines = orcaLines_.size();
 
   const float invTimeHorizon = 1.0F / timeHorizon_;
 
   /* Create agent ORCA lines. */
-  for (size_t i = 0; i < agentNeighbors_.size(); ++i) {
+  for (std::size_t i = 0U; i < agentNeighbors_.size(); ++i) {
     const Agent *const other = agentNeighbors_[i].second;
 
     const Vector2 relativePosition = other->position_ - position_;
@@ -613,7 +613,7 @@ void Agent::computeNewVelocity() {
     orcaLines_.push_back(line);
   }
 
-  size_t lineFail =
+  std::size_t lineFail =
       linearProgram2(orcaLines_, maxSpeed_, prefVelocity_, false, newVelocity_);
 
   if (lineFail < orcaLines_.size()) {
@@ -630,10 +630,10 @@ void Agent::insertAgentNeighbor(const Agent *agent, float &rangeSq) {
         agentNeighbors_.push_back(std::make_pair(distSq, agent));
       }
 
-      size_t i = agentNeighbors_.size() - 1;
+      std::size_t i = agentNeighbors_.size() - 1U;
 
-      while (i != 0 && distSq < agentNeighbors_[i - 1].first) {
-        agentNeighbors_[i] = agentNeighbors_[i - 1];
+      while (i != 0U && distSq < agentNeighbors_[i - 1U].first) {
+        agentNeighbors_[i] = agentNeighbors_[i - 1U];
         --i;
       }
 
@@ -655,10 +655,10 @@ void Agent::insertObstacleNeighbor(const Obstacle *obstacle, float rangeSq) {
   if (distSq < rangeSq) {
     obstacleNeighbors_.push_back(std::make_pair(distSq, obstacle));
 
-    size_t i = obstacleNeighbors_.size() - 1;
+    std::size_t i = obstacleNeighbors_.size() - 1U;
 
-    while (i != 0 && distSq < obstacleNeighbors_[i - 1].first) {
-      obstacleNeighbors_[i] = obstacleNeighbors_[i - 1];
+    while (i != 0U && distSq < obstacleNeighbors_[i - 1U].first) {
+      obstacleNeighbors_[i] = obstacleNeighbors_[i - 1U];
       --i;
     }
 

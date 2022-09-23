@@ -71,7 +71,7 @@ class Obstacle {
   Obstacle *prevObstacle_;
   Vector2 unitDir_;
 
-  size_t id_;
+  std::size_t id_;
 
   friend class Agent;
   friend class KdTree;

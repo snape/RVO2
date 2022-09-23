@@ -78,14 +78,14 @@ void setupScenario(
   sim->setTimeStep(0.25F);
 
   /* Specify the default parameters for agents that are subsequently added. */
-  sim->setAgentDefaults(15.0F, 10, 5.0F, 5.0F, 2.0F, 2.0F);
+  sim->setAgentDefaults(15.0F, 10U, 5.0F, 5.0F, 2.0F, 2.0F);
 
   /*
    * Add agents, specifying their start position, and store their goals on the
    * opposite side of the environment.
    */
-  for (size_t i = 0; i < 5; ++i) {
-    for (size_t j = 0; j < 5; ++j) {
+  for (std::size_t i = 0U; i < 5U; ++i) {
+    for (std::size_t j = 0U; j < 5U; ++j) {
       sim->addAgent(RVO::Vector2(55.0F + static_cast<float>(i) * 10.0F,
                                  55.0F + static_cast<float>(j) * 10.0F));
       goals.push_back(RVO::Vector2(-75.0F, -75.0F));
@@ -148,7 +148,7 @@ void updateVisualization(RVO::RVOSimulator *sim) {
   std::cout << sim->getGlobalTime();
 
   /* Output the current position of all the agents. */
-  for (size_t i = 0; i < sim->getNumAgents(); ++i) {
+  for (std::size_t i = 0U; i < sim->getNumAgents(); ++i) {
     std::cout << " " << sim->getAgentPosition(i);
   }
 
@@ -191,7 +191,7 @@ void setPreferredVelocities(RVO::RVOSimulator *sim,
 bool reachedGoal(RVO::RVOSimulator *sim,
                  const std::vector<RVO::Vector2> &goals) {
   /* Check if all agents have reached their goals. */
-  for (size_t i = 0; i < sim->getNumAgents(); ++i) {
+  for (std::size_t i = 0U; i < sim->getNumAgents(); ++i) {
     if (RVO::absSq(sim->getAgentPosition(i) - goals[i]) > 20.0F * 20.0F) {
       return false;
     }

@@ -96,7 +96,7 @@ class Agent {
   void update();
 
   std::vector<std::pair<float, const Agent *> > agentNeighbors_;
-  size_t maxNeighbors_;
+  std::size_t maxNeighbors_;
   float maxSpeed_;
   float neighborDist_;
   Vector2 newVelocity_;
@@ -110,7 +110,7 @@ class Agent {
   float timeHorizonObst_;
   Vector2 velocity_;
 
-  size_t id_;
+  std::size_t id_;
 
   friend class KdTree;
   friend class RVOSimulator;

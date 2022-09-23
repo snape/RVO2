@@ -73,7 +73,8 @@ class KdTree {
    */
   void buildAgentTree();
 
-  void buildAgentTreeRecursive(size_t begin, size_t end, size_t node);
+  void buildAgentTreeRecursive(std::size_t begin, std::size_t end,
+                               std::size_t node);
 
   /**
    * \brief      Builds an obstacle <i>k</i>d-tree.
@@ -109,7 +110,7 @@ class KdTree {
 
   void queryAgentTreeRecursive(Agent *agent,
                                float &rangeSq, /* NOLINT(runtime/references) */
-                               size_t node) const;
+                               std::size_t node) const;
 
   void queryObstacleTreeRecursive(Agent *agent, float rangeSq,
                                   const ObstacleTreeNode *node) const;
