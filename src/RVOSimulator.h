@@ -43,7 +43,6 @@
 #include <vector>
 
 #include "Export.h"
-#include "Vector2.h"
 
 namespace RVO {
 /**
@@ -57,6 +56,7 @@ class Agent;
 class KdTree;
 class Line;
 class Obstacle;
+class Vector2;
 
 /**
  * @brief Defines the simulation. The main class of the library that contains

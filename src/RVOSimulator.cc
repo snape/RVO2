@@ -45,6 +45,7 @@
 #include "KdTree.h"
 #include "Line.h"
 #include "Obstacle.h"
+#include "Vector2.h"
 
 #ifdef _OPENMP
 #include <omp.h>
