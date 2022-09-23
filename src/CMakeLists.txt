@@ -35,6 +35,7 @@
 #
 
 set(RVO_HEADERS
+  Line.h
   RVO.h
   RVOSimulator.h
   Vector2.h)
@@ -47,6 +48,7 @@ set(RVO_SOURCES
   Export.cc
   KdTree.cc
   KdTree.h
+  Line.cc
   Obstacle.cc
   Obstacle.h
   RVOSimulator.cc

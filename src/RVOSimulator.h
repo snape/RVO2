@@ -40,7 +40,6 @@
  */
 
 #include <cstddef>
-#include <limits>
 #include <vector>
 
 #include "Export.h"
@@ -48,36 +47,17 @@
 
 namespace RVO {
 /**
+ * \relates     RVOSimulator
  * \brief       Error value.
  *
  * A value equal to the largest unsigned integer that is returned in case
  * of an error by functions in RVO::RVOSimulator.
  */
-const size_t RVO_ERROR = std::numeric_limits<size_t>::max();
-
-/**
- * \brief      Defines a directed line.
- */
-class RVO_EXPORT Line {
- public:
-  /**
-   * \brief     Constructs a directed line instance.
-   */
-  Line();
-
-  /**
-   * \brief     A point on the directed line.
-   */
-  Vector2 point;
-
-  /**
-   * \brief     The direction of the directed line.
-   */
-  Vector2 direction;
-};
+RVO_EXPORT extern const size_t RVO_ERROR;
 
 class Agent;
 class KdTree;
+class Line;
 class Obstacle;
 
 /**
@@ -370,13 +350,13 @@ class RVO_EXPORT RVOSimulator {
    * \brief      Returns the global time of the simulation.
    * \return     The present global time of the simulation (zero initially).
    */
-  float getGlobalTime() const;
+  float getGlobalTime() const { return globalTime_; }
 
   /**
    * \brief      Returns the count of agents in the simulation.
    * \return     The count of agents in the simulation.
    */
-  size_t getNumAgents() const;
+  size_t getNumAgents() const { return agents_.size(); }
 
   /**
    * \brief      Returns the count of obstacle vertices in the simulation.
@@ -578,7 +558,7 @@ class RVO_EXPORT RVOSimulator {
    * \param      timeStep        The time step of the simulation.
    *                             Must be positive.
    */
-  void setTimeStep(float timeStep);
+  void setTimeStep(float timeStep) { timeStep_ = timeStep; }
 
  private:
   /* Not implemented. */

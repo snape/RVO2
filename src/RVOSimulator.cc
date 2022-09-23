@@ -33,11 +33,12 @@
 
 #include "RVOSimulator.h"
 
+#include <limits>
 #include <utility>
 
 #include "Agent.h"
-#include "Definitions.h"
 #include "KdTree.h"
+#include "Line.h"
 #include "Obstacle.h"
 
 #ifdef _OPENMP
@@ -45,7 +46,7 @@
 #endif
 
 namespace RVO {
-Line::Line() {}
+const size_t RVO_ERROR = std::numeric_limits<size_t>::max();
 
 RVOSimulator::RVOSimulator()
     : defaultAgent_(NULL),
@@ -255,10 +256,6 @@ const Vector2 &RVOSimulator::getAgentVelocity(size_t agentNo) const {
   return agents_[agentNo]->velocity_;
 }
 
-float RVOSimulator::getGlobalTime() const { return globalTime_; }
-
-size_t RVOSimulator::getNumAgents() const { return agents_.size(); }
-
 size_t RVOSimulator::getNumObstacleVertices() const {
   return obstacles_.size();
 }
@@ -338,6 +335,4 @@ void RVOSimulator::setAgentTimeHorizonObst(size_t agentNo,
 void RVOSimulator::setAgentVelocity(size_t agentNo, const Vector2 &velocity) {
   agents_[agentNo]->velocity_ = velocity;
 }
-
-void RVOSimulator::setTimeStep(float timeStep) { timeStep_ = timeStep; }
 }  // namespace RVO

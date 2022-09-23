@@ -108,6 +108,7 @@ filegroup(
     name = "hdrs",
     srcs = [
         "Export.h",
+        "Line.h",
         "RVO.h",
         "RVOSimulator.h",
         "Vector2.h",
@@ -125,6 +126,7 @@ cc_library(
         "Export.cc",
         "KdTree.cc",
         "KdTree.h",
+        "Line.cc",
         "Obstacle.cc",
         "Obstacle.h",
         "RVOSimulator.cc",

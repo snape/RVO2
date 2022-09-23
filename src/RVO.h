@@ -36,6 +36,7 @@
 
 /* IWYU pragma: begin_exports */
 #include "Export.h"
+#include "Line.h"
 #include "RVOSimulator.h"
 #include "Vector2.h"
 /* IWYU pragma: end_exports */

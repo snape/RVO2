@@ -64,6 +64,7 @@
 
 #include "RVO.h"
 
+namespace {
 const float RVO_TWO_PI = 6.28318530717958647692F;
 
 void setupScenario(
@@ -198,6 +199,7 @@ bool reachedGoal(RVO::RVOSimulator *sim,
 
   return true;
 }
+}  // namespace
 
 int main() {
   /* Store the goals of the agents. */

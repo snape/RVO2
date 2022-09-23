@@ -43,6 +43,61 @@
 #include "Vector2.h"
 
 namespace RVO {
+namespace {
+const size_t RVO_MAX_LEAF_SIZE = 10;
+}  // namespace
+
+/**
+ * \brief      Defines an agent <i>k</i>d-tree node.
+ */
+class KdTree::AgentTreeNode {
+ public:
+  /**
+   * \brief      Constructs an agent <i>k</i>d-ree node instance.
+   */
+  AgentTreeNode();
+
+  /**
+   * \brief      The beginning node number.
+   */
+  size_t begin;
+
+  /**
+   * \brief      The ending node number.
+   */
+  size_t end;
+
+  /**
+   * \brief      The left node number.
+   */
+  size_t left;
+
+  /**
+   * \brief      The maximum x-coordinate.
+   */
+  float maxX;
+
+  /**
+   * \brief      The maximum y-coordinate.
+   */
+  float maxY;
+
+  /**
+   * \brief      The minimum x-coordinate.
+   */
+  float minX;
+
+  /**
+   * \brief      The minimum y-coordinate.
+   */
+  float minY;
+
+  /**
+   * \brief      The right node number.
+   */
+  size_t right;
+};
+
 KdTree::AgentTreeNode::AgentTreeNode()
     : begin(0),
       end(0),
@@ -52,6 +107,44 @@ KdTree::AgentTreeNode::AgentTreeNode()
       minX(0.0F),
       minY(0.0F),
       right(0) {}
+
+/**
+ * \brief      Defines an obstacle <i>k</i>d-tree node.
+ */
+class KdTree::ObstacleTreeNode {
+ public:
+  /**
+   * @brief Constructs an obstacle k-D tree node instance.
+   */
+  ObstacleTreeNode();
+
+  /**
+   * @brief Destroys this obstacle k-D tree node instance.
+   */
+  ~ObstacleTreeNode();
+
+  /**
+   * \brief      The left obstacle tree node.
+   */
+  ObstacleTreeNode *left;
+
+  /**
+   * \brief      The obstacle number.
+   */
+  const Obstacle *obstacle;
+
+  /**
+   * \brief      The right obstacle tree node.
+   */
+  ObstacleTreeNode *right;
+
+ private:
+  /* Not implemented. */
+  ObstacleTreeNode(const ObstacleTreeNode &other);
+
+  /* Not implemented. */
+  ObstacleTreeNode &operator=(const ObstacleTreeNode &other);
+};
 
 KdTree::ObstacleTreeNode::ObstacleTreeNode()
     : left(NULL), obstacle(NULL), right(NULL) {}
@@ -93,7 +186,7 @@ void KdTree::buildAgentTreeRecursive(size_t begin, size_t end, size_t node) {
         std::min(agentTree_[node].minY, agents_[i]->position_.y());
   }
 
-  if (end - begin > MAX_LEAF_SIZE) {
+  if (end - begin > RVO_MAX_LEAF_SIZE) {
     /* No leaf node. */
     const bool isVertical = (agentTree_[node].maxX - agentTree_[node].minX >
                              agentTree_[node].maxY - agentTree_[node].minY);
@@ -294,7 +387,7 @@ void KdTree::deleteObstacleTree(ObstacleTreeNode *node) {
 
 void KdTree::queryAgentTreeRecursive(Agent *agent, float &rangeSq,
                                      size_t node) const {
-  if (agentTree_[node].end - agentTree_[node].begin <= MAX_LEAF_SIZE) {
+  if (agentTree_[node].end - agentTree_[node].begin <= RVO_MAX_LEAF_SIZE) {
     for (size_t i = agentTree_[node].begin; i < agentTree_[node].end; ++i) {
       agent->insertAgentNeighbor(agents_[i], rangeSq);
     }

@@ -54,94 +54,8 @@ class Vector2;
  */
 class KdTree {
  private:
-  /**
-   * \brief      Defines an agent <i>k</i>d-tree node.
-   */
-  class AgentTreeNode {
-   public:
-    /**
-     * \brief      Constructs an agent <i>k</i>d-ree node instance.
-     */
-    AgentTreeNode();
-
-    /**
-     * \brief      The beginning node number.
-     */
-    size_t begin;
-
-    /**
-     * \brief      The ending node number.
-     */
-    size_t end;
-
-    /**
-     * \brief      The left node number.
-     */
-    size_t left;
-
-    /**
-     * \brief      The maximum x-coordinate.
-     */
-    float maxX;
-
-    /**
-     * \brief      The maximum y-coordinate.
-     */
-    float maxY;
-
-    /**
-     * \brief      The minimum x-coordinate.
-     */
-    float minX;
-
-    /**
-     * \brief      The minimum y-coordinate.
-     */
-    float minY;
-
-    /**
-     * \brief      The right node number.
-     */
-    size_t right;
-  };
-
-  /**
-   * \brief      Defines an obstacle <i>k</i>d-tree node.
-   */
-  class ObstacleTreeNode {
-   public:
-    /**
-     * @brief Constructs an obstacle k-D tree node instance.
-     */
-    ObstacleTreeNode();
-
-    /**
-     * @brief Destroys this obstacle k-D tree node instance.
-     */
-    ~ObstacleTreeNode();
-
-    /**
-     * \brief      The left obstacle tree node.
-     */
-    ObstacleTreeNode *left;
-
-    /**
-     * \brief      The obstacle number.
-     */
-    const Obstacle *obstacle;
-
-    /**
-     * \brief      The right obstacle tree node.
-     */
-    ObstacleTreeNode *right;
-
-   private:
-    /* Not implemented. */
-    ObstacleTreeNode(const ObstacleTreeNode &other);
-
-    /* Not implemented. */
-    ObstacleTreeNode &operator=(const ObstacleTreeNode &other);
-  };
+  class AgentTreeNode;
+  class ObstacleTreeNode;
 
   /**
    * \brief      Constructs a <i>k</i>d-tree instance.
@@ -193,8 +107,9 @@ class KdTree {
    */
   void deleteObstacleTree(ObstacleTreeNode *node);
 
-  void queryAgentTreeRecursive(Agent *agent, float &rangeSq, size_t node)
-      const; /* NOLINT(runtime/references) */
+  void queryAgentTreeRecursive(Agent *agent,
+                               float &rangeSq, /* NOLINT(runtime/references) */
+                               size_t node) const;
 
   void queryObstacleTreeRecursive(Agent *agent, float rangeSq,
                                   const ObstacleTreeNode *node) const;
@@ -228,8 +143,6 @@ class KdTree {
   std::vector<AgentTreeNode> agentTree_;
   ObstacleTreeNode *obstacleTree_;
   RVOSimulator *sim_;
-
-  static const size_t MAX_LEAF_SIZE = 10;
 
   friend class Agent;
   friend class RVOSimulator;

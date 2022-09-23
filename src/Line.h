@@ -1,5 +1,5 @@
 /*
- * Definitions.h
+ * Line.h
  * RVO2 Library
  *
  * SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
@@ -31,35 +31,38 @@
  * <https://gamma.cs.unc.edu/RVO2/>
  */
 
-#ifndef RVO_DEFINITIONS_H_
-#define RVO_DEFINITIONS_H_
+#ifndef RVO_LINE_H_
+#define RVO_LINE_H_
 
 /**
- * \file       Definitions.h
- * \brief      Contains functions and constants used in multiple classes.
+ * \file       Line.h
+ * \brief      Contains the Line class.
  */
+
+#include "Export.h"
+#include "Vector2.h"
 
 namespace RVO {
-class Vector2;
-
 /**
- * \brief      Computes the squared distance from a line segment with the
- *             specified endpoints to a specified point.
- * \param      a               The first endpoint of the line segment.
- * \param      b               The second endpoint of the line segment.
- * \param      c               The point to which the squared distance is to
- *                             be calculated.
- * \return     The squared distance from the line segment to the point.
+ * \brief      Defines a directed line.
  */
-float distSqPointLineSegment(const Vector2 &a, const Vector2 &b,
-                             const Vector2 &c);
+class RVO_EXPORT Line {
+ public:
+  /**
+   * \brief     Constructs a directed line instance.
+   */
+  Line();
 
-/**
- * \brief      Computes the square of a float.
- * \param      a               The float to be squared.
- * \return     The square of the float.
- */
-inline float sqr(float a) { return a * a; }
+  /**
+   * \brief     A point on the directed line.
+   */
+  Vector2 point;
+
+  /**
+   * \brief     The direction of the directed line.
+   */
+  Vector2 direction;
+};
 }  // namespace RVO
 
-#endif /* RVO_DEFINITIONS_H_ */
+#endif /* RVO_LINE_H_ */

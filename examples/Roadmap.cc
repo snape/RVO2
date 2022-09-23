@@ -67,6 +67,7 @@
 #include <omp.h>
 #endif
 
+namespace {
 const float RVO_TWO_PI = 6.28318530717958647692F;
 
 class RoadmapVertex {
@@ -347,6 +348,7 @@ bool reachedGoal(RVO::RVOSimulator *sim,
 
   return true;
 }
+}  // namespace
 
 int main() {
   /* Store the roadmap. */

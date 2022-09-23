@@ -39,12 +39,16 @@
  * \brief      Contains the Vector2 class.
  */
 
-#include <cmath>
-#include <ostream>
+#include <iosfwd>
 
 #include "Export.h"
 
 namespace RVO {
+/**
+ * \brief       A sufficiently small positive number.
+ */
+RVO_EXPORT extern const float RVO_EPSILON;
+
 /**
  * \brief      Defines a two-dimensional vector.
  */
@@ -54,7 +58,7 @@ class RVO_EXPORT Vector2 {
    * \brief      Constructs and initializes a two-dimensional vector instance
    *             to (0.0, 0.0).
    */
-  inline Vector2() : x_(0.0F), y_(0.0F) {}
+  Vector2();
 
   /**
    * \brief      Constructs and initializes a two-dimensional vector from
@@ -64,25 +68,25 @@ class RVO_EXPORT Vector2 {
    * \param      y               The y-coordinate of the two-dimensional
    *                             vector.
    */
-  inline Vector2(float x, float y) : x_(x), y_(y) {}
+  Vector2(float x, float y);
 
   /**
    * \brief      Returns the x-coordinate of this two-dimensional vector.
    * \return     The x-coordinate of the two-dimensional vector.
    */
-  inline float x() const { return x_; }
+  float x() const { return x_; }
 
   /**
    * \brief      Returns the y-coordinate of this two-dimensional vector.
    * \return     The y-coordinate of the two-dimensional vector.
    */
-  inline float y() const { return y_; }
+  float y() const { return y_; }
 
   /**
    * \brief      Computes the negation of this two-dimensional vector.
    * \return     The negation of this two-dimensional vector.
    */
-  inline Vector2 operator-() const { return Vector2(-x_, -y_); }
+  Vector2 operator-() const;
 
   /**
    * \brief      Computes the dot product of this two-dimensional vector with
@@ -92,9 +96,7 @@ class RVO_EXPORT Vector2 {
    * \return     The dot product of this two-dimensional vector with a
    *             specified two-dimensional vector.
    */
-  inline float operator*(const Vector2 &vector) const {
-    return x_ * vector.x() + y_ * vector.y();
-  }
+  float operator*(const Vector2 &vector) const;
 
   /**
    * \brief      Computes the scalar multiplication of this
@@ -104,7 +106,7 @@ class RVO_EXPORT Vector2 {
    * \return     The scalar multiplication of this two-dimensional vector
    *             with a specified scalar value.
    */
-  inline Vector2 operator*(float s) const { return Vector2(x_ * s, y_ * s); }
+  Vector2 operator*(float s) const;
 
   /**
    * \brief      Computes the scalar division of this two-dimensional vector
@@ -114,11 +116,7 @@ class RVO_EXPORT Vector2 {
    * \return     The scalar division of this two-dimensional vector with a
    *             specified scalar value.
    */
-  inline Vector2 operator/(float s) const {
-    const float invS = 1.0F / s;
-
-    return Vector2(x_ * invS, y_ * invS);
-  }
+  Vector2 operator/(float s) const;
 
   /**
    * \brief      Computes the vector sum of this two-dimensional vector with
@@ -128,9 +126,7 @@ class RVO_EXPORT Vector2 {
    * \return     The vector sum of this two-dimensional vector with a
    *             specified two-dimensional vector.
    */
-  inline Vector2 operator+(const Vector2 &vector) const {
-    return Vector2(x_ + vector.x(), y_ + vector.y());
-  }
+  Vector2 operator+(const Vector2 &vector) const;
 
   /**
    * \brief      Computes the vector difference of this two-dimensional
@@ -140,9 +136,7 @@ class RVO_EXPORT Vector2 {
    * \return     The vector difference of this two-dimensional vector with a
    *             specified two-dimensional vector.
    */
-  inline Vector2 operator-(const Vector2 &vector) const {
-    return Vector2(x_ - vector.x(), y_ - vector.y());
-  }
+  Vector2 operator-(const Vector2 &vector) const;
 
   /**
    * \brief      Tests this two-dimensional vector for equality with the
@@ -151,9 +145,7 @@ class RVO_EXPORT Vector2 {
    *                             test for equality.
    * \return     True if the two-dimensional vectors are equal.
    */
-  inline bool operator==(const Vector2 &vector) const {
-    return x_ == vector.x() && y_ == vector.y();
-  }
+  bool operator==(const Vector2 &vector) const;
 
   /**
    * \brief      Tests this two-dimensional vector for inequality with the
@@ -162,9 +154,7 @@ class RVO_EXPORT Vector2 {
    *                             test for inequality.
    * \return     True if the two-dimensional vectors are not equal.
    */
-  inline bool operator!=(const Vector2 &vector) const {
-    return x_ != vector.x() || y_ != vector.y();
-  }
+  bool operator!=(const Vector2 &vector) const;
 
   /**
    * \brief      Sets the value of this two-dimensional vector to the scalar
@@ -173,12 +163,7 @@ class RVO_EXPORT Vector2 {
    *                             multiplication should be computed.
    * \return     A reference to this two-dimensional vector.
    */
-  inline Vector2 &operator*=(float s) {
-    x_ *= s;
-    y_ *= s;
-
-    return *this;
-  }
+  Vector2 &operator*=(float s);
 
   /**
    * \brief      Sets the value of this two-dimensional vector to the scalar
@@ -187,13 +172,7 @@ class RVO_EXPORT Vector2 {
    *                             division should be computed.
    * \return     A reference to this two-dimensional vector.
    */
-  inline Vector2 &operator/=(float s) {
-    const float invS = 1.0F / s;
-    x_ *= invS;
-    y_ *= invS;
-
-    return *this;
-  }
+  Vector2 &operator/=(float s);
 
   /**
    * \brief      Sets the value of this two-dimensional vector to the vector
@@ -202,12 +181,7 @@ class RVO_EXPORT Vector2 {
    *                             vector sum should be computed.
    * \return     A reference to this two-dimensional vector.
    */
-  inline Vector2 &operator+=(const Vector2 &vector) {
-    x_ += vector.x();
-    y_ += vector.y();
-
-    return *this;
-  }
+  Vector2 &operator+=(const Vector2 &vector);
 
   /**
    * \brief      Sets the value of this two-dimensional vector to the vector
@@ -217,12 +191,7 @@ class RVO_EXPORT Vector2 {
    *                             vector difference should be computed.
    * \return     A reference to this two-dimensional vector.
    */
-  inline Vector2 &operator-=(const Vector2 &vector) {
-    x_ -= vector.x();
-    y_ -= vector.y();
-
-    return *this;
-  }
+  Vector2 &operator-=(const Vector2 &vector);
 
  private:
   float x_;
@@ -240,9 +209,7 @@ class RVO_EXPORT Vector2 {
  * \return     The scalar multiplication of the two-dimensional vector with the
  *             scalar value.
  */
-RVO_EXPORT inline Vector2 operator*(float s, const Vector2 &vector) {
-  return Vector2(s * vector.x(), s * vector.y());
-}
+RVO_EXPORT Vector2 operator*(float s, const Vector2 &vector);
 
 /**
  * \relates    Vector2
@@ -254,12 +221,7 @@ RVO_EXPORT inline Vector2 operator*(float s, const Vector2 &vector) {
  *                             the output stream.
  * \return     A reference to the output stream.
  */
-RVO_EXPORT inline std::ostream &operator<<(std::ostream &os,
-                                           const Vector2 &vector) {
-  os << "(" << vector.x() << "," << vector.y() << ")";
-
-  return os;
-}
+RVO_EXPORT std::ostream &operator<<(std::ostream &os, const Vector2 &vector);
 
 /**
  * \relates    Vector2
@@ -268,9 +230,7 @@ RVO_EXPORT inline std::ostream &operator<<(std::ostream &os,
  *                             computed.
  * \return     The length of the two-dimensional vector.
  */
-RVO_EXPORT inline float abs(const Vector2 &vector) {
-  return std::sqrt(vector * vector);
-}
+RVO_EXPORT float abs(const Vector2 &vector);
 
 /**
  * \relates    Vector2
@@ -280,7 +240,7 @@ RVO_EXPORT inline float abs(const Vector2 &vector) {
  *                             is to be computed.
  * \return     The squared length of the two-dimensional vector.
  */
-RVO_EXPORT inline float absSq(const Vector2 &vector) { return vector * vector; }
+RVO_EXPORT float absSq(const Vector2 &vector);
 
 /**
  * \relates    Vector2
@@ -292,9 +252,19 @@ RVO_EXPORT inline float absSq(const Vector2 &vector) { return vector * vector; }
  *                             matrix.
  * \return     The determinant of the two-dimensional square matrix.
  */
-RVO_EXPORT inline float det(const Vector2 &vector1, const Vector2 &vector2) {
-  return vector1.x() * vector2.y() - vector1.y() * vector2.x();
-}
+RVO_EXPORT float det(const Vector2 &vector1, const Vector2 &vector2);
+
+/**
+ * \relates    Vector2
+ * \brief      Computes the signed distance from a line connecting the
+ *             specified points to a specified point.
+ * \param      a               The first point on the line.
+ * \param      b               The second point on the line.
+ * \param      c               The point to which the signed distance is to
+ *                             be calculated.
+ * \return     Positive when the point c lies to the left of the line ab.
+ */
+RVO_EXPORT float leftOf(const Vector2 &a, const Vector2 &b, const Vector2 &c);
 
 /**
  * \relates    Vector2
@@ -304,9 +274,7 @@ RVO_EXPORT inline float det(const Vector2 &vector1, const Vector2 &vector2) {
  *                             is to be computed.
  * \return     The normalization of the two-dimensional vector.
  */
-RVO_EXPORT inline Vector2 normalize(const Vector2 &vector) {
-  return vector / abs(vector);
-}
+RVO_EXPORT Vector2 normalize(const Vector2 &vector);
 }  // namespace RVO
 
 #endif /* RVO_VECTOR2_H_ */

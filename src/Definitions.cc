@@ -32,3 +32,29 @@
  */
 
 #include "Definitions.h"
+
+#include "Vector2.h"
+
+namespace RVO {
+/**
+ * \brief      Computes the squared distance from a line segment with the
+ *             specified endpoints to a specified point.
+ * \param      a               The first endpoint of the line segment.
+ * \param      b               The second endpoint of the line segment.
+ * \param      c               The point to which the squared distance is to
+ *                             be calculated.
+ * \return     The squared distance from the line segment to the point.
+ */
+float distSqPointLineSegment(const Vector2 &a, const Vector2 &b,
+                             const Vector2 &c) {
+  const float r = ((c - a) * (b - a)) / absSq(b - a);
+
+  if (r < 0.0F) {
+    return absSq(c - a);
+  }
+  if (r > 1.0F) {
+    return absSq(c - b);
+  }
+  return absSq(c - (a + r * (b - a)));
+}
+}  // namespace RVO
