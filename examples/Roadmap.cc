@@ -50,6 +50,7 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <limits>
 #include <map>
 #include <utility>
 #include <vector>
@@ -228,7 +229,7 @@ void buildRoadmap(
     }
 
     /* Initialize the distance to each of the four goal vertices at infinity. */
-    roadmap[i].distToGoal.resize(4U, 9.0E9F);
+    roadmap[i].distToGoal.resize(4U, std::numeric_limits<float>::infinity());
   }
 
   /* Compute the distance to each of the four goals (the first four vertices)
@@ -279,7 +280,7 @@ void setPreferredVelocities(RVO::RVOSimulator *sim,
 #pragma omp parallel for
 #endif /* _OPENMP */
   for (int i = 0; i < static_cast<int>(sim->getNumAgents()); ++i) {
-    float minDist = 9.0E9F;
+    float minDist = std::numeric_limits<float>::infinity();
     int minVertex = -1;
 
     for (int j = 0; j < static_cast<int>(roadmap.size()); ++j) {
