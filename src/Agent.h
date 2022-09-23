@@ -35,8 +35,8 @@
 #define RVO_AGENT_H_
 
 /**
- * \file       Agent.h
- * \brief      Contains the Agent class.
+ * @file  Agent.h
+ * @brief Declares the Agent class.
  */
 
 #include <cstddef>
@@ -51,49 +51,59 @@ class Obstacle;
 class RVOSimulator;
 
 /**
- * \brief      Defines an agent in the simulation.
+ * @brief Defines an agent in the simulation.
  */
 class Agent {
  private:
   /**
-   * \brief      Constructs an agent instance.
-   * \param      sim             The simulator instance.
+   * @brief     Constructs an agent instance.
+   * @param[in] sim The simulator instance.
    */
   explicit Agent(RVOSimulator *sim);
 
   /**
-   * \brief      Computes the neighbors of this agent.
+   * @brief Destroys this agent instance.
+   */
+  ~Agent();
+
+  /**
+   * @brief Computes the neighbors of this agent.
    */
   void computeNeighbors();
 
   /**
-   * \brief      Computes the new velocity of this agent.
+   * @brief Computes the new velocity of this agent.
    */
   void computeNewVelocity();
 
   /**
-   * \brief      Inserts an agent neighbor into the set of neighbors of
-   *             this agent.
-   * \param      agent           A pointer to the agent to be inserted.
-   * \param      rangeSq         The squared range around this agent.
+   * @brief          Inserts an agent neighbor into the set of neighbors of this
+   *                 agent.
+   * @param[in]      agent   A pointer to the agent to be inserted.
+   * @param[in, out] rangeSq The squared range around this agent.
    */
   void insertAgentNeighbor(const Agent *agent,
                            float &rangeSq); /* NOLINT(runtime/references) */
 
   /**
-   * \brief      Inserts a static obstacle neighbor into the set of neighbors
-   *             of this agent.
-   * \param      obstacle        The number of the static obstacle to be
-   *                             inserted.
-   * \param      rangeSq         The squared range around this agent.
+   * @brief          Inserts a static obstacle neighbor into the set of
+   *                 neighbors of this agent.
+   * @param[in]      obstacle The number of the static obstacle to be inserted.
+   * @param[in, out] rangeSq  The squared range around this agent.
    */
   void insertObstacleNeighbor(const Obstacle *obstacle, float rangeSq);
 
   /**
-   * \brief      Updates the two-dimensional position and two-dimensional
-   *             velocity of this agent.
+   * @brief Updates the two-dimensional position and two-dimensional velocity of
+   *        this agent.
    */
   void update();
+
+  /* Not implemented. */
+  Agent(const Agent &other);
+
+  /* Not implemented. */
+  Agent &operator=(const Agent &other);
 
   std::vector<std::pair<float, const Agent *> > agentNeighbors_;
   std::size_t maxNeighbors_;
@@ -115,6 +125,6 @@ class Agent {
   friend class KdTree;
   friend class RVOSimulator;
 };
-}  // namespace RVO
+} /* namespace RVO */
 
 #endif /* RVO_AGENT_H_ */

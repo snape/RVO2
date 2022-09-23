@@ -35,8 +35,8 @@
 #define RVO_OBSTACLE_H_
 
 /**
- * \file       Obstacle.h
- * \brief      Contains the Obstacle class.
+ * @file  Obstacle.h
+ * @brief Declares the Obstacle class.
  */
 
 #include <cstddef>
@@ -45,17 +45,17 @@
 
 namespace RVO {
 /**
- * \brief      Defines static obstacles in the simulation.
+ * @brief Defines static obstacles in the simulation.
  */
 class Obstacle {
  private:
   /**
-   * \brief      Constructs a static obstacle instance.
+   * @brief Constructs a static obstacle instance.
    */
   Obstacle();
 
   /**
-   * \brief      Destroys this static obstacle instance.
+   * @brief Destroys this static obstacle instance.
    */
   ~Obstacle();
 
@@ -77,6 +77,6 @@ class Obstacle {
   friend class KdTree;
   friend class RVOSimulator;
 };
-}  // namespace RVO
+} /* namespace RVO */
 
 #endif /* RVO_OBSTACLE_H_ */

@@ -32,14 +32,15 @@
  */
 
 /*
- * Example file showing a demo with 250 agents initially positioned evenly
- * distributed on a circle attempting to move to the antipodal position on the
- * circle.
+ * @file  Circle.cc
+ * @brief Example file showing a demo with 250 agents initially positioned
+ *        evenly distributed on a circle attempting to move to the antipodal
+ *        position on the circle.
  */
 
 #ifndef RVO_OUTPUT_TIME_AND_POSITIONS
 #define RVO_OUTPUT_TIME_AND_POSITIONS 1
-#endif
+#endif /* RVO_OUTPUT_TIME_AND_POSITIONS */
 
 #include <cmath>
 #include <cstddef>
@@ -47,11 +48,11 @@
 
 #if RVO_OUTPUT_TIME_AND_POSITIONS
 #include <iostream>
-#endif
+#endif /* RVO_OUTPUT_TIME_AND_POSITIONS */
 
 #if _OPENMP
 #include <omp.h>
-#endif
+#endif /* _OPENMP */
 
 #include "RVO.h"
 
@@ -67,10 +68,8 @@ void setupScenario(
   /* Specify the default parameters for agents that are subsequently added. */
   sim->setAgentDefaults(15.0F, 10U, 10.0F, 10.0F, 1.5F, 2.0F);
 
-  /*
-   * Add agents, specifying their start position, and store their goals on the
-   * opposite side of the environment.
-   */
+  /* Add agents, specifying their start position, and store their goals on the
+   * opposite side of the environment. */
   for (std::size_t i = 0U; i < 250U; ++i) {
     sim->addAgent(
         200.0F *
@@ -92,17 +91,15 @@ void updateVisualization(RVO::RVOSimulator *sim) {
 
   std::cout << std::endl;
 }
-#endif
+#endif /* RVO_OUTPUT_TIME_AND_POSITIONS */
 
 void setPreferredVelocities(RVO::RVOSimulator *sim,
                             const std::vector<RVO::Vector2> &goals) {
-  /*
-   * Set the preferred velocity to be a vector of unit magnitude (speed) in the
-   * direction of the goal.
-   */
+  /* Set the preferred velocity to be a vector of unit magnitude (speed) in the
+   * direction of the goal. */
 #ifdef _OPENMP
 #pragma omp parallel for
-#endif
+#endif /* _OPENMP */
   for (int i = 0; i < static_cast<int>(sim->getNumAgents()); ++i) {
     RVO::Vector2 goalVector = goals[i] - sim->getAgentPosition(i);
 
@@ -126,7 +123,7 @@ bool reachedGoal(RVO::RVOSimulator *sim,
 
   return true;
 }
-}  // namespace
+} /* namespace */
 
 int main() {
   /* Store the goals of the agents. */
@@ -138,11 +135,11 @@ int main() {
   /* Set up the scenario. */
   setupScenario(sim, goals);
 
-  /* Perform (and manipulate) the simulation. */
+  /* Perform and manipulate the simulation. */
   do {
 #if RVO_OUTPUT_TIME_AND_POSITIONS
     updateVisualization(sim);
-#endif
+#endif /* RVO_OUTPUT_TIME_AND_POSITIONS */
     setPreferredVelocities(sim, goals);
     sim->doStep();
   } while (!reachedGoal(sim, goals));

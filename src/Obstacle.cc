@@ -31,6 +31,11 @@
  * <https://gamma.cs.unc.edu/RVO2/>
  */
 
+/**
+ * @file  Obstacle.cc
+ * @brief Defines the Obstacle class.
+ */
+
 #include "Obstacle.h"
 
 namespace RVO {
@@ -38,4 +43,5 @@ Obstacle::Obstacle()
     : isConvex_(false), nextObstacle_(NULL), prevObstacle_(NULL), id_(0U) {}
 
 Obstacle::~Obstacle() {}
-}  // namespace RVO
+
+} /* namespace RVO */

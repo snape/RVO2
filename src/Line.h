@@ -35,8 +35,8 @@
 #define RVO_LINE_H_
 
 /**
- * \file       Line.h
- * \brief      Contains the Line class.
+ * @file  Line.h
+ * @brief Declares the Line class.
  */
 
 #include "Export.h"
@@ -44,25 +44,25 @@
 
 namespace RVO {
 /**
- * \brief      Defines a directed line.
+ * @brief Defines a directed line.
  */
 class RVO_EXPORT Line {
  public:
   /**
-   * \brief     Constructs a directed line instance.
+   * @brief Constructs a directed line instance.
    */
   Line();
 
   /**
-   * \brief     A point on the directed line.
+   * @brief A point on the directed line.
    */
   Vector2 point;
 
   /**
-   * \brief     The direction of the directed line.
+   * @brief The direction of the directed line.
    */
   Vector2 direction;
 };
-}  // namespace RVO
+} /* namespace RVO */
 
 #endif /* RVO_LINE_H_ */

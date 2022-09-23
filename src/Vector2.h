@@ -35,8 +35,8 @@
 #define RVO_VECTOR2_H_
 
 /**
- * \file       Vector2.h
- * \brief      Contains the Vector2 class.
+ * @file  Vector2.h
+ * @brief Declares and defines the Vector2 class.
  */
 
 #include <iosfwd>
@@ -45,151 +45,148 @@
 
 namespace RVO {
 /**
- * \brief       A sufficiently small positive number.
+ * @brief A sufficiently small positive number.
  */
 RVO_EXPORT extern const float RVO_EPSILON;
 
 /**
- * \brief      Defines a two-dimensional vector.
+ * @brief Defines a two-dimensional vector.
  */
 class RVO_EXPORT Vector2 {
  public:
   /**
-   * \brief      Constructs and initializes a two-dimensional vector instance
-   *             to (0.0, 0.0).
+   * @brief Constructs and initializes a two-dimensional vector instance to
+   *        (0.0, 0.0).
    */
   Vector2();
 
   /**
-   * \brief      Constructs and initializes a two-dimensional vector from
-   *             the specified xy-coordinates.
-   * \param      x               The x-coordinate of the two-dimensional
-   *                             vector.
-   * \param      y               The y-coordinate of the two-dimensional
-   *                             vector.
+   * @brief     Constructs and initializes a two-dimensional vector from the
+   *            specified xy-coordinates.
+   * @param[in] x The x-coordinate of the two-dimensional vector.
+   * @param[in] y The y-coordinate of the two-dimensional vector.
    */
   Vector2(float x, float y);
 
   /**
-   * \brief      Returns the x-coordinate of this two-dimensional vector.
-   * \return     The x-coordinate of the two-dimensional vector.
+   * @brief  Returns the x-coordinate of this two-dimensional vector.
+   * @return The x-coordinate of the two-dimensional vector.
    */
   float x() const { return x_; }
 
   /**
-   * \brief      Returns the y-coordinate of this two-dimensional vector.
-   * \return     The y-coordinate of the two-dimensional vector.
+   * @brief  Returns the y-coordinate of this two-dimensional vector.
+   * @return The y-coordinate of the two-dimensional vector.
    */
   float y() const { return y_; }
 
   /**
-   * \brief      Computes the negation of this two-dimensional vector.
-   * \return     The negation of this two-dimensional vector.
+   * @brief  Computes the negation of this two-dimensional vector.
+   * @return The negation of this two-dimensional vector.
    */
   Vector2 operator-() const;
 
   /**
-   * \brief      Computes the dot product of this two-dimensional vector with
-   *             the specified two-dimensional vector.
-   * \param      vector          The two-dimensional vector with which the
-   *                             dot product should be computed.
-   * \return     The dot product of this two-dimensional vector with a
-   *             specified two-dimensional vector.
+   * @brief     Computes the dot product of this two-dimensional vector with the
+   *            specified two-dimensional vector.
+   * @param[in] vector The two-dimensional vector with which the dot product
+   *                   should be computed.
+   * @return    The dot product of this two-dimensional vector with a specified
+   *            two-dimensional vector.
    */
   float operator*(const Vector2 &vector) const;
 
   /**
-   * \brief      Computes the scalar multiplication of this
-   *             two-dimensional vector with the specified scalar value.
-   * \param      s               The scalar value with which the scalar
-   *                             multiplication should be computed.
-   * \return     The scalar multiplication of this two-dimensional vector
-   *             with a specified scalar value.
+   * @brief     Computes the scalar multiplication of this two-dimensional
+   *            vector with the specified scalar value.
+   * @param[in] scalar The scalar value with which the scalar multiplication
+   *                   should be computed.
+   * @return    The scalar multiplication of this two-dimensional vector with a
+   *            specified scalar value.
    */
-  Vector2 operator*(float s) const;
+  Vector2 operator*(float scalar) const;
 
   /**
-   * \brief      Computes the scalar division of this two-dimensional vector
-   *             with the specified scalar value.
-   * \param      s               The scalar value with which the scalar
-   *                             division should be computed.
-   * \return     The scalar division of this two-dimensional vector with a
-   *             specified scalar value.
+   * @brief     Computes the scalar division of this two-dimensional vector with
+   *            the specified scalar value.
+   * @param[in] scalar The scalar value with which the scalar division should be
+   *                   computed.
+   * @return    The scalar division of this two-dimensional vector with a
+   *            specified scalar value.
    */
-  Vector2 operator/(float s) const;
+  Vector2 operator/(float scalar) const;
 
   /**
-   * \brief      Computes the vector sum of this two-dimensional vector with
-   *             the specified two-dimensional vector.
-   * \param      vector          The two-dimensional vector with which the
-   *                             vector sum should be computed.
-   * \return     The vector sum of this two-dimensional vector with a
-   *             specified two-dimensional vector.
+   * @brief     Computes the vector sum of this two-dimensional vector with the
+   *            specified two-dimensional vector.
+   * @param[in] vector The two-dimensional vector with which the vector sum
+   *                   should be computed.
+   * @return    The vector sum of this two-dimensional vector with a specified
+   *            two-dimensional vector.
    */
   Vector2 operator+(const Vector2 &vector) const;
 
   /**
-   * \brief      Computes the vector difference of this two-dimensional
-   *             vector with the specified two-dimensional vector.
-   * \param      vector          The two-dimensional vector with which the
-   *                             vector difference should be computed.
-   * \return     The vector difference of this two-dimensional vector with a
-   *             specified two-dimensional vector.
+   * @brief     Computes the vector difference of this two-dimensional vector
+   *            with the specified two-dimensional vector.
+   * @param[in] vector The two-dimensional vector with which the vector
+   *                   difference should be computed.
+   * @return    The vector difference of this two-dimensional vector with a
+   *            specified two-dimensional vector.
    */
   Vector2 operator-(const Vector2 &vector) const;
 
   /**
-   * \brief      Tests this two-dimensional vector for equality with the
-   *             specified two-dimensional vector.
-   * \param      vector          The two-dimensional vector with which to
-   *                             test for equality.
-   * \return     True if the two-dimensional vectors are equal.
+   * @brief     Tests this two-dimensional vector for equality with the
+   *            specified two-dimensional vector.
+   * @param[in] vector The two-dimensional vector with which to test for
+   *                   equality.
+   * @return    True if the two-dimensional vectors are equal.
    */
   bool operator==(const Vector2 &vector) const;
 
   /**
-   * \brief      Tests this two-dimensional vector for inequality with the
-   *             specified two-dimensional vector.
-   * \param      vector          The two-dimensional vector with which to
-   *                             test for inequality.
-   * \return     True if the two-dimensional vectors are not equal.
+   * @brief     Tests this two-dimensional vector for inequality with the
+   *            specified two-dimensional vector.
+   * @param[in] vector The two-dimensional vector with which to test for
+   *                   inequality.
+   * @return    True if the two-dimensional vectors are not equal.
    */
   bool operator!=(const Vector2 &vector) const;
 
   /**
-   * \brief      Sets the value of this two-dimensional vector to the scalar
-   *             multiplication of itself with the specified scalar value.
-   * \param      s               The scalar value with which the scalar
-   *                             multiplication should be computed.
-   * \return     A reference to this two-dimensional vector.
+   * @brief     Sets the value of this two-dimensional vector to the scalar
+   *            multiplication of itself with the specified scalar value.
+   * @param[in] scalar The scalar value with which the scalar multiplication
+   *                   should be computed.
+   * @return    A reference to this two-dimensional vector.
    */
-  Vector2 &operator*=(float s);
+  Vector2 &operator*=(float scalar);
 
   /**
-   * \brief      Sets the value of this two-dimensional vector to the scalar
-   *             division of itself with the specified scalar value.
-   * \param      s               The scalar value with which the scalar
-   *                             division should be computed.
-   * \return     A reference to this two-dimensional vector.
+   * @brief     Sets the value of this two-dimensional vector to the scalar
+   *            division of itself with the specified scalar value.
+   * @param[in] scalar The scalar value with which the scalar division should be
+   *                   computed.
+   * @return    A reference to this two-dimensional vector.
    */
-  Vector2 &operator/=(float s);
+  Vector2 &operator/=(float scalar);
 
   /**
-   * \brief      Sets the value of this two-dimensional vector to the vector
-   *             sum of itself with the specified two-dimensional vector.
-   * \param      vector          The two-dimensional vector with which the
-   *                             vector sum should be computed.
-   * \return     A reference to this two-dimensional vector.
+   * @brief     Sets the value of this two-dimensional vector to the vector sum
+   *            of itself with the specified two-dimensional vector.
+   * @param[in] vector The two-dimensional vector with which the vector sum
+   *                   should be computed.
+   * @return    A reference to this two-dimensional vector.
    */
   Vector2 &operator+=(const Vector2 &vector);
 
   /**
-   * \brief      Sets the value of this two-dimensional vector to the vector
-   *             difference of itself with the specified two-dimensional
-   *             vector.
-   * \param      vector          The two-dimensional vector with which the
-   *                             vector difference should be computed.
-   * \return     A reference to this two-dimensional vector.
+   * @brief     Sets the value of this two-dimensional vector to the vector
+   *            difference of itself with the specified two-dimensional vector.
+   * @param[in] vector The two-dimensional vector with which the vector
+   *                   difference should be computed.
+   * @return    A reference to this two-dimensional vector.
    */
   Vector2 &operator-=(const Vector2 &vector);
 
@@ -199,82 +196,80 @@ class RVO_EXPORT Vector2 {
 };
 
 /**
- * \relates    Vector2
- * \brief      Computes the scalar multiplication of the specified
- *             two-dimensional vector with the specified scalar value.
- * \param      s               The scalar value with which the scalar
- *                             multiplication should be computed.
- * \param      vector          The two-dimensional vector with which the scalar
- *                             multiplication should be computed.
- * \return     The scalar multiplication of the two-dimensional vector with the
- *             scalar value.
+ * @relates   Vector2
+ * @brief     Computes the scalar multiplication of the specified
+ *            two-dimensional vector with the specified scalar value.
+ * @param[in] scalar The scalar value with which the scalar multiplication
+ *                   should be computed.
+ * @param[in] vector The two-dimensional vector with which the scalar
+ *                   multiplication should be computed.
+ * @return    The scalar multiplication of the two-dimensional vector with the
+ *            scalar value.
  */
-RVO_EXPORT Vector2 operator*(float s, const Vector2 &vector);
+RVO_EXPORT Vector2 operator*(float scalar, const Vector2 &vector);
 
 /**
- * \relates    Vector2
- * \brief      Inserts the specified two-dimensional vector into the specified
- *             output stream.
- * \param      os              The output stream into which the two-dimensional
- *                             vector should be inserted.
- * \param      vector          The two-dimensional vector which to insert into
- *                             the output stream.
- * \return     A reference to the output stream.
+ * @relates        Vector2
+ * @brief          Inserts the specified two-dimensional vector into the
+ *                 specified output stream.
+ * @param[in, out] stream The output stream into which the two-dimensional
+ *                        vector should be inserted.
+ * @param[in]      vector The two-dimensional vector which to insert into the
+ *                        output stream.
+ * @return         A reference to the output stream.
  */
-RVO_EXPORT std::ostream &operator<<(std::ostream &os, const Vector2 &vector);
+RVO_EXPORT std::ostream &operator<<(std::ostream &stream,
+                                    const Vector2 &vector);
 
 /**
- * \relates    Vector2
- * \brief      Computes the length of a specified two-dimensional vector.
- * \param      vector          The two-dimensional vector whose length is to be
- *                             computed.
- * \return     The length of the two-dimensional vector.
+ * @relates   Vector2
+ * @brief     Computes the length of a specified two-dimensional vector.
+ * @param[in] vector The two-dimensional vector whose length is to be computed.
+ * @return    The length of the two-dimensional vector.
  */
 RVO_EXPORT float abs(const Vector2 &vector);
 
 /**
- * \relates    Vector2
- * \brief      Computes the squared length of a specified two-dimensional
- *             vector.
- * \param      vector          The two-dimensional vector whose squared length
- *                             is to be computed.
- * \return     The squared length of the two-dimensional vector.
+ * @relates   Vector2
+ * @brief     Computes the squared length of a specified two-dimensional vector.
+ * @param[in] vector The two-dimensional vector whose squared length is to be
+ *                   computed.
+ * @return    The squared length of the two-dimensional vector.
  */
 RVO_EXPORT float absSq(const Vector2 &vector);
 
 /**
- * \relates    Vector2
- * \brief      Computes the determinant of a two-dimensional square matrix with
- *             rows consisting of the specified two-dimensional vectors.
- * \param      vector1         The top row of the two-dimensional square
- *                             matrix.
- * \param      vector2         The bottom row of the two-dimensional square
- *                             matrix.
- * \return     The determinant of the two-dimensional square matrix.
+ * @relates   Vector2
+ * @brief     Computes the determinant of a two-dimensional square matrix with
+ *            rows consisting of the specified two-dimensional vectors.
+ * @param[in] vector1 The top row of the two-dimensional square matrix.
+ * @param[in] vector2 The bottom row of the two-dimensional square matrix.
+ * @return    The determinant of the two-dimensional square matrix.
  */
 RVO_EXPORT float det(const Vector2 &vector1, const Vector2 &vector2);
 
 /**
- * \relates    Vector2
- * \brief      Computes the signed distance from a line connecting the
- *             specified points to a specified point.
- * \param      a               The first point on the line.
- * \param      b               The second point on the line.
- * \param      c               The point to which the signed distance is to
- *                             be calculated.
- * \return     Positive when the point c lies to the left of the line ab.
+ * @brief     Computes the signed distance from a line connecting th specified
+ *            points to a specified point.
+ * @param[in] vector1 The first point on the line.
+ * @param[in] vector2 The second point on the line.
+ * @param[in] vector3 The point to which the signed distance is to be
+ *                    calculated.
+ * @return    Positive when the point vector3 lies to the left of the line
+ *            vector1-vector2.
  */
-RVO_EXPORT float leftOf(const Vector2 &a, const Vector2 &b, const Vector2 &c);
+RVO_EXPORT float leftOf(const Vector2 &vector1, const Vector2 &vector2,
+                        const Vector2 &vector3);
 
 /**
- * \relates    Vector2
- * \brief      Computes the normalization of the specified two-dimensional
- *             vector.
- * \param      vector          The two-dimensional vector whose normalization
- *                             is to be computed.
- * \return     The normalization of the two-dimensional vector.
+ * @relates   Vector2
+ * @brief     Computes the normalization of the specified two-dimensional
+ *            vector.
+ * @param[in] vector The two-dimensional vector whose normalization is to be
+ *                   computed.
+ * @return    The normalization of the two-dimensional vector.
  */
 RVO_EXPORT Vector2 normalize(const Vector2 &vector);
-}  // namespace RVO
+} /* namespace RVO */
 
 #endif /* RVO_VECTOR2_H_ */

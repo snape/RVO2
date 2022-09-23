@@ -31,6 +31,11 @@
  * <https://gamma.cs.unc.edu/RVO2/>
  */
 
+/**
+ * @file  Agent.cc
+ * @brief Defines the Agent class.
+ */
+
 #include "Agent.h"
 
 #include <algorithm>
@@ -45,17 +50,17 @@
 namespace RVO {
 namespace {
 /**
- * \relates    Agent
- * \brief      Solves a one-dimensional linear program on a specified line
- *             subject to linear constraints defined by lines and a circular
- *             constraint.
- * \param      lines         Lines defining the linear constraints.
- * \param      lineNo        The specified line constraint.
- * \param      radius        The radius of the circular constraint.
- * \param      optVelocity   The optimization velocity.
- * \param      directionOpt  True if the direction should be optimized.
- * \param      result        A reference to the result of the linear program.
- * \return     True if successful.
+ * @relates        Agent
+ * @brief          Solves a one-dimensional linear program on a specified line
+ *                 subject to linear constraints defined by lines and a circular
+ *                 constraint.
+ * @param[in]      lines        Lines defining the linear constraints.
+ * @param[in]      lineNo       The specified line constraint.
+ * @param[in]      radius       The radius of the circular constraint.
+ * @param[in]      optVelocity  The optimization velocity.
+ * @param[in]      directionOpt True if the direction should be optimized.
+ * @param[in, out] result       A reference to the result of the linear program.
+ * @return         True if successful.
  */
 bool linearProgram1(const std::vector<Line> &lines, std::size_t lineNo,
                     float radius, const Vector2 &optVelocity, bool directionOpt,
@@ -128,24 +133,23 @@ bool linearProgram1(const std::vector<Line> &lines, std::size_t lineNo,
 }
 
 /**
- * \relates    Agent
- * \brief      Solves a two-dimensional linear program subject to linear
- *             constraints defined by lines and a circular constraint.
- * \param      lines         Lines defining the linear constraints.
- * \param      radius        The radius of the circular constraint.
- * \param      optVelocity   The optimization velocity.
- * \param      directionOpt  True if the direction should be optimized.
- * \param      result        A reference to the result of the linear program.
- * \return     The number of the line it fails on, and the number of lines if
- * successful.
+ * @relates        Agent
+ * @brief          Solves a two-dimensional linear program subject to linear
+ *                 constraints defined by lines and a circular constraint.
+ * @param[in]      lines        Lines defining the linear constraints.
+ * @param[in]      radius       The radius of the circular constraint.
+ * @param[in]      optVelocity  The optimization velocity.
+ * @param[in]      directionOpt True if the direction should be optimized.
+ * @param[in, out] result       A reference to the result of the linear program.
+ * @return         The number of the line it fails on, and the number of lines
+ *                 if successful.
  */
 std::size_t linearProgram2(const std::vector<Line> &lines, float radius,
                            const Vector2 &optVelocity, bool directionOpt,
                            Vector2 &result) { /* NOLINT(runtime/references) */
   if (directionOpt) {
-    /*
-     * Optimize direction. Note that the optimization velocity is of unit
-     * length in this case.
+    /* Optimize direction. Note that the optimization velocity is of unit length
+     * in this case.
      */
     result = optVelocity * radius;
   } else if (absSq(optVelocity) > sqr(radius)) {
@@ -173,14 +177,14 @@ std::size_t linearProgram2(const std::vector<Line> &lines, float radius,
 }
 
 /**
- * \relates    Agent
- * \brief      Solves a two-dimensional linear program subject to linear
- *             constraints defined by lines and a circular constraint.
- * \param      lines         Lines defining the linear constraints.
- * \param      numObstLines  Count of obstacle lines.
- * \param      beginLine     The line on which the 2-d linear program failed.
- * \param      radius        The radius of the circular constraint.
- * \param      result        A reference to the result of the linear program.
+ * @relates        Agent
+ * @brief          Solves a two-dimensional linear program subject to linear
+ *                 constraints defined by lines and a circular constraint.
+ * @param[in]      lines        Lines defining the linear constraints.
+ * @param[in]      numObstLines Count of obstacle lines.
+ * @param[in]      beginLine    The line on which the 2-d linear program failed.
+ * @param[in]      radius       The radius of the circular constraint.
+ * @param[in, out] result       A reference to the result of the linear program.
  */
 void linearProgram3(const std::vector<Line> &lines, std::size_t numObstLines,
                     std::size_t beginLine, float radius,
@@ -203,9 +207,10 @@ void linearProgram3(const std::vector<Line> &lines, std::size_t numObstLines,
           if (lines[i].direction * lines[j].direction > 0.0F) {
             /* Line i and line j point in the same direction. */
             continue;
-          } /* Line i and line j point in opposite direction. */
-          line.point = 0.5F * (lines[i].point + lines[j].point);
+          }
 
+          /* Line i and line j point in opposite direction. */
+          line.point = 0.5F * (lines[i].point + lines[j].point);
         } else {
           line.point = lines[i].point + (det(lines[j].direction,
                                              lines[i].point - lines[j].point) /
@@ -223,11 +228,10 @@ void linearProgram3(const std::vector<Line> &lines, std::size_t numObstLines,
               projLines, radius,
               Vector2(-lines[i].direction.y(), lines[i].direction.x()), true,
               result) < projLines.size()) {
-        /* This should in principle not happen.  The result is by definition
+        /* This should in principle not happen. The result is by definition
          * already in the feasible region of this linear program. If it fails,
          * it is due to small floating point error, and the current result is
-         * kept.
-         */
+         * kept. */
         result = tempResult;
       }
 
@@ -235,7 +239,7 @@ void linearProgram3(const std::vector<Line> &lines, std::size_t numObstLines,
     }
   }
 }
-}  // namespace
+} /* namespace */
 
 Agent::Agent(RVOSimulator *sim)
     : maxNeighbors_(0U),
@@ -246,6 +250,8 @@ Agent::Agent(RVOSimulator *sim)
       timeHorizon_(0.0F),
       timeHorizonObst_(0.0F),
       id_(0U) {}
+
+Agent::~Agent() {}
 
 void Agent::computeNeighbors() {
   obstacleNeighbors_.clear();
@@ -274,10 +280,8 @@ void Agent::computeNewVelocity() {
     const Vector2 relativePosition1 = obstacle1->point_ - position_;
     const Vector2 relativePosition2 = obstacle2->point_ - position_;
 
-    /*
-     * Check if velocity obstacle of obstacle is already taken care of by
-     * previously constructed obstacle ORCA lines.
-     */
+    /* Check if velocity obstacle of obstacle is already taken care of by
+     * previously constructed obstacle ORCA lines. */
     bool alreadyCovered = false;
 
     for (std::size_t j = 0U; j < orcaLines_.size(); ++j) {
@@ -299,7 +303,6 @@ void Agent::computeNewVelocity() {
     }
 
     /* Not yet covered. Check for collisions. */
-
     const float distSq1 = absSq(relativePosition1);
     const float distSq2 = absSq(relativePosition2);
 
@@ -323,9 +326,10 @@ void Agent::computeNewVelocity() {
 
       continue;
     }
+
     if (s > 1.0F && distSq2 <= radiusSq) {
-      /* Collision with right vertex. Ignore if non-convex
-       * or if it will be taken care of by neighoring obstace */
+      /* Collision with right vertex. Ignore if non-convex or if it will be
+       * taken care of by neighoring obstace */
       if (obstacle2->isConvex_ &&
           det(relativePosition2, obstacle2->unitDir_) >= 0.0F) {
         line.point = Vector2(0.0F, 0.0F);
@@ -336,6 +340,7 @@ void Agent::computeNewVelocity() {
 
       continue;
     }
+
     if (s >= 0.0F && s <= 1.0F && distSqLine <= radiusSq) {
       /* Collision with obstacle segment. */
       line.point = Vector2(0.0F, 0.0F);
@@ -344,20 +349,14 @@ void Agent::computeNewVelocity() {
       continue;
     }
 
-    /*
-     * No collision.
-     * Compute legs. When obliquely viewed, both legs can come from a single
-     * vertex. Legs extend cut-off line when nonconvex vertex.
-     */
-
+    /* No collision. Compute legs. When obliquely viewed, both legs can come
+     * from a single vertex. Legs extend cut-off line when nonconvex vertex. */
     Vector2 leftLegDirection;
     Vector2 rightLegDirection;
 
     if (s < 0.0F && distSqLine <= radiusSq) {
-      /*
-       * Obstacle viewed obliquely so that left vertex
-       * defines velocity obstacle.
-       */
+      /* Obstacle viewed obliquely so that left vertex defines velocity
+       * obstacle. */
       if (!obstacle1->isConvex_) {
         /* Ignore obstacle. */
         continue;
@@ -377,10 +376,8 @@ void Agent::computeNewVelocity() {
               -relativePosition1.x() * radius_ + relativePosition1.y() * leg1) /
           distSq1;
     } else if (s > 1.0F && distSqLine <= radiusSq) {
-      /*
-       * Obstacle viewed obliquely so that
-       * right vertex defines velocity obstacle.
-       */
+      /* Obstacle viewed obliquely so that right vertex defines velocity
+       * obstacle. */
       if (!obstacle2->isConvex_) {
         /* Ignore obstacle. */
         continue;
@@ -426,12 +423,9 @@ void Agent::computeNewVelocity() {
       }
     }
 
-    /*
-     * Legs can never point into neighboring edge when convex vertex,
-     * take cutoff-line of neighboring edge instead. If velocity projected on
-     * "foreign" leg, no constraint is added.
-     */
-
+    /* Legs can never point into neighboring edge when convex vertex, take
+     * cutoff-line of neighboring edge instead. If velocity projected on
+     * "foreign" leg, no constraint is added. */
     const Obstacle *const leftNeighbor = obstacle1->prevObstacle_;
 
     bool isLeftLegForeign = false;
@@ -488,10 +482,8 @@ void Agent::computeNewVelocity() {
       continue;
     }
 
-    /*
-     * Project on left leg, right leg, or cut-off line, whichever is closest
-     * to velocity.
-     */
+    /* Project on left leg, right leg, or cut-off line, whichever is closest to
+     * velocity. */
     const float distSqCutoff =
         ((t < 0.0F || t > 1.0F || obstacle1 == obstacle2)
              ? std::numeric_limits<float>::infinity()
@@ -526,7 +518,9 @@ void Agent::computeNewVelocity() {
                            Vector2(-line.direction.y(), line.direction.x());
       orcaLines_.push_back(line);
       continue;
-    } /* Project on right leg. */
+    }
+
+    /* Project on right leg. */
     if (isRightLegForeign) {
       continue;
     }
@@ -670,4 +664,4 @@ void Agent::update() {
   velocity_ = newVelocity_;
   position_ += velocity_ * sim_->timeStep_;
 }
-}  // namespace RVO
+} /* namespace RVO */

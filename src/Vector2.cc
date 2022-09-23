@@ -31,6 +31,11 @@
  * <https://gamma.cs.unc.edu/RVO2/>
  */
 
+/**
+ * @file  Vector2.cc
+ * @brief Defines the Vector2 class.
+ */
+
 #include "Vector2.h"
 
 #include <cmath>
@@ -49,12 +54,14 @@ float Vector2::operator*(const Vector2 &vector) const {
   return x_ * vector.x() + y_ * vector.y();
 }
 
-Vector2 Vector2::operator*(float s) const { return Vector2(x_ * s, y_ * s); }
+Vector2 Vector2::operator*(float scalar) const {
+  return Vector2(x_ * scalar, y_ * scalar);
+}
 
-Vector2 Vector2::operator/(float s) const {
-  const float invS = 1.0F / s;
+Vector2 Vector2::operator/(float scalar) const {
+  const float invScalar = 1.0F / scalar;
 
-  return Vector2(x_ * invS, y_ * invS);
+  return Vector2(x_ * invScalar, y_ * invScalar);
 }
 
 Vector2 Vector2::operator+(const Vector2 &vector) const {
@@ -73,17 +80,17 @@ bool Vector2::operator!=(const Vector2 &vector) const {
   return x_ != vector.x() || y_ != vector.y();
 }
 
-Vector2 &Vector2::operator*=(float s) {
-  x_ *= s;
-  y_ *= s;
+Vector2 &Vector2::operator*=(float scalar) {
+  x_ *= scalar;
+  y_ *= scalar;
 
   return *this;
 }
 
-Vector2 &Vector2::operator/=(float s) {
-  const float invS = 1.0F / s;
-  x_ *= invS;
-  y_ *= invS;
+Vector2 &Vector2::operator/=(float scalar) {
+  const float invScalar = 1.0F / scalar;
+  x_ *= invScalar;
+  y_ *= invScalar;
 
   return *this;
 }
@@ -102,14 +109,14 @@ Vector2 &Vector2::operator-=(const Vector2 &vector) {
   return *this;
 }
 
-Vector2 operator*(float s, const Vector2 &vector) {
-  return Vector2(s * vector.x(), s * vector.y());
+Vector2 operator*(float scalar, const Vector2 &vector) {
+  return Vector2(scalar * vector.x(), scalar * vector.y());
 }
 
-std::ostream &operator<<(std::ostream &os, const Vector2 &vector) {
-  os << "(" << vector.x() << "," << vector.y() << ")";
+std::ostream &operator<<(std::ostream &stream, const Vector2 &vector) {
+  stream << "(" << vector.x() << "," << vector.y() << ")";
 
-  return os;
+  return stream;
 }
 
 float abs(const Vector2 &vector) { return std::sqrt(vector * vector); }
@@ -120,9 +127,10 @@ float det(const Vector2 &vector1, const Vector2 &vector2) {
   return vector1.x() * vector2.y() - vector1.y() * vector2.x();
 }
 
-float leftOf(const Vector2 &a, const Vector2 &b, const Vector2 &c) {
-  return det(a - c, b - a);
+float leftOf(const Vector2 &vector1, const Vector2 &vector2,
+             const Vector2 &vector3) {
+  return det(vector1 - vector3, vector2 - vector1);
 }
 
 Vector2 normalize(const Vector2 &vector) { return vector / abs(vector); }
-}  // namespace RVO
+} /* namespace RVO */

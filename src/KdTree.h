@@ -35,8 +35,8 @@
 #define RVO_KD_TREE_H_
 
 /**
- * \file       KdTree.h
- * \brief      Contains the KdTree class.
+ * @file  KdTree.h
+ * @brief Declares the KdTree class.
  */
 
 #include <cstddef>
@@ -49,8 +49,7 @@ class RVOSimulator;
 class Vector2;
 
 /**
- * \brief      Defines <i>k</i>d-trees for agents and static obstacles in the
- *             simulation.
+ * @brief Defines k-D trees for agents and static obstacles in the simulation.
  */
 class KdTree {
  private:
@@ -58,78 +57,113 @@ class KdTree {
   class ObstacleTreeNode;
 
   /**
-   * \brief      Constructs a <i>k</i>d-tree instance.
-   * \param      sim             The simulator instance.
+   * @brief     Constructs a k-D tree instance.
+   * @param[in] sim The simulator instance.
    */
   explicit KdTree(RVOSimulator *sim);
 
   /**
-   * \brief      Destroys this kd-tree instance.
+   * @brief Destroys this k-D tree instance.
    */
   ~KdTree();
 
   /**
-   * \brief      Builds an agent <i>k</i>d-tree.
+   * @brief Builds an agent k-D tree.
    */
   void buildAgentTree();
 
+  /**
+   * @brief     Recursive function to build an agent k-D tree.
+   * @param[in] begin The beginning agent k-D tree node.
+   * @param[in] end   The ending agent k-D tree node.
+   * @param[in] node  The current agent k-D tree node.
+   */
   void buildAgentTreeRecursive(std::size_t begin, std::size_t end,
                                std::size_t node);
 
   /**
-   * \brief      Builds an obstacle <i>k</i>d-tree.
+   * @brief Builds an obstacle k-D tree.
    */
   void buildObstacleTree();
 
+  /**
+   * @brief     Recursive function to build an obstacle k-D tree.
+   * @param[in] obstacles List of obstacles from which to build the obstacle k-D
+   * tree.
+   */
   ObstacleTreeNode *buildObstacleTreeRecursive(
       const std::vector<Obstacle *> &obstacles);
 
   /**
-   * \brief      Computes the agent neighbors of the specified agent.
-   * \param      agent           A pointer to the agent for which agent
-   *                             neighbors are to be computed.
-   * \param      rangeSq         The squared range around the agent.
+   * @brief     Computes the agent neighbors of the specified agent.
+   * @param[in] agent        A pointer to the agent for which agent neighbors
+   *                         are to be computed.
+   * @param[in, out] rangeSq The squared range around the agent.
    */
   void computeAgentNeighbors(
       Agent *agent, float &rangeSq) const; /* NOLINT(runtime/references) */
 
   /**
-   * \brief      Computes the obstacle neighbors of the specified agent.
-   * \param      agent           A pointer to the agent for which obstacle
-   *                             neighbors are to be computed.
-   * \param      rangeSq         The squared range around the agent.
+   * @brief     Computes the obstacle neighbors of the specified agent.
+   * @param[in] agent   A pointer to the agent for which obstacle neighbors are
+   *                    to be computed.
+   * @param[in] rangeSq The squared range around the agent.
    */
   void computeObstacleNeighbors(Agent *agent, float rangeSq) const;
 
   /**
-   * \brief      Deletes the specified obstacle tree node.
-   * \param      node            A pointer to the obstacle tree node to be
-   *                             deleted.
+   * @brief     Deletes the specified obstacle tree node.
+   * @param[in] node A pointer to the obstacle tree node to be deleted.
    */
   void deleteObstacleTree(ObstacleTreeNode *node);
 
+  /**
+   * @brief         Recursive function to compute the neighbors of the specified
+   *                agent.
+   * @param[in]     agent   A pointer to the agent for which neighbors are to be
+   *                        computed.
+   * @param[in,out] rangeSq The squared range around the agent.
+   * @param[in]     node    The current agent k-D tree node.
+   */
   void queryAgentTreeRecursive(Agent *agent,
                                float &rangeSq, /* NOLINT(runtime/references) */
                                std::size_t node) const;
 
+  /**
+   * @brief         Recursive function to compute the neighbors of the specified
+   *                obstacle.
+   * @param[in]     agent   A pointer to the agent for which neighbors are to be
+   *                        computed.
+   * @param[in,out] rangeSq The squared range around the agent.
+   * @param[in]     node    The current obstacle k-D tree node.
+   */
   void queryObstacleTreeRecursive(Agent *agent, float rangeSq,
                                   const ObstacleTreeNode *node) const;
 
   /**
-   * \brief      Queries the visibility between two points within a
-   *             specified radius.
-   * \param      q1              The first point between which visibility is
-   *                             to be tested.
-   * \param      q2              The second point between which visibility is
-   *                             to be tested.
-   * \param      radius          The radius within which visibility is to be
-   *                             tested.
-   * \return     True if q1 and q2 are mutually visible within the radius;
-   *             false otherwise.
+   * @brief     Queries the visibility between two points within a specified
+   *            radius.
+   * @param[in] q1     The first point between which visibility is to be tested.
+   * @param[in] q2     The second point between which visibility is to be
+   *                   tested.
+   * @param[in] radius The radius within which visibility is to be tested.
+   * @return    True if q1 and q2 are mutually visible within the radius; false
+   *            otherwise.
    */
   bool queryVisibility(const Vector2 &q1, const Vector2 &q2,
                        float radius) const;
 
+  /**
+   * @brief     Recursive function to query the visibility between two points
+   * within a specified radius.
+   * @param[in] q1     The first point between which visibility is to be tested.
+   * @param[in] q2     The second point between which visibility is to be
+   *                   tested.
+   * @param[in] radius The radius within which visibility is to be tested.
+   * @param[in] node   The current obstacle k-D tree node.
+   * @return    True if q1 and q2 are mutually visible within the radius; false
+   *            otherwise.
+   */
   bool queryVisibilityRecursive(const Vector2 &q1, const Vector2 &q2,
                                 float radius,
                                 const ObstacleTreeNode *node) const;
@@ -148,6 +182,6 @@ class KdTree {
   friend class Agent;
   friend class RVOSimulator;
 };
-}  // namespace RVO
+} /* namespace RVO */
 
 #endif /* RVO_KD_TREE_H_ */

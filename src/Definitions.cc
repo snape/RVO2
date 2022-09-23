@@ -31,20 +31,16 @@
  * <https://gamma.cs.unc.edu/RVO2/>
  */
 
+/**
+ * \file       Definitions.h
+ * \brief      Defines functions used in multiple classes.
+ */
+
 #include "Definitions.h"
 
 #include "Vector2.h"
 
 namespace RVO {
-/**
- * \brief      Computes the squared distance from a line segment with the
- *             specified endpoints to a specified point.
- * \param      a               The first endpoint of the line segment.
- * \param      b               The second endpoint of the line segment.
- * \param      c               The point to which the squared distance is to
- *                             be calculated.
- * \return     The squared distance from the line segment to the point.
- */
 float distSqPointLineSegment(const Vector2 &a, const Vector2 &b,
                              const Vector2 &c) {
   const float r = ((c - a) * (b - a)) / absSq(b - a);
@@ -57,4 +53,4 @@ float distSqPointLineSegment(const Vector2 &a, const Vector2 &b,
   }
   return absSq(c - (a + r * (b - a)));
 }
-}  // namespace RVO
+} /* namespace RVO */

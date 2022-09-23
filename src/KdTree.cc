@@ -1,5 +1,5 @@
 /*
- * KdTree.cpp
+ * KdTree.cc
  * RVO2 Library
  *
  * SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
@@ -31,6 +31,11 @@
  * <https://gamma.cs.unc.edu/RVO2/>
  */
 
+/**
+ * @file  KdTree.cc
+ * @brief Defines the KdTree class.
+ */
+
 #include "KdTree.h"
 
 #include <algorithm>
@@ -44,56 +49,59 @@
 
 namespace RVO {
 namespace {
+/**
+ * @brief Maximum k-D tree node leafe size.
+ */
 const std::size_t RVO_MAX_LEAF_SIZE = 10U;
-}  // namespace
+} /* namespace */
 
 /**
- * \brief      Defines an agent <i>k</i>d-tree node.
+ * @brief Defines an agent k-D tree node.
  */
 class KdTree::AgentTreeNode {
  public:
   /**
-   * \brief      Constructs an agent <i>k</i>d-ree node instance.
+   * @brief Constructs an agent k-D tree node instance.
    */
   AgentTreeNode();
 
   /**
-   * \brief      The beginning node number.
+   * @brief The beginning node number.
    */
   std::size_t begin;
 
   /**
-   * \brief      The ending node number.
+   * @brief The ending node number.
    */
   std::size_t end;
 
   /**
-   * \brief      The left node number.
+   * @brief The left node number.
    */
   std::size_t left;
 
   /**
-   * \brief      The maximum x-coordinate.
+   * @brief The maximum x-coordinate.
    */
   float maxX;
 
   /**
-   * \brief      The maximum y-coordinate.
+   * @brief The maximum y-coordinate.
    */
   float maxY;
 
   /**
-   * \brief      The minimum x-coordinate.
+   * @brief The minimum x-coordinate.
    */
   float minX;
 
   /**
-   * \brief      The minimum y-coordinate.
+   * @brief The minimum y-coordinate.
    */
   float minY;
 
   /**
-   * \brief      The right node number.
+   * @brief The right node number.
    */
   std::size_t right;
 };
@@ -109,7 +117,7 @@ KdTree::AgentTreeNode::AgentTreeNode()
       right(0U) {}
 
 /**
- * \brief      Defines an obstacle <i>k</i>d-tree node.
+ * @brief Defines an obstacle k-D tree node.
  */
 class KdTree::ObstacleTreeNode {
  public:
@@ -124,17 +132,17 @@ class KdTree::ObstacleTreeNode {
   ~ObstacleTreeNode();
 
   /**
-   * \brief      The left obstacle tree node.
+   * @brief The left obstacle tree node.
    */
   ObstacleTreeNode *left;
 
   /**
-   * \brief      The obstacle number.
+   * @brief The obstacle number.
    */
   const Obstacle *obstacle;
 
   /**
-   * \brief      The right obstacle tree node.
+   * @brief The right obstacle tree node.
    */
   ObstacleTreeNode *right;
 
@@ -453,10 +461,8 @@ void KdTree::queryObstacleTreeRecursive(Agent *agent, float rangeSq,
 
   if (distSqLine < rangeSq) {
     if (agentLeftOfLine < 0.0F) {
-      /*
-       * Try obstacle at this node only if agent is on right side of
-       * obstacle (and can see obstacle).
-       */
+      /* Try obstacle at this node only if agent is on right side of obstacle
+       * and can see obstacle. */
       agent->insertObstacleNeighbor(node->obstacle, rangeSq);
     }
 
@@ -511,4 +517,4 @@ bool KdTree::queryVisibilityRecursive(const Vector2 &q1, const Vector2 &q2,
           queryVisibilityRecursive(q1, q2, radius, node->left) &&
           queryVisibilityRecursive(q1, q2, radius, node->right));
 }
-}  // namespace RVO
+} /* namespace RVO */
