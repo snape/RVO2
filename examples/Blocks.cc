@@ -191,7 +191,7 @@ bool reachedGoal(RVO::RVOSimulator *sim,
                  const std::vector<RVO::Vector2> &goals) {
   /* Check if all agents have reached their goals. */
   for (std::size_t i = 0U; i < sim->getNumAgents(); ++i) {
-    if (RVO::absSq(sim->getAgentPosition(i) - goals[i]) > 20.0F * 20.0F) {
+    if (RVO::absSq(sim->getAgentPosition(i) - goals[i]) > 400.0F) {
       return false;
     }
   }

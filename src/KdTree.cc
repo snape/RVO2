@@ -42,7 +42,6 @@
 #include <utility>
 
 #include "Agent.h"
-#include "Definitions.h"
 #include "Obstacle.h"
 #include "RVOSimulator.h"
 #include "Vector2.h"
@@ -197,11 +196,11 @@ void KdTree::buildAgentTreeRecursive(std::size_t begin, std::size_t end,
 
   if (end - begin > RVO_MAX_LEAF_SIZE) {
     /* No leaf node. */
-    const bool isVertical = (agentTree_[node].maxX - agentTree_[node].minX >
-                             agentTree_[node].maxY - agentTree_[node].minY);
+    const bool isVertical = agentTree_[node].maxX - agentTree_[node].minX >
+                            agentTree_[node].maxY - agentTree_[node].minY;
     const float splitValue =
-        (isVertical ? 0.5F * (agentTree_[node].maxX + agentTree_[node].minX)
-                    : 0.5F * (agentTree_[node].maxY + agentTree_[node].minY));
+        0.5F * (isVertical ? agentTree_[node].maxX + agentTree_[node].minX
+                           : agentTree_[node].maxY + agentTree_[node].minY);
 
     std::size_t left = begin;
     std::size_t right = end;
@@ -256,6 +255,7 @@ KdTree::ObstacleTreeNode *KdTree::buildObstacleTreeRecursive(
   if (obstacles.empty()) {
     return NULL;
   }
+
   ObstacleTreeNode *const node = new ObstacleTreeNode;
 
   std::size_t optimalSplit = 0U;
@@ -375,6 +375,7 @@ KdTree::ObstacleTreeNode *KdTree::buildObstacleTreeRecursive(
   node->obstacle = obstacleI1;
   node->left = buildObstacleTreeRecursive(leftObstacles);
   node->right = buildObstacleTreeRecursive(rightObstacles);
+
   return node;
 }
 
@@ -402,25 +403,31 @@ void KdTree::queryAgentTreeRecursive(Agent *agent, float &rangeSq,
       agent->insertAgentNeighbor(agents_[i], rangeSq);
     }
   } else {
+    const float distLeftMinX = std::max(
+        0.0F, agentTree_[agentTree_[node].left].minX - agent->position_.x());
+    const float distLeftMaxX = std::max(
+        0.0F, agent->position_.x() - agentTree_[agentTree_[node].left].maxX);
+    const float distLeftMinY = std::max(
+        0.0F, agentTree_[agentTree_[node].left].minY - agent->position_.y());
+    const float distLeftMaxY = std::max(
+        0.0F, agent->position_.y() - agentTree_[agentTree_[node].left].maxY);
+
     const float distSqLeft =
-        sqr(std::max(0.0F, agentTree_[agentTree_[node].left].minX -
-                               agent->position_.x())) +
-        sqr(std::max(0.0F, agent->position_.x() -
-                               agentTree_[agentTree_[node].left].maxX)) +
-        sqr(std::max(0.0F, agentTree_[agentTree_[node].left].minY -
-                               agent->position_.y())) +
-        sqr(std::max(0.0F, agent->position_.y() -
-                               agentTree_[agentTree_[node].left].maxY));
+        distLeftMinX * distLeftMinX + distLeftMaxX * distLeftMaxX +
+        distLeftMinY * distLeftMinY + distLeftMaxY * distLeftMaxY;
+
+    const float distRightMinX = std::max(
+        0.0F, agentTree_[agentTree_[node].right].minX - agent->position_.x());
+    const float distRightMaxX = std::max(
+        0.0F, agent->position_.x() - agentTree_[agentTree_[node].right].maxX);
+    const float distRightMinY = std::max(
+        0.0F, agentTree_[agentTree_[node].right].minY - agent->position_.y());
+    const float distRightMaxY = std::max(
+        0.0F, agent->position_.y() - agentTree_[agentTree_[node].right].maxY);
 
     const float distSqRight =
-        sqr(std::max(0.0F, agentTree_[agentTree_[node].right].minX -
-                               agent->position_.x())) +
-        sqr(std::max(0.0F, agent->position_.x() -
-                               agentTree_[agentTree_[node].right].maxX)) +
-        sqr(std::max(0.0F, agentTree_[agentTree_[node].right].minY -
-                               agent->position_.y())) +
-        sqr(std::max(0.0F, agent->position_.y() -
-                               agentTree_[agentTree_[node].right].maxY));
+        distRightMinX * distRightMinX + distRightMaxX * distRightMaxX +
+        distRightMinY * distRightMinY + distRightMaxY * distRightMaxY;
 
     if (distSqLeft < distSqRight) {
       if (distSqLeft < rangeSq) {
@@ -430,13 +437,11 @@ void KdTree::queryAgentTreeRecursive(Agent *agent, float &rangeSq,
           queryAgentTreeRecursive(agent, rangeSq, agentTree_[node].right);
         }
       }
-    } else {
-      if (distSqRight < rangeSq) {
-        queryAgentTreeRecursive(agent, rangeSq, agentTree_[node].right);
+    } else if (distSqRight < rangeSq) {
+      queryAgentTreeRecursive(agent, rangeSq, agentTree_[node].right);
 
-        if (distSqLeft < rangeSq) {
-          queryAgentTreeRecursive(agent, rangeSq, agentTree_[node].left);
-        }
+      if (distSqLeft < rangeSq) {
+        queryAgentTreeRecursive(agent, rangeSq, agentTree_[node].left);
       }
     }
   }
@@ -447,6 +452,7 @@ void KdTree::queryObstacleTreeRecursive(Agent *agent, float rangeSq,
   if (node == NULL) {
     return;
   }
+
   const Obstacle *const obstacle1 = node->obstacle;
   const Obstacle *const obstacle2 = obstacle1->nextObstacle_;
 
@@ -454,10 +460,10 @@ void KdTree::queryObstacleTreeRecursive(Agent *agent, float rangeSq,
       leftOf(obstacle1->point_, obstacle2->point_, agent->position_);
 
   queryObstacleTreeRecursive(
-      agent, rangeSq, (agentLeftOfLine >= 0.0F ? node->left : node->right));
+      agent, rangeSq, agentLeftOfLine >= 0.0F ? node->left : node->right);
 
-  const float distSqLine =
-      sqr(agentLeftOfLine) / absSq(obstacle2->point_ - obstacle1->point_);
+  const float distSqLine = agentLeftOfLine * agentLeftOfLine /
+                           absSq(obstacle2->point_ - obstacle1->point_);
 
   if (distSqLine < rangeSq) {
     if (agentLeftOfLine < 0.0F) {
@@ -468,7 +474,7 @@ void KdTree::queryObstacleTreeRecursive(Agent *agent, float rangeSq,
 
     /* Try other side of line. */
     queryObstacleTreeRecursive(
-        agent, rangeSq, (agentLeftOfLine >= 0.0F ? node->right : node->left));
+        agent, rangeSq, agentLeftOfLine >= 0.0F ? node->right : node->left);
   }
 }
 
@@ -483,6 +489,7 @@ bool KdTree::queryVisibilityRecursive(const Vector2 &q1, const Vector2 &q2,
   if (node == NULL) {
     return true;
   }
+
   const Obstacle *const obstacle1 = node->obstacle;
   const Obstacle *const obstacle2 = obstacle1->nextObstacle_;
 
@@ -492,29 +499,32 @@ bool KdTree::queryVisibilityRecursive(const Vector2 &q1, const Vector2 &q2,
 
   if (q1LeftOfI >= 0.0F && q2LeftOfI >= 0.0F) {
     return queryVisibilityRecursive(q1, q2, radius, node->left) &&
-           ((sqr(q1LeftOfI) * invLengthI >= sqr(radius) &&
-             sqr(q2LeftOfI) * invLengthI >= sqr(radius)) ||
+           ((q1LeftOfI * q1LeftOfI * invLengthI >= radius * radius &&
+             q2LeftOfI * q2LeftOfI * invLengthI >= radius * radius) ||
             queryVisibilityRecursive(q1, q2, radius, node->right));
   }
+
   if (q1LeftOfI <= 0.0F && q2LeftOfI <= 0.0F) {
     return queryVisibilityRecursive(q1, q2, radius, node->right) &&
-           ((sqr(q1LeftOfI) * invLengthI >= sqr(radius) &&
-             sqr(q2LeftOfI) * invLengthI >= sqr(radius)) ||
+           ((q1LeftOfI * q1LeftOfI * invLengthI >= radius * radius &&
+             q2LeftOfI * q2LeftOfI * invLengthI >= radius * radius) ||
             queryVisibilityRecursive(q1, q2, radius, node->left));
   }
+
   if (q1LeftOfI >= 0.0F && q2LeftOfI <= 0.0F) {
     /* One can see through obstacle from left to right. */
     return queryVisibilityRecursive(q1, q2, radius, node->left) &&
            queryVisibilityRecursive(q1, q2, radius, node->right);
   }
+
   const float point1LeftOfQ = leftOf(q1, q2, obstacle1->point_);
   const float point2LeftOfQ = leftOf(q1, q2, obstacle2->point_);
   const float invLengthQ = 1.0F / absSq(q2 - q1);
 
-  return (point1LeftOfQ * point2LeftOfQ >= 0.0F &&
-          sqr(point1LeftOfQ) * invLengthQ > sqr(radius) &&
-          sqr(point2LeftOfQ) * invLengthQ > sqr(radius) &&
-          queryVisibilityRecursive(q1, q2, radius, node->left) &&
-          queryVisibilityRecursive(q1, q2, radius, node->right));
+  return point1LeftOfQ * point2LeftOfQ >= 0.0F &&
+         point1LeftOfQ * point1LeftOfQ * invLengthQ > radius * radius &&
+         point2LeftOfQ * point2LeftOfQ * invLengthQ > radius * radius &&
+         queryVisibilityRecursive(q1, q2, radius, node->left) &&
+         queryVisibilityRecursive(q1, q2, radius, node->right);
 }
 } /* namespace RVO */

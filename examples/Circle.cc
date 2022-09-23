@@ -73,8 +73,8 @@ void setupScenario(
   for (std::size_t i = 0U; i < 250U; ++i) {
     sim->addAgent(
         200.0F *
-        RVO::Vector2(std::cos(static_cast<float>(i) * RVO_TWO_PI / 250.0F),
-                     std::sin(static_cast<float>(i) * RVO_TWO_PI / 250.0F)));
+        RVO::Vector2(std::cos(static_cast<float>(i) * RVO_TWO_PI * 0.004F),
+                     std::sin(static_cast<float>(i) * RVO_TWO_PI * 0.004F)));
     goals.push_back(-sim->getAgentPosition(i));
   }
 }

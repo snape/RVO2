@@ -333,7 +333,7 @@ bool reachedGoal(RVO::RVOSimulator *sim,
   /* Check if all agents have reached their goals. */
   for (std::size_t i = 0U; i < sim->getNumAgents(); ++i) {
     if (RVO::absSq(sim->getAgentPosition(i) - roadmap[goals[i]].position) >
-        20.0F * 20.0F) {
+        400.0F) {
       return false;
     }
   }

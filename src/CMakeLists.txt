@@ -43,8 +43,6 @@ set(RVO_HEADERS
 set(RVO_SOURCES
   Agent.cc
   Agent.h
-  Definitions.cc
-  Definitions.h
   Export.cc
   KdTree.cc
   KdTree.h

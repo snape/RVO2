@@ -42,7 +42,6 @@
 #include <cmath>
 #include <limits>
 
-#include "Definitions.h"
 #include "KdTree.h"
 #include "Obstacle.h"
 #include "RVOSimulator.h"
@@ -67,7 +66,7 @@ bool linearProgram1(const std::vector<Line> &lines, std::size_t lineNo,
                     Vector2 &result) { /* NOLINT(runtime/references) */
   const float dotProduct = lines[lineNo].point * lines[lineNo].direction;
   const float discriminant =
-      sqr(dotProduct) + sqr(radius) - absSq(lines[lineNo].point);
+      dotProduct * dotProduct + radius * radius - absSq(lines[lineNo].point);
 
   if (discriminant < 0.0F) {
     /* Max speed circle fully invalidates line lineNo. */
@@ -88,6 +87,7 @@ bool linearProgram1(const std::vector<Line> &lines, std::size_t lineNo,
       if (numerator < 0.0F) {
         return false;
       }
+
       continue;
     }
 
@@ -152,7 +152,7 @@ std::size_t linearProgram2(const std::vector<Line> &lines, float radius,
      * in this case.
      */
     result = optVelocity * radius;
-  } else if (absSq(optVelocity) > sqr(radius)) {
+  } else if (absSq(optVelocity) > radius * radius) {
     /* Optimize closest point and outside circle. */
     result = normalize(optVelocity) * radius;
   } else {
@@ -255,13 +255,14 @@ Agent::~Agent() {}
 
 void Agent::computeNeighbors() {
   obstacleNeighbors_.clear();
-  float rangeSq = sqr(timeHorizonObst_ * maxSpeed_ + radius_);
+  const float range = timeHorizonObst_ * maxSpeed_ + radius_;
+  float rangeSq = range * range;
   sim_->kdTree_->computeObstacleNeighbors(this, rangeSq);
 
   agentNeighbors_.clear();
 
   if (maxNeighbors_ > 0U) {
-    rangeSq = sqr(neighborDist_);
+    rangeSq = neighborDist_ * neighborDist_;
     sim_->kdTree_->computeAgentNeighbors(this, rangeSq);
   }
 }
@@ -306,7 +307,7 @@ void Agent::computeNewVelocity() {
     const float distSq1 = absSq(relativePosition1);
     const float distSq2 = absSq(relativePosition2);
 
-    const float radiusSq = sqr(radius_);
+    const float radiusSq = radius_ * radius_;
 
     const Vector2 obstacleVector = obstacle2->point_ - obstacle1->point_;
     const float s =
@@ -455,12 +456,11 @@ void Agent::computeNewVelocity() {
     /* Project current velocity on velocity obstacle. */
 
     /* Check if current velocity is projected on cutoff circles. */
-    const float t =
-        (obstacle1 == obstacle2
-             ? 0.5F
-             : ((velocity_ - leftCutoff) * cutoffVec) / absSq(cutoffVec));
-    const float tLeft = ((velocity_ - leftCutoff) * leftLegDirection);
-    const float tRight = ((velocity_ - rightCutoff) * rightLegDirection);
+    const float t = obstacle1 == obstacle2 ? 0.5F
+                                           : (velocity_ - leftCutoff) *
+                                                 cutoffVec / absSq(cutoffVec);
+    const float tLeft = (velocity_ - leftCutoff) * leftLegDirection;
+    const float tRight = (velocity_ - rightCutoff) * rightLegDirection;
 
     if ((t < 0.0F && tLeft < 0.0F) ||
         (obstacle1 == obstacle2 && tLeft < 0.0F && tRight < 0.0F)) {
@@ -472,6 +472,7 @@ void Agent::computeNewVelocity() {
       orcaLines_.push_back(line);
       continue;
     }
+
     if (t > 1.0F && tRight < 0.0F) {
       /* Project on right cut-off circle. */
       const Vector2 unitW = normalize(velocity_ - rightCutoff);
@@ -485,17 +486,17 @@ void Agent::computeNewVelocity() {
     /* Project on left leg, right leg, or cut-off line, whichever is closest to
      * velocity. */
     const float distSqCutoff =
-        ((t < 0.0F || t > 1.0F || obstacle1 == obstacle2)
-             ? std::numeric_limits<float>::infinity()
-             : absSq(velocity_ - (leftCutoff + t * cutoffVec)));
+        (t < 0.0F || t > 1.0F || obstacle1 == obstacle2)
+            ? std::numeric_limits<float>::infinity()
+            : absSq(velocity_ - (leftCutoff + t * cutoffVec));
     const float distSqLeft =
-        ((tLeft < 0.0F)
-             ? std::numeric_limits<float>::infinity()
-             : absSq(velocity_ - (leftCutoff + tLeft * leftLegDirection)));
+        tLeft < 0.0F
+            ? std::numeric_limits<float>::infinity()
+            : absSq(velocity_ - (leftCutoff + tLeft * leftLegDirection));
     const float distSqRight =
-        ((tRight < 0.0F)
-             ? std::numeric_limits<float>::infinity()
-             : absSq(velocity_ - (rightCutoff + tRight * rightLegDirection)));
+        tRight < 0.0F
+            ? std::numeric_limits<float>::infinity()
+            : absSq(velocity_ - (rightCutoff + tRight * rightLegDirection));
 
     if (distSqCutoff <= distSqLeft && distSqCutoff <= distSqRight) {
       /* Project on cut-off line. */
@@ -506,6 +507,7 @@ void Agent::computeNewVelocity() {
       orcaLines_.push_back(line);
       continue;
     }
+
     if (distSqLeft <= distSqRight) {
       /* Project on left leg. */
       if (isLeftLegForeign) {
@@ -544,7 +546,7 @@ void Agent::computeNewVelocity() {
     const Vector2 relativeVelocity = velocity_ - other->velocity_;
     const float distSq = absSq(relativePosition);
     const float combinedRadius = radius_ + other->radius_;
-    const float combinedRadiusSq = sqr(combinedRadius);
+    const float combinedRadiusSq = combinedRadius * combinedRadius;
 
     Line line;
     Vector2 u;
@@ -558,7 +560,7 @@ void Agent::computeNewVelocity() {
       const float dotProduct1 = w * relativePosition;
 
       if (dotProduct1 < 0.0F &&
-          sqr(dotProduct1) > combinedRadiusSq * wLengthSq) {
+          dotProduct1 * dotProduct1 > combinedRadiusSq * wLengthSq) {
         /* Project on cut-off circle. */
         const float wLength = std::sqrt(wLengthSq);
         const Vector2 unitW = w / wLength;
@@ -643,8 +645,19 @@ void Agent::insertAgentNeighbor(const Agent *agent, float &rangeSq) {
 void Agent::insertObstacleNeighbor(const Obstacle *obstacle, float rangeSq) {
   const Obstacle *const nextObstacle = obstacle->nextObstacle_;
 
-  const float distSq =
-      distSqPointLineSegment(obstacle->point_, nextObstacle->point_, position_);
+  float distSq = 0.0F;
+  const float r = ((position_ - obstacle->point_) *
+                   (nextObstacle->point_ - obstacle->point_)) /
+                  absSq(nextObstacle->point_ - obstacle->point_);
+
+  if (r < 0.0F) {
+    distSq = absSq(position_ - obstacle->point_);
+  } else if (r > 1.0F) {
+    distSq = absSq(position_ - nextObstacle->point_);
+  } else {
+    distSq = absSq(position_ - (obstacle->point_ +
+                                r * (nextObstacle->point_ - obstacle->point_)));
+  }
 
   if (distSq < rangeSq) {
     obstacleNeighbors_.push_back(std::make_pair(distSq, obstacle));
