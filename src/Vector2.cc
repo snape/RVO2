@@ -51,7 +51,7 @@ Vector2::Vector2(float x, float y) : x_(x), y_(y) {}
 Vector2 Vector2::operator-() const { return Vector2(-x_, -y_); }
 
 float Vector2::operator*(const Vector2 &vector) const {
-  return x_ * vector.x() + y_ * vector.y();
+  return x_ * vector.x_ + y_ * vector.y_;
 }
 
 Vector2 Vector2::operator*(float scalar) const {
@@ -65,19 +65,19 @@ Vector2 Vector2::operator/(float scalar) const {
 }
 
 Vector2 Vector2::operator+(const Vector2 &vector) const {
-  return Vector2(x_ + vector.x(), y_ + vector.y());
+  return Vector2(x_ + vector.x_, y_ + vector.y_);
 }
 
 Vector2 Vector2::operator-(const Vector2 &vector) const {
-  return Vector2(x_ - vector.x(), y_ - vector.y());
+  return Vector2(x_ - vector.x_, y_ - vector.y_);
 }
 
 bool Vector2::operator==(const Vector2 &vector) const {
-  return x_ == vector.x() && y_ == vector.y();
+  return x_ == vector.x_ && y_ == vector.y_;
 }
 
 bool Vector2::operator!=(const Vector2 &vector) const {
-  return x_ != vector.x() || y_ != vector.y();
+  return x_ != vector.x_ || y_ != vector.y_;
 }
 
 Vector2 &Vector2::operator*=(float scalar) {
@@ -96,15 +96,15 @@ Vector2 &Vector2::operator/=(float scalar) {
 }
 
 Vector2 &Vector2::operator+=(const Vector2 &vector) {
-  x_ += vector.x();
-  y_ += vector.y();
+  x_ += vector.x_;
+  y_ += vector.y_;
 
   return *this;
 }
 
 Vector2 &Vector2::operator-=(const Vector2 &vector) {
-  x_ -= vector.x();
-  y_ -= vector.y();
+  x_ -= vector.x_;
+  y_ -= vector.y_;
 
   return *this;
 }
