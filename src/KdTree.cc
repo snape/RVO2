@@ -49,7 +49,7 @@
 namespace RVO {
 namespace {
 /**
- * @brief Maximum k-D tree node leafe size.
+ * @brief Maximum k-D tree node leaf size.
  */
 const std::size_t RVO_MAX_LEAF_SIZE = 10U;
 } /* namespace */
@@ -158,14 +158,15 @@ KdTree::ObstacleTreeNode::ObstacleTreeNode()
 
 KdTree::ObstacleTreeNode::~ObstacleTreeNode() {}
 
-KdTree::KdTree(RVOSimulator *sim) : obstacleTree_(NULL), sim_(sim) {}
+KdTree::KdTree(RVOSimulator *simulator)
+    : obstacleTree_(NULL), simulator_(simulator) {}
 
 KdTree::~KdTree() { deleteObstacleTree(obstacleTree_); }
 
 void KdTree::buildAgentTree() {
-  if (agents_.size() < sim_->agents_.size()) {
-    for (std::size_t i = agents_.size(); i < sim_->agents_.size(); ++i) {
-      agents_.push_back(sim_->agents_[i]);
+  if (agents_.size() < simulator_->agents_.size()) {
+    for (std::size_t i = agents_.size(); i < simulator_->agents_.size(); ++i) {
+      agents_.push_back(simulator_->agents_[i]);
     }
 
     agentTree_.resize(2U * agents_.size() - 1U);
@@ -241,10 +242,10 @@ void KdTree::buildAgentTreeRecursive(std::size_t begin, std::size_t end,
 void KdTree::buildObstacleTree() {
   deleteObstacleTree(obstacleTree_);
 
-  std::vector<Obstacle *> obstacles(sim_->obstacles_.size());
+  std::vector<Obstacle *> obstacles(simulator_->obstacles_.size());
 
-  for (std::size_t i = 0U; i < sim_->obstacles_.size(); ++i) {
-    obstacles[i] = sim_->obstacles_[i];
+  for (std::size_t i = 0U; i < simulator_->obstacles_.size(); ++i) {
+    obstacles[i] = simulator_->obstacles_[i];
   }
 
   obstacleTree_ = buildObstacleTreeRecursive(obstacles);
@@ -256,7 +257,7 @@ KdTree::ObstacleTreeNode *KdTree::buildObstacleTreeRecursive(
     return NULL;
   }
 
-  ObstacleTreeNode *const node = new ObstacleTreeNode;
+  ObstacleTreeNode *const node = new ObstacleTreeNode();
 
   std::size_t optimalSplit = 0U;
   std::size_t minLeft = obstacles.size();
@@ -267,7 +268,7 @@ KdTree::ObstacleTreeNode *KdTree::buildObstacleTreeRecursive(
     std::size_t rightSize = 0U;
 
     const Obstacle *const obstacleI1 = obstacles[i];
-    const Obstacle *const obstacleI2 = obstacleI1->nextObstacle_;
+    const Obstacle *const obstacleI2 = obstacleI1->next_;
 
     /* Compute optimal split node. */
     for (std::size_t j = 0U; j < obstacles.size(); ++j) {
@@ -276,7 +277,7 @@ KdTree::ObstacleTreeNode *KdTree::buildObstacleTreeRecursive(
       }
 
       const Obstacle *const obstacleJ1 = obstacles[j];
-      const Obstacle *const obstacleJ2 = obstacleJ1->nextObstacle_;
+      const Obstacle *const obstacleJ2 = obstacleJ1->next_;
 
       const float j1LeftOfI =
           leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ1->point_);
@@ -319,7 +320,7 @@ KdTree::ObstacleTreeNode *KdTree::buildObstacleTreeRecursive(
   const std::size_t i = optimalSplit;
 
   const Obstacle *const obstacleI1 = obstacles[i];
-  const Obstacle *const obstacleI2 = obstacleI1->nextObstacle_;
+  const Obstacle *const obstacleI2 = obstacleI1->next_;
 
   for (std::size_t j = 0U; j < obstacles.size(); ++j) {
     if (i == j) {
@@ -327,7 +328,7 @@ KdTree::ObstacleTreeNode *KdTree::buildObstacleTreeRecursive(
     }
 
     Obstacle *const obstacleJ1 = obstacles[j];
-    Obstacle *const obstacleJ2 = obstacleJ1->nextObstacle_;
+    Obstacle *const obstacleJ2 = obstacleJ1->next_;
 
     const float j1LeftOfI =
         leftOf(obstacleI1->point_, obstacleI2->point_, obstacleJ1->point_);
@@ -350,17 +351,17 @@ KdTree::ObstacleTreeNode *KdTree::buildObstacleTreeRecursive(
 
       Obstacle *const newObstacle = new Obstacle();
       newObstacle->point_ = splitpoint;
-      newObstacle->prevObstacle_ = obstacleJ1;
-      newObstacle->nextObstacle_ = obstacleJ2;
+      newObstacle->previous_ = obstacleJ1;
+      newObstacle->next_ = obstacleJ2;
       newObstacle->isConvex_ = true;
-      newObstacle->unitDir_ = obstacleJ1->unitDir_;
+      newObstacle->direction_ = obstacleJ1->direction_;
 
-      newObstacle->id_ = sim_->obstacles_.size();
+      newObstacle->id_ = simulator_->obstacles_.size();
 
-      sim_->obstacles_.push_back(newObstacle);
+      simulator_->obstacles_.push_back(newObstacle);
 
-      obstacleJ1->nextObstacle_ = newObstacle;
-      obstacleJ2->prevObstacle_ = newObstacle;
+      obstacleJ1->next_ = newObstacle;
+      obstacleJ2->previous_ = newObstacle;
 
       if (j1LeftOfI > 0.0F) {
         leftObstacles[leftCounter++] = obstacleJ1;
@@ -454,7 +455,7 @@ void KdTree::queryObstacleTreeRecursive(Agent *agent, float rangeSq,
   }
 
   const Obstacle *const obstacle1 = node->obstacle;
-  const Obstacle *const obstacle2 = obstacle1->nextObstacle_;
+  const Obstacle *const obstacle2 = obstacle1->next_;
 
   const float agentLeftOfLine =
       leftOf(obstacle1->point_, obstacle2->point_, agent->position_);
@@ -478,53 +479,53 @@ void KdTree::queryObstacleTreeRecursive(Agent *agent, float rangeSq,
   }
 }
 
-bool KdTree::queryVisibility(const Vector2 &q1, const Vector2 &q2,
+bool KdTree::queryVisibility(const Vector2 &vector1, const Vector2 &vector2,
                              float radius) const {
-  return queryVisibilityRecursive(q1, q2, radius, obstacleTree_);
+  return queryVisibilityRecursive(vector1, vector2, radius, obstacleTree_);
 }
 
-bool KdTree::queryVisibilityRecursive(const Vector2 &q1, const Vector2 &q2,
-                                      float radius,
+bool KdTree::queryVisibilityRecursive(const Vector2 &vector1,
+                                      const Vector2 &vector2, float radius,
                                       const ObstacleTreeNode *node) const {
   if (node == NULL) {
     return true;
   }
 
   const Obstacle *const obstacle1 = node->obstacle;
-  const Obstacle *const obstacle2 = obstacle1->nextObstacle_;
+  const Obstacle *const obstacle2 = obstacle1->next_;
 
-  const float q1LeftOfI = leftOf(obstacle1->point_, obstacle2->point_, q1);
-  const float q2LeftOfI = leftOf(obstacle1->point_, obstacle2->point_, q2);
+  const float q1LeftOfI = leftOf(obstacle1->point_, obstacle2->point_, vector1);
+  const float q2LeftOfI = leftOf(obstacle1->point_, obstacle2->point_, vector2);
   const float invLengthI = 1.0F / absSq(obstacle2->point_ - obstacle1->point_);
 
   if (q1LeftOfI >= 0.0F && q2LeftOfI >= 0.0F) {
-    return queryVisibilityRecursive(q1, q2, radius, node->left) &&
+    return queryVisibilityRecursive(vector1, vector2, radius, node->left) &&
            ((q1LeftOfI * q1LeftOfI * invLengthI >= radius * radius &&
              q2LeftOfI * q2LeftOfI * invLengthI >= radius * radius) ||
-            queryVisibilityRecursive(q1, q2, radius, node->right));
+            queryVisibilityRecursive(vector1, vector2, radius, node->right));
   }
 
   if (q1LeftOfI <= 0.0F && q2LeftOfI <= 0.0F) {
-    return queryVisibilityRecursive(q1, q2, radius, node->right) &&
+    return queryVisibilityRecursive(vector1, vector2, radius, node->right) &&
            ((q1LeftOfI * q1LeftOfI * invLengthI >= radius * radius &&
              q2LeftOfI * q2LeftOfI * invLengthI >= radius * radius) ||
-            queryVisibilityRecursive(q1, q2, radius, node->left));
+            queryVisibilityRecursive(vector1, vector2, radius, node->left));
   }
 
   if (q1LeftOfI >= 0.0F && q2LeftOfI <= 0.0F) {
     /* One can see through obstacle from left to right. */
-    return queryVisibilityRecursive(q1, q2, radius, node->left) &&
-           queryVisibilityRecursive(q1, q2, radius, node->right);
+    return queryVisibilityRecursive(vector1, vector2, radius, node->left) &&
+           queryVisibilityRecursive(vector1, vector2, radius, node->right);
   }
 
-  const float point1LeftOfQ = leftOf(q1, q2, obstacle1->point_);
-  const float point2LeftOfQ = leftOf(q1, q2, obstacle2->point_);
-  const float invLengthQ = 1.0F / absSq(q2 - q1);
+  const float point1LeftOfQ = leftOf(vector1, vector2, obstacle1->point_);
+  const float point2LeftOfQ = leftOf(vector1, vector2, obstacle2->point_);
+  const float invLengthQ = 1.0F / absSq(vector2 - vector1);
 
   return point1LeftOfQ * point2LeftOfQ >= 0.0F &&
          point1LeftOfQ * point1LeftOfQ * invLengthQ > radius * radius &&
          point2LeftOfQ * point2LeftOfQ * invLengthQ > radius * radius &&
-         queryVisibilityRecursive(q1, q2, radius, node->left) &&
-         queryVisibilityRecursive(q1, q2, radius, node->right);
+         queryVisibilityRecursive(vector1, vector2, radius, node->left) &&
+         queryVisibilityRecursive(vector1, vector2, radius, node->right);
 }
 } /* namespace RVO */

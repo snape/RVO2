@@ -241,9 +241,9 @@ void linearProgram3(const std::vector<Line> &lines, std::size_t numObstLines,
 }
 } /* namespace */
 
-Agent::Agent(RVOSimulator *sim)
-    : sim_(sim),
-      id_(0U) ,
+Agent::Agent(RVOSimulator *simulator)
+    : simulator_(simulator),
+      id_(0U),
       maxNeighbors_(0U),
       maxSpeed_(0.0F),
       neighborDist_(0.0F),
@@ -257,13 +257,13 @@ void Agent::computeNeighbors() {
   obstacleNeighbors_.clear();
   const float range = timeHorizonObst_ * maxSpeed_ + radius_;
   float rangeSq = range * range;
-  sim_->kdTree_->computeObstacleNeighbors(this, rangeSq);
+  simulator_->kdTree_->computeObstacleNeighbors(this, rangeSq);
 
   agentNeighbors_.clear();
 
   if (maxNeighbors_ > 0U) {
     rangeSq = neighborDist_ * neighborDist_;
-    sim_->kdTree_->computeAgentNeighbors(this, rangeSq);
+    simulator_->kdTree_->computeAgentNeighbors(this, rangeSq);
   }
 }
 
@@ -276,7 +276,7 @@ void Agent::computeNewVelocity() {
   /* Create obstacle ORCA lines. */
   for (std::size_t i = 0U; i < obstacleNeighbors_.size(); ++i) {
     const Obstacle *obstacle1 = obstacleNeighbors_[i].second;
-    const Obstacle *obstacle2 = obstacle1->nextObstacle_;
+    const Obstacle *obstacle2 = obstacle1->next_;
 
     const Vector2 relativePosition1 = obstacle1->point_ - position_;
     const Vector2 relativePosition2 = obstacle2->point_ - position_;
@@ -332,7 +332,7 @@ void Agent::computeNewVelocity() {
       /* Collision with right vertex. Ignore if non-convex or if it will be
        * taken care of by neighoring obstace */
       if (obstacle2->isConvex_ &&
-          det(relativePosition2, obstacle2->unitDir_) >= 0.0F) {
+          det(relativePosition2, obstacle2->direction_) >= 0.0F) {
         line.point = Vector2(0.0F, 0.0F);
         line.direction =
             normalize(Vector2(-relativePosition2.y(), relativePosition2.x()));
@@ -345,7 +345,7 @@ void Agent::computeNewVelocity() {
     if (s >= 0.0F && s <= 1.0F && distSqLine <= radiusSq) {
       /* Collision with obstacle segment. */
       line.point = Vector2(0.0F, 0.0F);
-      line.direction = -obstacle1->unitDir_;
+      line.direction = -obstacle1->direction_;
       orcaLines_.push_back(line);
       continue;
     }
@@ -408,7 +408,7 @@ void Agent::computeNewVelocity() {
                            distSq1;
       } else {
         /* Left vertex non-convex; left leg extends cut-off line. */
-        leftLegDirection = -obstacle1->unitDir_;
+        leftLegDirection = -obstacle1->direction_;
       }
 
       if (obstacle2->isConvex_) {
@@ -420,29 +420,29 @@ void Agent::computeNewVelocity() {
                             distSq2;
       } else {
         /* Right vertex non-convex; right leg extends cut-off line. */
-        rightLegDirection = obstacle1->unitDir_;
+        rightLegDirection = obstacle1->direction_;
       }
     }
 
     /* Legs can never point into neighboring edge when convex vertex, take
      * cutoff-line of neighboring edge instead. If velocity projected on
      * "foreign" leg, no constraint is added. */
-    const Obstacle *const leftNeighbor = obstacle1->prevObstacle_;
+    const Obstacle *const leftNeighbor = obstacle1->previous_;
 
     bool isLeftLegForeign = false;
     bool isRightLegForeign = false;
 
     if (obstacle1->isConvex_ &&
-        det(leftLegDirection, -leftNeighbor->unitDir_) >= 0.0F) {
+        det(leftLegDirection, -leftNeighbor->direction_) >= 0.0F) {
       /* Left leg points into obstacle. */
-      leftLegDirection = -leftNeighbor->unitDir_;
+      leftLegDirection = -leftNeighbor->direction_;
       isLeftLegForeign = true;
     }
 
     if (obstacle2->isConvex_ &&
-        det(rightLegDirection, obstacle2->unitDir_) <= 0.0F) {
+        det(rightLegDirection, obstacle2->direction_) <= 0.0F) {
       /* Right leg points into obstacle. */
-      rightLegDirection = obstacle2->unitDir_;
+      rightLegDirection = obstacle2->direction_;
       isRightLegForeign = true;
     }
 
@@ -500,7 +500,7 @@ void Agent::computeNewVelocity() {
 
     if (distSqCutoff <= distSqLeft && distSqCutoff <= distSqRight) {
       /* Project on cut-off line. */
-      line.direction = -obstacle1->unitDir_;
+      line.direction = -obstacle1->direction_;
       line.point =
           leftCutoff + radius_ * invTimeHorizonObst *
                            Vector2(-line.direction.y(), line.direction.x());
@@ -593,7 +593,7 @@ void Agent::computeNewVelocity() {
       }
     } else {
       /* Collision. Project on cut-off circle of time timeStep. */
-      const float invTimeStep = 1.0F / sim_->timeStep_;
+      const float invTimeStep = 1.0F / simulator_->timeStep_;
 
       /* Vector from cutoff center to relative velocity. */
       const Vector2 w = relativeVelocity - invTimeStep * relativePosition;
@@ -643,7 +643,7 @@ void Agent::insertAgentNeighbor(const Agent *agent, float &rangeSq) {
 }
 
 void Agent::insertObstacleNeighbor(const Obstacle *obstacle, float rangeSq) {
-  const Obstacle *const nextObstacle = obstacle->nextObstacle_;
+  const Obstacle *const nextObstacle = obstacle->next_;
 
   float distSq = 0.0F;
   const float r = ((position_ - obstacle->point_) *
@@ -675,6 +675,6 @@ void Agent::insertObstacleNeighbor(const Obstacle *obstacle, float rangeSq) {
 
 void Agent::update() {
   velocity_ = newVelocity_;
-  position_ += velocity_ * sim_->timeStep_;
+  position_ += velocity_ * simulator_->timeStep_;
 }
 } /* namespace RVO */

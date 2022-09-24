@@ -57,9 +57,9 @@ class Agent {
  private:
   /**
    * @brief     Constructs an agent instance.
-   * @param[in] sim The simulator instance.
+   * @param[in] simulator The simulator instance.
    */
-  explicit Agent(RVOSimulator *sim);
+  explicit Agent(RVOSimulator *simulator);
 
   /**
    * @brief Destroys this agent instance.
@@ -112,7 +112,7 @@ class Agent {
   Vector2 position_;
   Vector2 prefVelocity_;
   Vector2 velocity_;
-  RVOSimulator *sim_;
+  RVOSimulator *simulator_;
   std::size_t id_;
   std::size_t maxNeighbors_;
   float maxSpeed_;

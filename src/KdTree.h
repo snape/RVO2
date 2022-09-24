@@ -58,9 +58,9 @@ class KdTree {
 
   /**
    * @brief     Constructs a k-D tree instance.
-   * @param[in] sim The simulator instance.
+   * @param[in] simulator The simulator instance.
    */
-  explicit KdTree(RVOSimulator *sim);
+  explicit KdTree(RVOSimulator *simulator);
 
   /**
    * @brief Destroys this k-D tree instance.
@@ -143,28 +143,30 @@ class KdTree {
   /**
    * @brief     Queries the visibility between two points within a specified
    *            radius.
-   * @param[in] q1     The first point between which visibility is to be tested.
-   * @param[in] q2     The second point between which visibility is to be
-   *                   tested.
-   * @param[in] radius The radius within which visibility is to be tested.
+   * @param[in] vector1 The first point between which visibility is to be
+   * tested.
+   * @param[in] vector2 The second point between which visibility is to be
+   *                    tested.
+   * @param[in] radius  The radius within which visibility is to be tested.
    * @return    True if q1 and q2 are mutually visible within the radius; false
    *            otherwise.
    */
-  bool queryVisibility(const Vector2 &q1, const Vector2 &q2,
+  bool queryVisibility(const Vector2 &vector1, const Vector2 &vector2,
                        float radius) const;
 
   /**
    * @brief     Recursive function to query the visibility between two points
    * within a specified radius.
-   * @param[in] q1     The first point between which visibility is to be tested.
-   * @param[in] q2     The second point between which visibility is to be
-   *                   tested.
-   * @param[in] radius The radius within which visibility is to be tested.
-   * @param[in] node   The current obstacle k-D tree node.
+   * @param[in] vector1 The first point between which visibility is to be
+   * tested.
+   * @param[in] vector2 The second point between which visibility is to be
+   *                    tested.
+   * @param[in] radius  The radius within which visibility is to be tested.
+   * @param[in] node    The current obstacle k-D tree node.
    * @return    True if q1 and q2 are mutually visible within the radius; false
    *            otherwise.
    */
-  bool queryVisibilityRecursive(const Vector2 &q1, const Vector2 &q2,
+  bool queryVisibilityRecursive(const Vector2 &vector1, const Vector2 &vector2,
                                 float radius,
                                 const ObstacleTreeNode *node) const;
 
@@ -177,7 +179,7 @@ class KdTree {
   std::vector<Agent *> agents_;
   std::vector<AgentTreeNode> agentTree_;
   ObstacleTreeNode *obstacleTree_;
-  RVOSimulator *sim_;
+  RVOSimulator *simulator_;
 
   friend class Agent;
   friend class RVOSimulator;

@@ -75,36 +75,36 @@ namespace {
 const float RVO_TWO_PI = 6.28318530717958647692F;
 
 void setupScenario(
-    RVO::RVOSimulator *sim,
+    RVO::RVOSimulator *simulator,
     std::vector<RVO::Vector2> &goals) { /* NOLINT(runtime/references) */
 #if RVO_SEED_RANDOM_NUMBER_GENERATOR
   std::srand(static_cast<unsigned int>(std::time(NULL)));
 #endif /* RVO_SEED_RANDOM_NUMBER_GENERATOR */
 
   /* Specify the global time step of the simulation. */
-  sim->setTimeStep(0.25F);
+  simulator->setTimeStep(0.25F);
 
   /* Specify the default parameters for agents that are subsequently added. */
-  sim->setAgentDefaults(15.0F, 10U, 5.0F, 5.0F, 2.0F, 2.0F);
+  simulator->setAgentDefaults(15.0F, 10U, 5.0F, 5.0F, 2.0F, 2.0F);
 
   /* Add agents, specifying their start position, and store their goals on the
    * opposite side of the environment. */
   for (std::size_t i = 0U; i < 5U; ++i) {
     for (std::size_t j = 0U; j < 5U; ++j) {
-      sim->addAgent(RVO::Vector2(55.0F + static_cast<float>(i) * 10.0F,
-                                 55.0F + static_cast<float>(j) * 10.0F));
+      simulator->addAgent(RVO::Vector2(55.0F + static_cast<float>(i) * 10.0F,
+                                       55.0F + static_cast<float>(j) * 10.0F));
       goals.push_back(RVO::Vector2(-75.0F, -75.0F));
 
-      sim->addAgent(RVO::Vector2(-55.0F - static_cast<float>(i) * 10.0F,
-                                 55.0F + static_cast<float>(j) * 10.0F));
+      simulator->addAgent(RVO::Vector2(-55.0F - static_cast<float>(i) * 10.0F,
+                                       55.0F + static_cast<float>(j) * 10.0F));
       goals.push_back(RVO::Vector2(75.0F, -75.0F));
 
-      sim->addAgent(RVO::Vector2(55.0F + static_cast<float>(i) * 10.0F,
-                                 -55.0F - static_cast<float>(j) * 10.0F));
+      simulator->addAgent(RVO::Vector2(55.0F + static_cast<float>(i) * 10.0F,
+                                       -55.0F - static_cast<float>(j) * 10.0F));
       goals.push_back(RVO::Vector2(-75.0F, 75.0F));
 
-      sim->addAgent(RVO::Vector2(-55.0F - static_cast<float>(i) * 10.0F,
-                                 -55.0F - static_cast<float>(j) * 10.0F));
+      simulator->addAgent(RVO::Vector2(-55.0F - static_cast<float>(i) * 10.0F,
+                                       -55.0F - static_cast<float>(j) * 10.0F));
       goals.push_back(RVO::Vector2(75.0F, 75.0F));
     }
   }
@@ -136,44 +136,44 @@ void setupScenario(
   obstacle4.push_back(RVO::Vector2(-40.0F, -10.0F));
   obstacle4.push_back(RVO::Vector2(-40.0F, -40.0F));
 
-  sim->addObstacle(obstacle1);
-  sim->addObstacle(obstacle2);
-  sim->addObstacle(obstacle3);
-  sim->addObstacle(obstacle4);
+  simulator->addObstacle(obstacle1);
+  simulator->addObstacle(obstacle2);
+  simulator->addObstacle(obstacle3);
+  simulator->addObstacle(obstacle4);
 
   /* Process the obstacles so that they are accounted for in the simulation. */
-  sim->processObstacles();
+  simulator->processObstacles();
 }
 
 #if RVO_OUTPUT_TIME_AND_POSITIONS
-void updateVisualization(RVO::RVOSimulator *sim) {
+void updateVisualization(RVO::RVOSimulator *simulator) {
   /* Output the current global time. */
-  std::cout << sim->getGlobalTime();
+  std::cout << simulator->getGlobalTime();
 
   /* Output the current position of all the agents. */
-  for (std::size_t i = 0U; i < sim->getNumAgents(); ++i) {
-    std::cout << " " << sim->getAgentPosition(i);
+  for (std::size_t i = 0U; i < simulator->getNumAgents(); ++i) {
+    std::cout << " " << simulator->getAgentPosition(i);
   }
 
   std::cout << std::endl;
 }
 #endif /* RVO_OUTPUT_TIME_AND_POSITIONS */
 
-void setPreferredVelocities(RVO::RVOSimulator *sim,
+void setPreferredVelocities(RVO::RVOSimulator *simulator,
                             const std::vector<RVO::Vector2> &goals) {
   /* Set the preferred velocity to be a vector of unit magnitude (speed) in the
    * direction of the goal. */
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif /* _OPENMP */
-  for (int i = 0; i < static_cast<int>(sim->getNumAgents()); ++i) {
-    RVO::Vector2 goalVector = goals[i] - sim->getAgentPosition(i);
+  for (int i = 0; i < static_cast<int>(simulator->getNumAgents()); ++i) {
+    RVO::Vector2 goalVector = goals[i] - simulator->getAgentPosition(i);
 
     if (RVO::absSq(goalVector) > 1.0F) {
       goalVector = RVO::normalize(goalVector);
     }
 
-    sim->setAgentPrefVelocity(i, goalVector);
+    simulator->setAgentPrefVelocity(i, goalVector);
 
     /* Perturb a little to avoid deadlocks due to perfect symmetry. */
     float angle = static_cast<float>(std::rand()) * RVO_TWO_PI /
@@ -181,17 +181,17 @@ void setPreferredVelocities(RVO::RVOSimulator *sim,
     float dist = static_cast<float>(std::rand()) * 0.0001F /
                  static_cast<float>(RAND_MAX);
 
-    sim->setAgentPrefVelocity(
-        i, sim->getAgentPrefVelocity(i) +
+    simulator->setAgentPrefVelocity(
+        i, simulator->getAgentPrefVelocity(i) +
                dist * RVO::Vector2(std::cos(angle), std::sin(angle)));
   }
 }
 
-bool reachedGoal(RVO::RVOSimulator *sim,
+bool reachedGoal(RVO::RVOSimulator *simulator,
                  const std::vector<RVO::Vector2> &goals) {
   /* Check if all agents have reached their goals. */
-  for (std::size_t i = 0U; i < sim->getNumAgents(); ++i) {
-    if (RVO::absSq(sim->getAgentPosition(i) - goals[i]) > 400.0F) {
+  for (std::size_t i = 0U; i < simulator->getNumAgents(); ++i) {
+    if (RVO::absSq(simulator->getAgentPosition(i) - goals[i]) > 400.0F) {
       return false;
     }
   }
@@ -205,21 +205,21 @@ int main() {
   std::vector<RVO::Vector2> goals;
 
   /* Create a new simulator instance. */
-  RVO::RVOSimulator *sim = new RVO::RVOSimulator();
+  RVO::RVOSimulator *simulator = new RVO::RVOSimulator();
 
   /* Set up the scenario. */
-  setupScenario(sim, goals);
+  setupScenario(simulator, goals);
 
   /* Perform and manipulate the simulation. */
   do {
 #if RVO_OUTPUT_TIME_AND_POSITIONS
-    updateVisualization(sim);
+    updateVisualization(simulator);
 #endif /* RVO_OUTPUT_TIME_AND_POSITIONS */
-    setPreferredVelocities(sim, goals);
-    sim->doStep();
-  } while (!reachedGoal(sim, goals));
+    setPreferredVelocities(simulator, goals);
+    simulator->doStep();
+  } while (!reachedGoal(simulator, goals));
 
-  delete sim;
+  delete simulator;
 
   return 0;
 }

@@ -90,7 +90,6 @@ RVOSimulator::RVOSimulator(float timeStep, float neighborDist,
   defaultAgent_->radius_ = radius;
   defaultAgent_->timeHorizon_ = timeHorizon;
   defaultAgent_->timeHorizonObst_ = timeHorizonObst;
-
 }
 
 RVOSimulator::~RVOSimulator() {
@@ -165,16 +164,16 @@ std::size_t RVOSimulator::addObstacle(const std::vector<Vector2> &vertices) {
     obstacle->point_ = vertices[i];
 
     if (i != 0U) {
-      obstacle->prevObstacle_ = obstacles_.back();
-      obstacle->prevObstacle_->nextObstacle_ = obstacle;
+      obstacle->previous_ = obstacles_.back();
+      obstacle->previous_->next_ = obstacle;
     }
 
     if (i == vertices.size() - 1U) {
-      obstacle->nextObstacle_ = obstacles_[obstacleNo];
-      obstacle->nextObstacle_->prevObstacle_ = obstacle;
+      obstacle->next_ = obstacles_[obstacleNo];
+      obstacle->next_->previous_ = obstacle;
     }
 
-    obstacle->unitDir_ = normalize(
+    obstacle->direction_ = normalize(
         vertices[(i == vertices.size() - 1U ? 0U : i + 1U)] - vertices[i]);
 
     if (vertices.size() == 2U) {
@@ -283,11 +282,11 @@ const Vector2 &RVOSimulator::getObstacleVertex(std::size_t vertexNo) const {
 }
 
 std::size_t RVOSimulator::getNextObstacleVertexNo(std::size_t vertexNo) const {
-  return obstacles_[vertexNo]->nextObstacle_->id_;
+  return obstacles_[vertexNo]->next_->id_;
 }
 
 std::size_t RVOSimulator::getPrevObstacleVertexNo(std::size_t vertexNo) const {
-  return obstacles_[vertexNo]->prevObstacle_->id_;
+  return obstacles_[vertexNo]->previous_->id_;
 }
 
 void RVOSimulator::processObstacles() { kdTree_->buildObstacleTree(); }

@@ -224,19 +224,19 @@ std::vector<RVO::Vector2> goals;
 
 int main() {
   // Create a new simulator instance.
-  RVO::RVOSimulator *sim = new RVO::RVOSimulator();
+  RVO::RVOSimulator *simulator = new RVO::RVOSimulator();
 
   // Set up the scenario.
- setupScenario(sim);
+ setupScenario(simulator);
 
   // Perform (and manipulate) the simulation.
   do {
-    updateVisualization(sim);
-    setPreferredVelocities(sim);
-    sim->doStep();
-  } while (!reachedGoal(sim));
+    updateVisualization(simulator);
+    setPreferredVelocities(simulator);
+    simulator->doStep();
+  } while (!reachedGoal(simulator));
 
-  delete sim;
+  delete simulator;
 }
 @endcode
 
@@ -281,22 +281,22 @@ around a rectangular obstacle in the middle.
 #include <cstddef>
 
 namespace {
-void setupScenario(RVO::RVOSimulator *sim) {
+void setupScenario(RVO::RVOSimulator *simulator) {
   // Specify global time step of the simulation.
-  sim->setTimeStep(0.25F);
+  simulator->setTimeStep(0.25F);
 
   // Specify default parameters for agents that are subsequently added.
-  sim->setAgentDefaults(15.0F, 10U, 10.0F, 5.0F, 2.0F, 2.0F);
+  simulator->setAgentDefaults(15.0F, 10U, 10.0F, 5.0F, 2.0F, 2.0F);
 
   // Add agents, specifying their start position.
-  sim->addAgent(RVO::Vector2(-50.0F, -50.0F));
-  sim->addAgent(RVO::Vector2(50.0F, -50.0F));
-  sim->addAgent(RVO::Vector2(50.0F, 50.0F));
-  sim->addAgent(RVO::Vector2(-50.0F, 50.0F));
+  simulator->addAgent(RVO::Vector2(-50.0F, -50.0F));
+  simulator->addAgent(RVO::Vector2(50.0F, -50.0F));
+  simulator->addAgent(RVO::Vector2(50.0F, 50.0F));
+  simulator->addAgent(RVO::Vector2(-50.0F, 50.0F));
 
   // Create goals. The simulator is unaware of these.
-  for (std::size_t i = 0U; i < sim->getNumAgents(); ++i) {
-    goals.push_back(-sim->getAgentPosition(i));
+  for (std::size_t i = 0U; i < simulator->getNumAgents(); ++i) {
+    goals.push_back(-simulator->getAgentPosition(i));
   }
 
   // Add polygonal obstacle(s), specifying vertices in counterclockwise order.
@@ -306,10 +306,10 @@ void setupScenario(RVO::RVOSimulator *sim) {
   vertices.push_back(RVO::Vector2(7.0F, 20.0F));
   vertices.push_back(RVO::Vector2(-7.0F, 20.0F));
 
-  sim->addObstacle(vertices);
+  simulator->addObstacle(vertices);
 
   // Process obstacles so that they are accounted for in the simulation.
-  sim->processObstacles();
+  simulator->processObstacles();
 }
 }  // namespace
 @endcode
@@ -335,13 +335,13 @@ example that returns true if all agents are within one radius of their goals.
 #include <iostream>
 
 namespace {
-void updateVisualization(RVO::RVOSimulator *sim) {
+void updateVisualization(RVO::RVOSimulator *simulator) {
   // Output the current global time.
-  std::cout << sim->getGlobalTime() << " ";
+  std::cout << simulator->getGlobalTime() << " ";
 
   // Output the position for all the agents.
-  for (std::size_t i = 0U; i < sim->getNumAgents(); ++i) {
-    std::cout << sim->getAgentPosition(i) << " ";
+  for (std::size_t i = 0U; i < simulator->getNumAgents(); ++i) {
+    std::cout << simulator->getAgentPosition(i) << " ";
   }
 
   std::cout << std::endl;
@@ -354,11 +354,11 @@ void updateVisualization(RVO::RVOSimulator *sim) {
 
 #include <cstddef>
 
-bool reachedGoal(RVO::RVOSimulator *sim) {
+bool reachedGoal(RVO::RVOSimulator *simulator) {
   // Check whether all agents have arrived at their goals.
-  for (std::size_t i = 0U; i < sim->getNumAgents(); ++i) {
-    if (absSq(goals[i] - sim->getAgentPosition(i)) >
-        sim->getAgentRadius(i) * sim->getAgentRadius(i)) {
+  for (std::size_t i = 0U; i < simulator->getNumAgents(); ++i) {
+    if (absSq(goals[i] - simulator->getAgentPosition(i)) >
+        simulator->getAgentRadius(i) * simulator->getAgentRadius(i)) {
       // Agent is further away from its goal than one radius.
       return false;
     }
@@ -403,18 +403,19 @@ this a roadmap or other global planning techniques may be used (see one of the
 #include <cstddef>
 
 namespace {
-void setPreferredVelocities(RVO::RVOSimulator *sim) {
+void setPreferredVelocities(RVO::RVOSimulator *simulator) {
   // Set the preferred velocity for each agent.
-  for (std::size_t i = 0U; i < sim->getNumAgents(); ++i) {
-    if (absSq(goals[i] - sim->getAgentPosition(i)) <
-        sim->getAgentRadius(i) * sim->getAgentRadius(i) ) {
+  for (std::size_t i = 0U; i < simulator->getNumAgents(); ++i) {
+    if (absSq(goals[i] - simulator->getAgentPosition(i)) <
+        simulator->getAgentRadius(i) * simulator->getAgentRadius(i) ) {
       // Agent is within one radius of its goal, set preferred velocity to zero.
-      sim->setAgentPrefVelocity(i, RVO::Vector2(0.0F, 0.0F));
+      simulator->setAgentPrefVelocity(i, RVO::Vector2(0.0F, 0.0F));
     } else {
       // Agent is far away from its goal, set preferred velocity as unit vector
       // towards agent's goal.
-      sim->setAgentPrefVelocity(i,
-                                normalize(goals[i] - sim->getAgentPosition(i)));
+      simulator->setAgentPrefVelocity(i,
+                                normalize(goals[i] -
+simulator->getAgentPosition(i)));
     }
   }
 }
