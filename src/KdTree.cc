@@ -80,6 +80,11 @@ class KdTree::AgentTreeNode {
   std::size_t left;
 
   /**
+   * @brief The right node number.
+   */
+  std::size_t right;
+
+  /**
    * @brief The maximum x-coordinate.
    */
   float maxX;
@@ -98,22 +103,17 @@ class KdTree::AgentTreeNode {
    * @brief The minimum y-coordinate.
    */
   float minY;
-
-  /**
-   * @brief The right node number.
-   */
-  std::size_t right;
 };
 
 KdTree::AgentTreeNode::AgentTreeNode()
     : begin(0U),
       end(0U),
       left(0U),
+      right(0U),
       maxX(0.0F),
       maxY(0.0F),
       minX(0.0F),
-      minY(0.0F),
-      right(0U) {}
+      minY(0.0F) {}
 
 /**
  * @brief Defines an obstacle k-D tree node.
@@ -131,14 +131,14 @@ class KdTree::ObstacleTreeNode {
   ~ObstacleTreeNode();
 
   /**
-   * @brief The left obstacle tree node.
-   */
-  ObstacleTreeNode *left;
-
-  /**
    * @brief The obstacle number.
    */
   const Obstacle *obstacle;
+
+  /**
+   * @brief The left obstacle tree node.
+   */
+  ObstacleTreeNode *left;
 
   /**
    * @brief The right obstacle tree node.
@@ -154,7 +154,7 @@ class KdTree::ObstacleTreeNode {
 };
 
 KdTree::ObstacleTreeNode::ObstacleTreeNode()
-    : left(NULL), obstacle(NULL), right(NULL) {}
+    : obstacle(NULL), left(NULL), right(NULL) {}
 
 KdTree::ObstacleTreeNode::~ObstacleTreeNode() {}
 

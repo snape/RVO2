@@ -106,21 +106,21 @@ class Agent {
   Agent &operator=(const Agent &other);
 
   std::vector<std::pair<float, const Agent *> > agentNeighbors_;
+  std::vector<std::pair<float, const Obstacle *> > obstacleNeighbors_;
+  std::vector<Line> orcaLines_;
+  Vector2 newVelocity_;
+  Vector2 position_;
+  Vector2 prefVelocity_;
+  Vector2 velocity_;
+  RVOSimulator *sim_;
+  std::size_t id_;
   std::size_t maxNeighbors_;
   float maxSpeed_;
   float neighborDist_;
-  Vector2 newVelocity_;
-  std::vector<std::pair<float, const Obstacle *> > obstacleNeighbors_;
-  std::vector<Line> orcaLines_;
-  Vector2 position_;
-  Vector2 prefVelocity_;
   float radius_;
-  RVOSimulator *sim_;
   float timeHorizon_;
   float timeHorizonObst_;
-  Vector2 velocity_;
-
-  std::size_t id_;
+  char padding_[4];
 
   friend class KdTree;
   friend class RVOSimulator;

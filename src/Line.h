@@ -54,14 +54,14 @@ class RVO_EXPORT Line {
   Line();
 
   /**
-   * @brief A point on the directed line.
-   */
-  Vector2 point;
-
-  /**
    * @brief The direction of the directed line.
    */
   Vector2 direction;
+
+  /**
+   * @brief A point on the directed line.
+   */
+  Vector2 point;
 };
 } /* namespace RVO */
 

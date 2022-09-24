@@ -45,18 +45,18 @@
 #include "Export.h"
 
 namespace RVO {
+class Agent;
+class KdTree;
+class Line;
+class Obstacle;
+class Vector2;
+
 /**
  * @relates RVOSimulator
  * @brief   Error value. A value equal to the largest unsigned integer that is
  *          returned in case of an error by functions in RVO::RVOSimulator.
  */
 RVO_EXPORT extern const std::size_t RVO_ERROR;
-
-class Agent;
-class KdTree;
-class Line;
-class Obstacle;
-class Vector2;
 
 /**
  * @brief Defines the simulation. The main class of the library that contains
@@ -653,10 +653,10 @@ class RVO_EXPORT RVOSimulator {
   RVOSimulator &operator=(const RVOSimulator &other);
 
   std::vector<Agent *> agents_;
-  Agent *defaultAgent_;
-  float globalTime_;
-  KdTree *kdTree_;
   std::vector<Obstacle *> obstacles_;
+  Agent *defaultAgent_;
+  KdTree *kdTree_;
+  float globalTime_;
   float timeStep_;
 
   friend class Agent;

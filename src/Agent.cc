@@ -242,14 +242,14 @@ void linearProgram3(const std::vector<Line> &lines, std::size_t numObstLines,
 } /* namespace */
 
 Agent::Agent(RVOSimulator *sim)
-    : maxNeighbors_(0U),
+    : sim_(sim),
+      id_(0U) ,
+      maxNeighbors_(0U),
       maxSpeed_(0.0F),
       neighborDist_(0.0F),
       radius_(0.0F),
-      sim_(sim),
       timeHorizon_(0.0F),
-      timeHorizonObst_(0.0F),
-      id_(0U) {}
+      timeHorizonObst_(0.0F) {}
 
 Agent::~Agent() {}
 

@@ -65,13 +65,13 @@ class Obstacle {
   /* Not implemented. */
   Obstacle &operator=(const Obstacle &other);
 
-  bool isConvex_;
-  Obstacle *nextObstacle_;
   Vector2 point_;
-  Obstacle *prevObstacle_;
   Vector2 unitDir_;
-
+  Obstacle *nextObstacle_;
+  Obstacle *prevObstacle_;
   std::size_t id_;
+  bool isConvex_;
+  char padding_[7];
 
   friend class Agent;
   friend class KdTree;

@@ -40,7 +40,7 @@
 
 namespace RVO {
 Obstacle::Obstacle()
-    : isConvex_(false), nextObstacle_(NULL), prevObstacle_(NULL), id_(0U) {}
+    : nextObstacle_(NULL), prevObstacle_(NULL), id_(0U), isConvex_(false) {}
 
 Obstacle::~Obstacle() {}
 

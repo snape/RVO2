@@ -56,23 +56,16 @@ const std::size_t RVO_ERROR = std::numeric_limits<std::size_t>::max();
 
 RVOSimulator::RVOSimulator()
     : defaultAgent_(NULL),
-      globalTime_(0.0F),
       kdTree_(new KdTree(this)),
+      globalTime_(0.0F),
       timeStep_(0.0F) {}
 
 RVOSimulator::RVOSimulator(float timeStep, float neighborDist,
                            std::size_t maxNeighbors, float timeHorizon,
                            float timeHorizonObst, float radius, float maxSpeed)
-    : RVOSimulator(timeStep, neighborDist, maxNeighbors, timeHorizon,
-                   timeHorizonObst, radius, maxSpeed, Vector2()) {}
-
-RVOSimulator::RVOSimulator(float timeStep, float neighborDist,
-                           std::size_t maxNeighbors, float timeHorizon,
-                           float timeHorizonObst, float radius, float maxSpeed,
-                           const Vector2 &velocity)
     : defaultAgent_(new Agent(this)),
-      globalTime_(0.0F),
       kdTree_(new KdTree(this)),
+      globalTime_(0.0F),
       timeStep_(timeStep) {
   defaultAgent_->maxNeighbors_ = maxNeighbors;
   defaultAgent_->maxSpeed_ = maxSpeed;
@@ -80,7 +73,24 @@ RVOSimulator::RVOSimulator(float timeStep, float neighborDist,
   defaultAgent_->radius_ = radius;
   defaultAgent_->timeHorizon_ = timeHorizon;
   defaultAgent_->timeHorizonObst_ = timeHorizonObst;
+}
+
+RVOSimulator::RVOSimulator(float timeStep, float neighborDist,
+                           std::size_t maxNeighbors, float timeHorizon,
+                           float timeHorizonObst, float radius, float maxSpeed,
+                           const Vector2 &velocity)
+    : defaultAgent_(new Agent(this)),
+      kdTree_(new KdTree(this)),
+      globalTime_(0.0F),
+      timeStep_(timeStep) {
   defaultAgent_->velocity_ = velocity;
+  defaultAgent_->maxNeighbors_ = maxNeighbors;
+  defaultAgent_->maxSpeed_ = maxSpeed;
+  defaultAgent_->neighborDist_ = neighborDist;
+  defaultAgent_->radius_ = radius;
+  defaultAgent_->timeHorizon_ = timeHorizon;
+  defaultAgent_->timeHorizonObst_ = timeHorizonObst;
+
 }
 
 RVOSimulator::~RVOSimulator() {
@@ -102,18 +112,15 @@ std::size_t RVOSimulator::addAgent(const Vector2 &position) {
   }
 
   Agent *agent = new Agent(this);
-
   agent->position_ = position;
+  agent->velocity_ = defaultAgent_->velocity_;
+  agent->id_ = agents_.size();
   agent->maxNeighbors_ = defaultAgent_->maxNeighbors_;
   agent->maxSpeed_ = defaultAgent_->maxSpeed_;
   agent->neighborDist_ = defaultAgent_->neighborDist_;
   agent->radius_ = defaultAgent_->radius_;
   agent->timeHorizon_ = defaultAgent_->timeHorizon_;
   agent->timeHorizonObst_ = defaultAgent_->timeHorizonObst_;
-  agent->velocity_ = defaultAgent_->velocity_;
-
-  agent->id_ = agents_.size();
-
   agents_.push_back(agent);
 
   return agents_.size() - 1U;
@@ -132,18 +139,15 @@ std::size_t RVOSimulator::addAgent(const Vector2 &position, float neighborDist,
                                    float timeHorizonObst, float radius,
                                    float maxSpeed, const Vector2 &velocity) {
   Agent *agent = new Agent(this);
-
   agent->position_ = position;
+  agent->velocity_ = velocity;
+  agent->id_ = agents_.size();
   agent->maxNeighbors_ = maxNeighbors;
   agent->maxSpeed_ = maxSpeed;
   agent->neighborDist_ = neighborDist;
   agent->radius_ = radius;
   agent->timeHorizon_ = timeHorizon;
   agent->timeHorizonObst_ = timeHorizonObst;
-  agent->velocity_ = velocity;
-
-  agent->id_ = agents_.size();
-
   agents_.push_back(agent);
 
   return agents_.size() - 1U;
