@@ -120,7 +120,6 @@ class Agent {
   float radius_;
   float timeHorizon_;
   float timeHorizonObst_;
-  char padding_[4];
 
   friend class KdTree;
   friend class RVOSimulator;

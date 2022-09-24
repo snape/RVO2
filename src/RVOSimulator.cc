@@ -106,23 +106,23 @@ RVOSimulator::~RVOSimulator() {
 }
 
 std::size_t RVOSimulator::addAgent(const Vector2 &position) {
-  if (defaultAgent_ == NULL) {
-    return RVO_ERROR;
+  if (defaultAgent_ != NULL) {
+    Agent *const agent = new Agent(this);
+    agent->position_ = position;
+    agent->velocity_ = defaultAgent_->velocity_;
+    agent->id_ = agents_.size();
+    agent->maxNeighbors_ = defaultAgent_->maxNeighbors_;
+    agent->maxSpeed_ = defaultAgent_->maxSpeed_;
+    agent->neighborDist_ = defaultAgent_->neighborDist_;
+    agent->radius_ = defaultAgent_->radius_;
+    agent->timeHorizon_ = defaultAgent_->timeHorizon_;
+    agent->timeHorizonObst_ = defaultAgent_->timeHorizonObst_;
+    agents_.push_back(agent);
+
+    return agents_.size() - 1U;
   }
 
-  Agent *agent = new Agent(this);
-  agent->position_ = position;
-  agent->velocity_ = defaultAgent_->velocity_;
-  agent->id_ = agents_.size();
-  agent->maxNeighbors_ = defaultAgent_->maxNeighbors_;
-  agent->maxSpeed_ = defaultAgent_->maxSpeed_;
-  agent->neighborDist_ = defaultAgent_->neighborDist_;
-  agent->radius_ = defaultAgent_->radius_;
-  agent->timeHorizon_ = defaultAgent_->timeHorizon_;
-  agent->timeHorizonObst_ = defaultAgent_->timeHorizonObst_;
-  agents_.push_back(agent);
-
-  return agents_.size() - 1U;
+  return RVO_ERROR;
 }
 
 std::size_t RVOSimulator::addAgent(const Vector2 &position, float neighborDist,
@@ -137,7 +137,7 @@ std::size_t RVOSimulator::addAgent(const Vector2 &position, float neighborDist,
                                    std::size_t maxNeighbors, float timeHorizon,
                                    float timeHorizonObst, float radius,
                                    float maxSpeed, const Vector2 &velocity) {
-  Agent *agent = new Agent(this);
+  Agent *const agent = new Agent(this);
   agent->position_ = position;
   agent->velocity_ = velocity;
   agent->id_ = agents_.size();
@@ -153,43 +153,44 @@ std::size_t RVOSimulator::addAgent(const Vector2 &position, float neighborDist,
 }
 
 std::size_t RVOSimulator::addObstacle(const std::vector<Vector2> &vertices) {
-  if (vertices.size() < 2U) {
-    return RVO_ERROR;
+  if (vertices.size() > 1U) {
+    const std::size_t obstacleNo = obstacles_.size();
+
+    for (std::size_t i = 0U; i < vertices.size(); ++i) {
+      Obstacle *const obstacle = new Obstacle();
+      obstacle->point_ = vertices[i];
+
+      if (i != 0U) {
+        obstacle->previous_ = obstacles_.back();
+        obstacle->previous_->next_ = obstacle;
+      }
+
+      if (i == vertices.size() - 1U) {
+        obstacle->next_ = obstacles_[obstacleNo];
+        obstacle->next_->previous_ = obstacle;
+      }
+
+      obstacle->direction_ = normalize(
+          vertices[(i == vertices.size() - 1U ? 0U : i + 1U)] - vertices[i]);
+
+      if (vertices.size() == 2U) {
+        obstacle->isConvex_ = true;
+      } else {
+        obstacle->isConvex_ =
+            leftOf(vertices[i == 0U ? vertices.size() - 1U : i - 1U],
+                   vertices[i],
+                   vertices[i == vertices.size() - 1U ? 0U : i + 1U]) >= 0.0F;
+      }
+
+      obstacle->id_ = obstacles_.size();
+
+      obstacles_.push_back(obstacle);
+    }
+
+    return obstacleNo;
   }
 
-  const std::size_t obstacleNo = obstacles_.size();
-
-  for (std::size_t i = 0U; i < vertices.size(); ++i) {
-    Obstacle *obstacle = new Obstacle();
-    obstacle->point_ = vertices[i];
-
-    if (i != 0U) {
-      obstacle->previous_ = obstacles_.back();
-      obstacle->previous_->next_ = obstacle;
-    }
-
-    if (i == vertices.size() - 1U) {
-      obstacle->next_ = obstacles_[obstacleNo];
-      obstacle->next_->previous_ = obstacle;
-    }
-
-    obstacle->direction_ = normalize(
-        vertices[(i == vertices.size() - 1U ? 0U : i + 1U)] - vertices[i]);
-
-    if (vertices.size() == 2U) {
-      obstacle->isConvex_ = true;
-    } else {
-      obstacle->isConvex_ =
-          leftOf(vertices[i == 0U ? vertices.size() - 1U : i - 1U], vertices[i],
-                 vertices[i == vertices.size() - 1U ? 0U : i + 1U]) >= 0.0F;
-    }
-
-    obstacle->id_ = obstacles_.size();
-
-    obstacles_.push_back(obstacle);
-  }
-
-  return obstacleNo;
+  return RVO_ERROR;
 }
 
 void RVOSimulator::doStep() {

@@ -168,6 +168,7 @@ std::size_t linearProgram2(const std::vector<Line> &lines, float radius,
       if (!linearProgram1(lines, i, radius, optVelocity, directionOpt,
                           result)) {
         result = tempResult;
+
         return i;
       }
     }
@@ -195,12 +196,13 @@ void linearProgram3(const std::vector<Line> &lines, std::size_t numObstLines,
     if (det(lines[i].direction, lines[i].point - result) > distance) {
       /* Result does not satisfy constraint of line i. */
       std::vector<Line> projLines(
-          lines.begin(), lines.begin() + static_cast<ptrdiff_t>(numObstLines));
+          lines.begin(),
+          lines.begin() + static_cast<std::ptrdiff_t>(numObstLines));
 
       for (std::size_t j = numObstLines; j < i; ++j) {
         Line line;
 
-        float determinant = det(lines[i].direction, lines[j].direction);
+        const float determinant = det(lines[i].direction, lines[j].direction);
 
         if (std::fabs(determinant) <= RVO_EPSILON) {
           /* Line i and line j are parallel. */
@@ -256,13 +258,12 @@ Agent::~Agent() {}
 void Agent::computeNeighbors() {
   obstacleNeighbors_.clear();
   const float range = timeHorizonObst_ * maxSpeed_ + radius_;
-  float rangeSq = range * range;
-  simulator_->kdTree_->computeObstacleNeighbors(this, rangeSq);
+  simulator_->kdTree_->computeObstacleNeighbors(this, range * range);
 
   agentNeighbors_.clear();
 
   if (maxNeighbors_ > 0U) {
-    rangeSq = neighborDist_ * neighborDist_;
+    float rangeSq = neighborDist_ * neighborDist_;
     simulator_->kdTree_->computeAgentNeighbors(this, rangeSq);
   }
 }
@@ -451,14 +452,15 @@ void Agent::computeNewVelocity() {
         invTimeHorizonObst * (obstacle1->point_ - position_);
     const Vector2 rightCutoff =
         invTimeHorizonObst * (obstacle2->point_ - position_);
-    const Vector2 cutoffVec = rightCutoff - leftCutoff;
+    const Vector2 cutoffVector = rightCutoff - leftCutoff;
 
     /* Project current velocity on velocity obstacle. */
 
     /* Check if current velocity is projected on cutoff circles. */
-    const float t = obstacle1 == obstacle2 ? 0.5F
-                                           : (velocity_ - leftCutoff) *
-                                                 cutoffVec / absSq(cutoffVec);
+    const float t =
+        obstacle1 == obstacle2
+            ? 0.5F
+            : (velocity_ - leftCutoff) * cutoffVector / absSq(cutoffVector);
     const float tLeft = (velocity_ - leftCutoff) * leftLegDirection;
     const float tRight = (velocity_ - rightCutoff) * rightLegDirection;
 
@@ -488,7 +490,7 @@ void Agent::computeNewVelocity() {
     const float distSqCutoff =
         (t < 0.0F || t > 1.0F || obstacle1 == obstacle2)
             ? std::numeric_limits<float>::infinity()
-            : absSq(velocity_ - (leftCutoff + t * cutoffVec));
+            : absSq(velocity_ - (leftCutoff + t * cutoffVector));
     const float distSqLeft =
         tLeft < 0.0F
             ? std::numeric_limits<float>::infinity()
@@ -557,10 +559,10 @@ void Agent::computeNewVelocity() {
       /* Vector from cutoff center to relative velocity. */
       const float wLengthSq = absSq(w);
 
-      const float dotProduct1 = w * relativePosition;
+      const float dotProduct = w * relativePosition;
 
-      if (dotProduct1 < 0.0F &&
-          dotProduct1 * dotProduct1 > combinedRadiusSq * wLengthSq) {
+      if (dotProduct < 0.0F &&
+          dotProduct * dotProduct > combinedRadiusSq * wLengthSq) {
         /* Project on cut-off circle. */
         const float wLength = std::sqrt(wLengthSq);
         const Vector2 unitW = w / wLength;
@@ -587,9 +589,8 @@ void Agent::computeNewVelocity() {
                            distSq;
         }
 
-        const float dotProduct2 = relativeVelocity * line.direction;
-
-        u = dotProduct2 * line.direction - relativeVelocity;
+        u = (relativeVelocity * line.direction) * line.direction -
+            relativeVelocity;
       }
     } else {
       /* Collision. Project on cut-off circle of time timeStep. */
@@ -609,7 +610,7 @@ void Agent::computeNewVelocity() {
     orcaLines_.push_back(line);
   }
 
-  std::size_t lineFail =
+  const std::size_t lineFail =
       linearProgram2(orcaLines_, maxSpeed_, prefVelocity_, false, newVelocity_);
 
   if (lineFail < orcaLines_.size()) {

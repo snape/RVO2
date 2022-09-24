@@ -89,7 +89,7 @@ class KdTree {
   /**
    * @brief     Recursive function to build an obstacle k-D tree.
    * @param[in] obstacles List of obstacles from which to build the obstacle k-D
-   * tree.
+   *                      tree.
    */
   ObstacleTreeNode *buildObstacleTreeRecursive(
       const std::vector<Obstacle *> &obstacles);
@@ -156,9 +156,9 @@ class KdTree {
 
   /**
    * @brief     Recursive function to query the visibility between two points
-   * within a specified radius.
+   *            within a specified radius.
    * @param[in] vector1 The first point between which visibility is to be
-   * tested.
+   *                    tested.
    * @param[in] vector2 The second point between which visibility is to be
    *                    tested.
    * @param[in] radius  The radius within which visibility is to be tested.
