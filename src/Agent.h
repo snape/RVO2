@@ -47,8 +47,8 @@
 #include "Vector2.h"
 
 namespace RVO {
+class KdTree;
 class Obstacle;
-class RVOSimulator;
 
 /**
  * @brief Defines an agent in the simulation.
@@ -56,10 +56,9 @@ class RVOSimulator;
 class Agent {
  private:
   /**
-   * @brief     Constructs an agent instance.
-   * @param[in] simulator The simulator instance.
+   * @brief Constructs an agent instance.
    */
-  explicit Agent(RVOSimulator *simulator);
+  Agent();
 
   /**
    * @brief Destroys this agent instance.
@@ -67,14 +66,17 @@ class Agent {
   ~Agent();
 
   /**
-   * @brief Computes the neighbors of this agent.
+   * @brief     Computes the neighbors of this agent.
+   * @param[in] kdTree A pointer to the k-D trees for agents and static
+   *                   obstacles in the simulation.
    */
-  void computeNeighbors();
+  void computeNeighbors(const KdTree *kdTree);
 
   /**
-   * @brief Computes the new velocity of this agent.
+   * @brief     Computes the new velocity of this agent.
+   * @param[in] timeStep The time step of the simulation.
    */
-  void computeNewVelocity();
+  void computeNewVelocity(float timeStep);
 
   /**
    * @brief          Inserts an agent neighbor into the set of neighbors of this
@@ -94,10 +96,11 @@ class Agent {
   void insertObstacleNeighbor(const Obstacle *obstacle, float rangeSq);
 
   /**
-   * @brief Updates the two-dimensional position and two-dimensional velocity of
-   *        this agent.
+   * @brief     Updates the two-dimensional position and two-dimensional
+   *            velocity of this agent.
+   * @param[in] timeStep The time step of the simulation.
    */
-  void update();
+  void update(float timeStep);
 
   /* Not implemented. */
   Agent(const Agent &other);
@@ -112,7 +115,6 @@ class Agent {
   Vector2 position_;
   Vector2 prefVelocity_;
   Vector2 velocity_;
-  RVOSimulator *simulator_;
   std::size_t id_;
   std::size_t maxNeighbors_;
   float maxSpeed_;

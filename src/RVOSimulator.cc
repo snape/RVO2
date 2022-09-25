@@ -63,7 +63,7 @@ RVOSimulator::RVOSimulator()
 RVOSimulator::RVOSimulator(float timeStep, float neighborDist,
                            std::size_t maxNeighbors, float timeHorizon,
                            float timeHorizonObst, float radius, float maxSpeed)
-    : defaultAgent_(new Agent(this)),
+    : defaultAgent_(new Agent()),
       kdTree_(new KdTree(this)),
       globalTime_(0.0F),
       timeStep_(timeStep) {
@@ -79,7 +79,7 @@ RVOSimulator::RVOSimulator(float timeStep, float neighborDist,
                            std::size_t maxNeighbors, float timeHorizon,
                            float timeHorizonObst, float radius, float maxSpeed,
                            const Vector2 &velocity)
-    : defaultAgent_(new Agent(this)),
+    : defaultAgent_(new Agent()),
       kdTree_(new KdTree(this)),
       globalTime_(0.0F),
       timeStep_(timeStep) {
@@ -107,7 +107,7 @@ RVOSimulator::~RVOSimulator() {
 
 std::size_t RVOSimulator::addAgent(const Vector2 &position) {
   if (defaultAgent_ != NULL) {
-    Agent *const agent = new Agent(this);
+    Agent *const agent = new Agent();
     agent->position_ = position;
     agent->velocity_ = defaultAgent_->velocity_;
     agent->id_ = agents_.size();
@@ -137,7 +137,7 @@ std::size_t RVOSimulator::addAgent(const Vector2 &position, float neighborDist,
                                    std::size_t maxNeighbors, float timeHorizon,
                                    float timeHorizonObst, float radius,
                                    float maxSpeed, const Vector2 &velocity) {
-  Agent *const agent = new Agent(this);
+  Agent *const agent = new Agent();
   agent->position_ = position;
   agent->velocity_ = velocity;
   agent->id_ = agents_.size();
@@ -200,15 +200,15 @@ void RVOSimulator::doStep() {
 #pragma omp parallel for
 #endif /* _OPENMP */
   for (int i = 0; i < static_cast<int>(agents_.size()); ++i) {
-    agents_[i]->computeNeighbors();
-    agents_[i]->computeNewVelocity();
+    agents_[i]->computeNeighbors(kdTree_);
+    agents_[i]->computeNewVelocity(timeStep_);
   }
 
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif /* _OPENMP */
   for (int i = 0; i < static_cast<int>(agents_.size()); ++i) {
-    agents_[i]->update();
+    agents_[i]->update(timeStep_);
   }
 
   globalTime_ += timeStep_;
@@ -315,7 +315,7 @@ void RVOSimulator::setAgentDefaults(float neighborDist,
                                     float timeHorizonObst, float radius,
                                     float maxSpeed, const Vector2 &velocity) {
   if (defaultAgent_ == NULL) {
-    defaultAgent_ = new Agent(this);
+    defaultAgent_ = new Agent();
   }
 
   defaultAgent_->maxNeighbors_ = maxNeighbors;

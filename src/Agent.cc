@@ -44,7 +44,6 @@
 
 #include "KdTree.h"
 #include "Obstacle.h"
-#include "RVOSimulator.h"
 
 namespace RVO {
 namespace {
@@ -243,9 +242,8 @@ void linearProgram3(const std::vector<Line> &lines, std::size_t numObstLines,
 }
 } /* namespace */
 
-Agent::Agent(RVOSimulator *simulator)
-    : simulator_(simulator),
-      id_(0U),
+Agent::Agent()
+    : id_(0U),
       maxNeighbors_(0U),
       maxSpeed_(0.0F),
       neighborDist_(0.0F),
@@ -255,21 +253,21 @@ Agent::Agent(RVOSimulator *simulator)
 
 Agent::~Agent() {}
 
-void Agent::computeNeighbors() {
+void Agent::computeNeighbors(const KdTree *kdTree) {
   obstacleNeighbors_.clear();
   const float range = timeHorizonObst_ * maxSpeed_ + radius_;
-  simulator_->kdTree_->computeObstacleNeighbors(this, range * range);
+  kdTree->computeObstacleNeighbors(this, range * range);
 
   agentNeighbors_.clear();
 
   if (maxNeighbors_ > 0U) {
     float rangeSq = neighborDist_ * neighborDist_;
-    simulator_->kdTree_->computeAgentNeighbors(this, rangeSq);
+    kdTree->computeAgentNeighbors(this, rangeSq);
   }
 }
 
 /* Search for the best new velocity. */
-void Agent::computeNewVelocity() {
+void Agent::computeNewVelocity(float timeStep) {
   orcaLines_.clear();
 
   const float invTimeHorizonObst = 1.0F / timeHorizonObst_;
@@ -594,7 +592,7 @@ void Agent::computeNewVelocity() {
       }
     } else {
       /* Collision. Project on cut-off circle of time timeStep. */
-      const float invTimeStep = 1.0F / simulator_->timeStep_;
+      const float invTimeStep = 1.0F / timeStep;
 
       /* Vector from cutoff center to relative velocity. */
       const Vector2 w = relativeVelocity - invTimeStep * relativePosition;
@@ -674,8 +672,8 @@ void Agent::insertObstacleNeighbor(const Obstacle *obstacle, float rangeSq) {
   }
 }
 
-void Agent::update() {
+void Agent::update(float timeStep) {
   velocity_ = newVelocity_;
-  position_ += velocity_ * simulator_->timeStep_;
+  position_ += velocity_ * timeStep;
 }
 } /* namespace RVO */

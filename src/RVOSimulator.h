@@ -659,9 +659,7 @@ class RVO_EXPORT RVOSimulator {
   float globalTime_;
   float timeStep_;
 
-  friend class Agent;
   friend class KdTree;
-  friend class Obstacle;
 };
 } /* namespace RVO */
 
