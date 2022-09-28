@@ -49,7 +49,7 @@
 namespace RVO {
 namespace {
 /**
- @ @relates KdTree
+ * @relates KdTree
  * @brief   The maximum k-D tree node leaf size.
  */
 const std::size_t RVO_MAX_LEAF_SIZE = 10U;
@@ -166,10 +166,10 @@ KdTree::~KdTree() { deleteObstacleTree(obstacleTree_); }
 
 void KdTree::buildAgentTree() {
   if (agents_.size() < simulator_->agents_.size()) {
-    for (std::size_t i = agents_.size(); i < simulator_->agents_.size(); ++i) {
-      agents_.push_back(simulator_->agents_[i]);
-    }
-
+    agents_.insert(agents_.end(),
+                   simulator_->agents_.begin() +
+                       static_cast<std::ptrdiff_t>(agents_.size()),
+                   simulator_->agents_.end());
     agentTree_.resize(2U * agents_.size() - 1U);
   }
 
@@ -243,12 +243,7 @@ void KdTree::buildAgentTreeRecursive(std::size_t begin, std::size_t end,
 void KdTree::buildObstacleTree() {
   deleteObstacleTree(obstacleTree_);
 
-  std::vector<Obstacle *> obstacles(simulator_->obstacles_.size());
-
-  for (std::size_t i = 0U; i < simulator_->obstacles_.size(); ++i) {
-    obstacles[i] = simulator_->obstacles_[i];
-  }
-
+  const std::vector<Obstacle *> obstacles(simulator_->obstacles_);
   obstacleTree_ = buildObstacleTreeRecursive(obstacles);
 }
 
