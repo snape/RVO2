@@ -77,6 +77,7 @@ jobs:
         uses: actions/checkout@v3
       - name: setup
         run: |
+          rm -f /usr/local/bin/*3.11*
           brew update -q
           brew bundle install -q --no-lock
         shell: zsh -efuo pipefail {0}
@@ -262,6 +263,7 @@ jobs:
         uses: actions/checkout@v3
       - name: setup
         run: |
+          rm -f /usr/local/bin/*3.11*
           brew update -q
           brew bundle install -q --no-lock
         env:
@@ -410,9 +412,8 @@ jobs:
         uses: actions/checkout@v3
       - name: setup
         run: |
-          choco update cmake.install -r -y --install-arguments=ADD_CMAKE_TO_PATH=System `
+          choco upgrade cmake.install -r -y --install-arguments=ADD_CMAKE_TO_PATH=System `
             --no-progress
-          choco install doxygen.install -f -r -y --no-progress
         shell: pwsh
       - name: build test package
         run: |
