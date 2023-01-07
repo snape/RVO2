@@ -37,7 +37,7 @@ version: 2.1
 jobs:
   ubuntu:
     machine:
-      image: ubuntu-2004:202201-02
+      image: ubuntu-2204:2022.10.2
     resource_class: arm.medium
     steps:
       - run:
@@ -51,17 +51,18 @@ jobs:
               git \
               gnupg \
               make \
-              pkgconf \
+              pkg-config \
               wget
             wget -qO- https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null \
               | gpg --dearmor - \
               | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
-            echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ focal main' \
+            echo 'deb [arch=arm64 signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main' \
               | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
             sudo apt-get -qq -o APT::Acquire::Retries=4 update \
               || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
             sudo apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 --no-install-recommends install \
               cmake
+            sudo apt-get -qq -o Dpkg::Use-Pty=0 autoremove
             sudo rm -rf /var/lib/apt/lists/*
           environment:
             DEBIAN_FRONTEND: noninteractive
@@ -70,8 +71,8 @@ jobs:
           name: build test
           command: |
             mkdir _build
-            cd _build
             cmake \
+              -B _build \
               -DBUILD_DOCUMENTATION:BOOL=OFF \
               -DBUILD_TESTING:BOOL=ON \
               -DCMAKE_INSTALL_PREFIX:PATH=install \
@@ -81,11 +82,13 @@ jobs:
               -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
               -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
               -DWARNINGS_AS_ERRORS:BOOL=ON \
-              --warn-uninitialized \
-              ..
-            cmake --build .
-            ctest -E Roadmap --repeat after-timeout:3 .
-            cmake --install .
+              -S . \
+              --warn-uninitialized
+            cmake --build _build
+            ctest -E Roadmap --output-junit out.xml --test-dir _build --repeat after-timeout:3 .
+            cmake --install _build
+      - store_test_results:
+          path: _build/out.xml
 
 workflows:
   version: 2
