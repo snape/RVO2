@@ -70,9 +70,9 @@ include(CMakeCheckCompilerFlagCommonPatterns)
 # cmake-lint: disable=C0111
 function(check_cxx_linker_flag _FLAG _VAR)
   if(MSVC)
-    _check_cxx_linker_flag(/WX HRVO_LINKER_SUPPORTS_WX)
+    _check_cxx_linker_flag(/WX RVO_LINKER_SUPPORTS_WX)
 
-    if(HRVO_LINKER_SUPPORTS_WX)
+    if(RVO_LINKER_SUPPORTS_WX)
       set(_FATAL_WARNINGS_FLAG /WX)
     else()
       set(_FATAL_WARNINGS_FLAG)

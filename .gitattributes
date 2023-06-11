@@ -43,6 +43,7 @@
 *                    text=auto
 
 *.bazel              text diff=python linguist-language=starlark whitespace-4
+*.bzlmod             text diff=python linguist-language=starlark whitespace-4
 *.cc                 text diff=cpp linguist-language=c++ whitespace-2
 *.cff                text linguist-documentation whitespace-2
 *.cfg                text whitespace-2

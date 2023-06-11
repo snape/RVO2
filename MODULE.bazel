@@ -1,5 +1,8 @@
+# -*- mode: bazel; -*-
+# vi: set ft=bazel:
+
 #
-# .bazelrc
+# WORKSPACE.bazel
 # RVO2 Library
 #
 # SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
@@ -31,24 +34,23 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
-build --force_pic=true
-build --incompatible_strict_action_env=true
-build --legacy_external_runfiles=false
-build --remote_upload_local_results=false
-build --sandbox_default_allow_network=false
+module(
+    name = "rvo",
+    version = "2.0.3",
+)
 
-build:macos --apple_generate_dsym=true
-build:macos --apple_crosstool_top=@local_config_apple_cc//:toolchain
-build:macos --apple_platform_type=macos
-build:macos --crosstool_top=@local_config_apple_cc//:toolchain
-build:macos --host_crosstool_top=@local_config_apple_cc//:toolchain
+bazel_dep(
+    name = "apple_support",
+    version = "1.6.0",
+    repo_name = "build_bazel_apple_support"
+)
 
-common --enable_platform_specific_config=true
-common --heap_dump_on_oom=true
+apple_cc_configure = use_extension(
+    "@build_bazel_apple_support//crosstool:setup.bzl",
+    "apple_cc_configure_extension",
+)
+use_repo(apple_cc_configure, "local_config_apple_cc")
 
-startup --host_jvm_args=-DBAZEL_TRACK_SOURCE_DIRECTORIES=1
-
-test --incompatible_exclusive_test_sandboxed=true
-test --test_verbose_timeout_warnings=true
-
-try-import %workspace%/.user.bazelrc
+bazel_dep(name = "rules_cc", version = "0.0.6")
+bazel_dep(name = "rules_license", version = "0.0.4")
+bazel_dep(name = "rules_pkg", version = "0.9.1", dev_dependency = True)

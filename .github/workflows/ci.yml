@@ -66,7 +66,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
       - name: build test package
-        run: bazel test --flaky_test_attempts=3 ...
+        run: bazel test --enable_bzlmod=0 --flaky_test_attempts=3 ...
         shell: bash
 
   bazel_macos:
@@ -80,6 +80,8 @@ jobs:
           rm -f \
             /usr/local/bin/2to3 \
             /usr/local/bin/2to3-3.* \
+            /usr/local/bin/go \
+            /usr/local/bin/gofmt \
             /usr/local/bin/idle3 \
             /usr/local/bin/idle3.* \
             /usr/local/bin/pydoc3 \
@@ -101,7 +103,7 @@ jobs:
           HOMEBREW_NO_INSTALL_CLEANUP: 1
         shell: zsh -efuo pipefail {0}
       - name: build test package
-        run: bazel test --flaky_test_attempts=3 ...
+        run: bazel test --enable_bzlmod=0 --flaky_test_attempts=3 ...
         shell: zsh -efuo pipefail {0}
 
   bazel_ubuntu:
@@ -140,7 +142,107 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
       - name: build test package
-        run: bazel test --flaky_test_attempts=3 ...
+        run: bazel test --enable_bzlmod=0 --flaky_test_attempts=3 ...
+        shell: bash
+
+  bzlmod_arch:
+    name: bzlmod arch latest
+    runs-on: ubuntu-22.04
+    container: archlinux:latest
+    steps:
+      - name: setup
+        run: |
+          pacman --needed --noconfirm --noprogressbar -S -u -y \
+            bazel \
+            ca-certificates \
+            gcc \
+            git \
+            python \
+            which
+          rm -rf \
+            /var/cache/pacman/pkg/* \
+            /var/lib/pacman/sync/*
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: build test package
+        run: bazel test --enable_bzlmod=1 --flaky_test_attempts=3 ...
+        shell: bash
+
+  bzlmod_macos:
+    name: bzlmod macos latest
+    runs-on: macos-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: setup
+        run: |
+          rm -f \
+            /usr/local/bin/2to3 \
+            /usr/local/bin/2to3-3.* \
+            /usr/local/bin/go \
+            /usr/local/bin/gofmt \
+            /usr/local/bin/idle3 \
+            /usr/local/bin/idle3.* \
+            /usr/local/bin/pydoc3 \
+            /usr/local/bin/pydoc3.* \
+            /usr/local/bin/python3 \
+            /usr/local/bin/python3.* \
+            /usr/local/bin/python3-config \
+            /usr/local/bin/python3.*-config \
+            /usr/local/lib/libtcl8.*.dylib \
+            /usr/local/lib/libtk8.*.dylib
+          brew update-reset -q
+          brew upgrade -f -q
+          brew bundle install -q --no-lock
+          brew cleanup -q -s
+          rm -rf $(brew --cache)
+        env:
+          HOMEBREW_NO_ANALYTICS: 1
+          HOMEBREW_NO_AUTO_UPDATE: 1
+          HOMEBREW_NO_INSTALL_CLEANUP: 1
+        shell: zsh -efuo pipefail {0}
+      - name: build test package
+        run: bazel test --enable_bzlmod=1 --flaky_test_attempts=3 ...
+        shell: zsh -efuo pipefail {0}
+
+  bzlmod_ubuntu:
+    name: bzlmod ubuntu 22.04
+    runs-on: ubuntu-22.04
+    container: ubuntu:latest
+    steps:
+      - name: setup
+        run: |
+          apt-get -qq -o APT::Acquire::Retries=4 update \
+            || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
+          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
+            upgrade
+          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
+              --no-install-recommends install \
+            ca-certificates \
+            g++ \
+            git \
+            gnupg \
+            python-is-python3 \
+            wget
+          wget -qO - https://bazel.build/bazel-release.pub.gpg 2>/dev/null | gpg --dearmor - \
+            > /usr/share/keyrings/bazel-archive-keyring.gpg
+          echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/bazel-archive-keyring.gpg] https://storage.googleapis.com/bazel-apt stable jdk1.8' \
+            > /etc/apt/sources.list.d/bazel.list
+          apt-get -qq -o APT::Acquire::Retries=4 update \
+            || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
+          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
+              --no-install-recommends install \
+            bazel
+          apt-get -qq -o Dpkg::Use-Pty=0 autoremove
+          rm -rf /var/lib/apt/lists/*
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: build test package
+        run: bazel test --enable_bzlmod=1 --flaky_test_attempts=3 ...
         shell: bash
 
   cmake_alpine:
@@ -290,6 +392,8 @@ jobs:
           rm -f \
             /usr/local/bin/2to3 \
             /usr/local/bin/2to3-3.* \
+            /usr/local/bin/go \
+            /usr/local/bin/gofmt \
             /usr/local/bin/idle3 \
             /usr/local/bin/idle3.* \
             /usr/local/bin/pydoc3 \

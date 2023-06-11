@@ -1,8 +1,8 @@
 #
-# codeql.yml
-# RVO2 Library
+# .yamllint.yaml
+# AVO2 Library
 #
-# SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
+# SPDX-FileCopyrightText: 2010 University of North Carolina at Chapel Hill
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,41 +21,20 @@
 #
 # The authors may be contacted via:
 #
-# Jur van den Berg, Stephen J. Guy, Jamie Snape, Ming C. Lin, Dinesh Manocha
+# Jur van den Berg, Jamie Snape, Stephen J. Guy, and Dinesh Manocha
 # Dept. of Computer Science
 # 201 S. Columbia St.
 # Frederick P. Brooks, Jr. Computer Science Bldg.
 # Chapel Hill, N.C. 27599-3175
 # United States of America
 #
-# <https://gamma.cs.unc.edu/RVO2/>
+# <https://gamma.cs.unc.edu/AVO/>
 #
 
 ---
-name: codeql
+extends: default
 
-on:  # yamllint disable-line rule:truthy
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  schedule:
-    - cron: '0 6 * * 3'
-
-jobs:
-  analyze:
-    name: analyze
-    runs-on: ubuntu-22.04
-    steps:
-      - name: checkout
-        uses: actions/checkout@v3
-      - name: initialize codeql
-        uses: github/codeql-action/init@v2
-        with:
-          languages: cpp
-      - name: autobuild
-        uses: github/codeql-action/autobuild@v2
-      - name: perform codeql analysis
-        uses: github/codeql-action/analyze@v2
+rules:
+  line-length:
+    max: 80
+    level: warning
