@@ -63,6 +63,7 @@
 
 .bazelignore         text whitespace-4
 .bazelrc             text whitespace-4
+.bazelversion        text whitespace-4
 .clang-format        text whitespace-2
 .clang-tidy          text whitespace-2
 .dockerignore        text whitespace-2
@@ -78,6 +79,7 @@ Dockerfile           text whitespace-2
 LICENSE              text linguist-documentation linguist-vendored whitespace-0
 README.md            linguist-documentation
 requirements.txt     whitespace-2
+triggers             whitespace-0
 
 .circleci/**         export-ignore
 .github/**           export-ignore

@@ -170,6 +170,7 @@ pkg_deb(
     package = "rvo",
     priority = "optional",
     section = "libdevel",
+    triggers = "triggers",
     version = "2.0.3",
     visibility = ["//visibility:private"],
 )
