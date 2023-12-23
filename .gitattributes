@@ -63,13 +63,14 @@
 
 .bazelignore         text whitespace-4
 .bazelrc             text whitespace-4
+.bazelversion        text whitespace-4
 .clang-format        text whitespace-2
 .clang-tidy          text whitespace-2
 .dockerignore        text whitespace-2
 .editorconfig        text whitespace-2
 .gitattributes       text export-ignore whitespace-2
 .gitignore           text export-ignore whitespace-2
-.zenodo.json         linguist-documentation
+.zenodo.json         export-ignore linguist-documentation
 Brewfile             text diff=ruby export-ignore whitespace-4
 CMakeLists.txt       whitespace-2
 CODEOWNERS           text whitespace-2
@@ -78,6 +79,7 @@ Dockerfile           text whitespace-2
 LICENSE              text linguist-documentation linguist-vendored whitespace-0
 README.md            linguist-documentation
 requirements.txt     whitespace-2
+triggers             whitespace-0
 
 .circleci/**         export-ignore
 .github/**           export-ignore
