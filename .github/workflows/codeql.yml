@@ -47,7 +47,7 @@ on:  # yamllint disable-line rule:truthy
 jobs:
   analyze:
     name: analyze
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v4

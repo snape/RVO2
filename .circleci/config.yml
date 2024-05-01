@@ -47,21 +47,11 @@ jobs:
               || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
             sudo apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 --no-install-recommends install \
               ca-certificates \
+              cmake \
               g++ \
               git \
-              gnupg \
               make \
-              pkg-config \
-              wget
-            wget -qO- https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null \
-              | gpg --dearmor - \
-              | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
-            echo 'deb [arch=arm64 signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main' \
-              | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
-            sudo apt-get -qq -o APT::Acquire::Retries=4 update \
-              || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
-            sudo apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 --no-install-recommends install \
-              cmake
+              pkgconf
             sudo apt-get -qq -o Dpkg::Use-Pty=0 autoremove
             sudo rm -rf /var/lib/apt/lists/*
           environment:

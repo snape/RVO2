@@ -38,7 +38,7 @@ includedir=${prefix}/@RVO_INCLUDE_DIR@
 
 Name: @RVO_NAME@
 Description: @PROJECT_DESCRIPTION@
-URL: @RVO_HOMEPAGE_URL@
+URL: @PROJECT_HOMEPAGE_URL@
 Version: @PROJECT_VERSION@
 Libs: -L${libdir} -l@RVO_LIBRARY@
 Cflags: -I${includedir}

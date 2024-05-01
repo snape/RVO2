@@ -47,7 +47,7 @@ on:  # yamllint disable-line rule:truthy
 jobs:
   bazel_arch:
     name: bazel arch latest
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     container: archlinux:latest
     steps:
       - name: setup
@@ -70,29 +70,14 @@ jobs:
         shell: bash
 
   bazel_macos:
-    name: bazel macos latest
-    runs-on: macos-latest
+    name: bazel macos 14
+    runs-on: macos-14
     steps:
       - name: checkout
         uses: actions/checkout@v4
       - name: setup
         run: |
-          rm -f \
-            /usr/local/bin/2to3 \
-            /usr/local/bin/2to3-3.* \
-            /usr/local/bin/go \
-            /usr/local/bin/gofmt \
-            /usr/local/bin/idle3 \
-            /usr/local/bin/idle3.* \
-            /usr/local/bin/pydoc3 \
-            /usr/local/bin/pydoc3.* \
-            /usr/local/bin/python3 \
-            /usr/local/bin/python3.* \
-            /usr/local/bin/python3-config \
-            /usr/local/bin/python3.*-config \
-            /usr/local/lib/libtcl8.*.dylib \
-            /usr/local/lib/libtk8.*.dylib
-          brew update-reset -q
+          brew update -q
           brew upgrade -f -q
           brew bundle install -q --no-lock
           brew cleanup -q -s
@@ -107,8 +92,8 @@ jobs:
         shell: zsh -efuo pipefail {0}
 
   bazel_ubuntu:
-    name: bazel ubuntu 22.04
-    runs-on: ubuntu-22.04
+    name: bazel ubuntu latest
+    runs-on: ubuntu-latest
     container: ubuntu:latest
     steps:
       - name: setup
@@ -125,9 +110,9 @@ jobs:
             gnupg \
             python-is-python3 \
             wget
-          wget -qO - https://bazel.build/bazel-release.pub.gpg 2>/dev/null | gpg --dearmor - \
-            > /usr/share/keyrings/bazel-archive-keyring.gpg
-          echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/bazel-archive-keyring.gpg] https://storage.googleapis.com/bazel-apt stable jdk1.8' \
+          wget -qO - https://bazel.build/bazel-release.pub.gpg 2>/dev/null \
+            | gpg --dearmor - > /usr/share/keyrings/bazel-archive-keyring.gpg
+          echo 'deb [signed-by=/usr/share/keyrings/bazel-archive-keyring.gpg] https://storage.googleapis.com/bazel-apt stable jdk1.8' \
             > /etc/apt/sources.list.d/bazel.list
           apt-get -qq -o APT::Acquire::Retries=4 update \
             || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
@@ -147,7 +132,7 @@ jobs:
 
   bzlmod_arch:
     name: bzlmod arch latest
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     container: archlinux:latest
     steps:
       - name: setup
@@ -170,29 +155,14 @@ jobs:
         shell: bash
 
   bzlmod_macos:
-    name: bzlmod macos latest
-    runs-on: macos-latest
+    name: bzlmod macos 14
+    runs-on: macos-14
     steps:
       - name: checkout
         uses: actions/checkout@v4
       - name: setup
         run: |
-          rm -f \
-            /usr/local/bin/2to3 \
-            /usr/local/bin/2to3-3.* \
-            /usr/local/bin/go \
-            /usr/local/bin/gofmt \
-            /usr/local/bin/idle3 \
-            /usr/local/bin/idle3.* \
-            /usr/local/bin/pydoc3 \
-            /usr/local/bin/pydoc3.* \
-            /usr/local/bin/python3 \
-            /usr/local/bin/python3.* \
-            /usr/local/bin/python3-config \
-            /usr/local/bin/python3.*-config \
-            /usr/local/lib/libtcl8.*.dylib \
-            /usr/local/lib/libtk8.*.dylib
-          brew update-reset -q
+          brew update -q
           brew upgrade -f -q
           brew bundle install -q --no-lock
           brew cleanup -q -s
@@ -207,8 +177,8 @@ jobs:
         shell: zsh -efuo pipefail {0}
 
   bzlmod_ubuntu:
-    name: bzlmod ubuntu 22.04
-    runs-on: ubuntu-22.04
+    name: bzlmod ubuntu latest
+    runs-on: ubuntu-latest
     container: ubuntu:latest
     steps:
       - name: setup
@@ -225,9 +195,9 @@ jobs:
             gnupg \
             python-is-python3 \
             wget
-          wget -qO - https://bazel.build/bazel-release.pub.gpg 2>/dev/null | gpg --dearmor - \
-            > /usr/share/keyrings/bazel-archive-keyring.gpg
-          echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/bazel-archive-keyring.gpg] https://storage.googleapis.com/bazel-apt stable jdk1.8' \
+          wget -qO - https://bazel.build/bazel-release.pub.gpg 2>/dev/null \
+            | gpg --dearmor - > /usr/share/keyrings/bazel-archive-keyring.gpg
+          echo 'deb [signed-by=/usr/share/keyrings/bazel-archive-keyring.gpg] https://storage.googleapis.com/bazel-apt stable jdk1.8' \
             > /etc/apt/sources.list.d/bazel.list
           apt-get -qq -o APT::Acquire::Retries=4 update \
             || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
@@ -246,9 +216,9 @@ jobs:
         shell: bash
 
   cmake_alpine:
-    name: cmake alpine 3
-    runs-on: ubuntu-22.04
-    container: alpine:3
+    name: cmake alpine latest
+    runs-on: ubuntu-latest
+    container: alpine:latest
     steps:
       - name: setup
         run: |
@@ -290,7 +260,7 @@ jobs:
 
   cmake_arch:
     name: cmake arch latest
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     container: archlinux:latest
     steps:
       - name: setup
@@ -335,7 +305,7 @@ jobs:
 
   cmake_fedora:
     name: cmake fedora latest
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     container: fedora:latest
     steps:
       - name: setup
@@ -382,29 +352,14 @@ jobs:
         shell: bash
 
   cmake_macos:
-    name: cmake macos latest
-    runs-on: macos-latest
+    name: cmake macos 14
+    runs-on: macos-14
     steps:
       - name: checkout
         uses: actions/checkout@v4
       - name: setup
         run: |
-          rm -f \
-            /usr/local/bin/2to3 \
-            /usr/local/bin/2to3-3.* \
-            /usr/local/bin/go \
-            /usr/local/bin/gofmt \
-            /usr/local/bin/idle3 \
-            /usr/local/bin/idle3.* \
-            /usr/local/bin/pydoc3 \
-            /usr/local/bin/pydoc3.* \
-            /usr/local/bin/python3 \
-            /usr/local/bin/python3.* \
-            /usr/local/bin/python3-config \
-            /usr/local/bin/python3.*-config \
-            /usr/local/lib/libtcl8.*.dylib \
-            /usr/local/lib/libtk8.*.dylib
-          brew update-reset -q
+          brew update -q
           brew upgrade -f -q
           brew bundle install -q --no-lock
           brew cleanup -q -s
@@ -439,7 +394,7 @@ jobs:
 
   cmake_rockylinux:
     name: cmake rockylinux 9
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     container: rockylinux:9
     steps:
       - name: setup
@@ -488,9 +443,9 @@ jobs:
         shell: bash
 
   cmake_ubuntu:
-    name: cmake ubuntu 22.04
-    runs-on: ubuntu-22.04
-    container: ubuntu:22.04
+    name: cmake ubuntu latest
+    runs-on: ubuntu-latest
+    container: ubuntu:latest
     steps:
       - name: setup
         run: |
@@ -503,24 +458,13 @@ jobs:
             ca-certificates \
             cmake \
             doxygen \
-            dpkg \
             dpkg-dev \
             file \
             g++ \
             git \
-            gnupg \
             graphviz \
             make \
-            pkg-config \
-            wget
-          wget -qO- https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null \
-            | gpg --dearmor - > /usr/share/keyrings/kitware-archive-keyring.gpg
-          echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main' \
-            > /etc/apt/sources.list.d/kitware.list
-          apt-get -qq -o APT::Acquire::Retries=4 update \
-            || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
-          apt-get -qq -o Dpkg::Use-Pty=0 --no-install-recommends --no-install-recommends install \
-            cmake
+            pkgconf
           apt-get -qq -o Dpkg::Use-Pty=0 autoremove
           rm -rf /var/lib/apt/lists/*
         env:
