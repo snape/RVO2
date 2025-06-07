@@ -53,14 +53,6 @@ if(BUILD_TESTING)
       RVO_SEED_RANDOM_NUMBER_GENERATOR=0)
   endif()
 
-  if(ENABLE_OPENMP AND OpenMP_FOUND)
-    set(RVO_EXAMPLES_COMPILE_OPTIONS ${OpenMP_CXX_FLAGS})
-    set(RVO_EXAMPLES_LINK_FLAGS "${OpenMP_CXX_FLAGS}")
-  else()
-    set(RVO_EXAMPLES_COMPILE_OPTIONS)
-    set(RVO_EXAMPLES_LINK_FLAGS)
-  endif()
-
   if(ENABLE_INTERPROCEDURAL_OPTIMIZATION
       AND RVO_INTERPROCEDURAL_OPTIMIZATION_SUPPORTED)
     set(RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION ON)
@@ -72,38 +64,41 @@ if(BUILD_TESTING)
   target_compile_definitions(Blocks PRIVATE
     ${RVO_EXAMPLES_COMPILE_DEFINITIONS})
   target_link_libraries(Blocks PRIVATE ${RVO_LIBRARY})
-  target_compile_options(Blocks PRIVATE ${RVO_EXAMPLES_COMPILE_OPTIONS})
+  if(ENABLE_OPENMP AND OpenMP_FOUND)
+    target_link_libraries(Blocks PRIVATE OpenMP::OpenMP_CXX)
+  endif()
   set_target_properties(Blocks PROPERTIES
-    INTERPROCEDURAL_OPTIMIZATION ${RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION}
-    LINK_FLAGS "${RVO_EXAMPLES_LINK_FLAGS}")
+    INTERPROCEDURAL_OPTIMIZATION ${RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION})
   add_test(NAME Blocks COMMAND Blocks)
   set_tests_properties(Blocks PROPERTIES
     LABELS medium
     TIMEOUT 60)
 
-  add_executable(Circle Circle.cc)
-  target_compile_definitions(Circle PRIVATE
-    ${RVO_EXAMPLES_COMPILE_DEFINITIONS})
-  target_link_libraries(Circle PRIVATE ${RVO_LIBRARY})
-  target_compile_options(Circle PRIVATE ${RVO_EXAMPLES_COMPILE_OPTIONS})
-  set_target_properties(Circle PROPERTIES
-    INTERPROCEDURAL_OPTIMIZATION ${RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION}
-    LINK_FLAGS "${RVO_EXAMPLES_LINK_FLAGS}")
-  add_test(NAME Circle COMMAND Circle)
-  set_tests_properties(Circle PROPERTIES
-    LABELS medium
-    TIMEOUT 60)
+    add_executable(Circle Circle.cc)
+    target_compile_definitions(Circle PRIVATE
+      ${RVO_EXAMPLES_COMPILE_DEFINITIONS})
+    target_link_libraries(Circle PRIVATE ${RVO_LIBRARY})
+    if(ENABLE_OPENMP AND OpenMP_FOUND)
+      target_link_libraries(Circle PRIVATE OpenMP::OpenMP_CXX)
+    endif()
+    set_target_properties(Circle PROPERTIES
+      INTERPROCEDURAL_OPTIMIZATION ${RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION})
+    add_test(NAME Circle COMMAND Circle)
+    set_tests_properties(Circle PROPERTIES
+      LABELS medium
+      TIMEOUT 60)
 
-  add_executable(Roadmap Roadmap.cc)
-  target_compile_definitions(Roadmap PRIVATE
-    ${RVO_EXAMPLES_COMPILE_DEFINITIONS})
-  target_link_libraries(Roadmap PRIVATE ${RVO_LIBRARY})
-  target_compile_options(Roadmap PRIVATE ${RVO_EXAMPLES_COMPILE_OPTIONS})
-  set_target_properties(Roadmap PROPERTIES
-    INTERPROCEDURAL_OPTIMIZATION ${RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION}
-    LINK_FLAGS "${RVO_EXAMPLES_LINK_FLAGS}")
-  add_test(NAME Roadmap COMMAND Roadmap)
-  set_tests_properties(Roadmap PROPERTIES
-    LABELS medium
-    TIMEOUT 60)
+      add_executable(Roadmap Roadmap.cc)
+      target_compile_definitions(Roadmap PRIVATE
+        ${RVO_EXAMPLES_COMPILE_DEFINITIONS})
+      target_link_libraries(Roadmap PRIVATE ${RVO_LIBRARY})
+      if(ENABLE_OPENMP AND OpenMP_FOUND)
+        target_link_libraries(Roadmap PRIVATE OpenMP::OpenMP_CXX)
+      endif()
+      set_target_properties(Roadmap PROPERTIES
+        INTERPROCEDURAL_OPTIMIZATION ${RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION})
+      add_test(NAME Roadmap COMMAND Roadmap)
+      set_tests_properties(Roadmap PROPERTIES
+        LABELS medium
+        TIMEOUT 60)
 endif()

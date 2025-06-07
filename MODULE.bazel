@@ -2,7 +2,7 @@
 # vi: set ft=bazel:
 
 #
-# WORKSPACE.bazel
+# MODULE.bazel
 # RVO2 Library
 #
 # SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
@@ -41,7 +41,7 @@ module(
 
 bazel_dep(
     name = "apple_support",
-    version = "1.11.1",
+    version = "1.21.1",
     repo_name = "build_bazel_apple_support",
 )
 
@@ -51,7 +51,20 @@ apple_cc_configure = use_extension(
 )
 use_repo(apple_cc_configure, "local_config_apple_cc")
 
-bazel_dep(name = "rules_cc", version = "0.0.9")
-bazel_dep(name = "rules_license", version = "0.0.7")
+bazel_dep(name = "rules_cc", version = "0.1.1")
+bazel_dep(name = "rules_license", version = "1.0.0")
 
-bazel_dep(name = "rules_pkg", version = "0.9.1", dev_dependency = True)
+bazel_dep(name = "rules_python", version = "1.3.0", dev_dependency = True)
+
+python = use_extension(
+    "@rules_python//python/extensions:python.bzl",
+    "python",
+)
+python.toolchain(
+    ignore_root_user_error = True,
+    is_default = True,
+    python_version = "3.12",
+)
+
+bazel_dep(name = "platforms", version = "0.0.11", dev_dependency = True)
+bazel_dep(name = "rules_pkg", version = "1.1.0", dev_dependency = True)

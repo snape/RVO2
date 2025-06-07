@@ -20,6 +20,7 @@
       }
     }
   },
+  "containerUser": "ubuntu",
   "dockerComposeFile": "../compose.yaml",
   "overrideCommand": true,
   "service": "dev",

@@ -37,9 +37,10 @@
 load("@rules_cc//cc:defs.bzl", "cc_library")
 load("@rules_pkg//pkg:mappings.bzl", "pkg_attributes", "pkg_files")
 
-package(default_applicable_licenses = ["//:license"])
-
-licenses(["notice"])  # Apache-2.0
+package(default_package_metadata = [
+    "//:license",
+    "//:package_info",
+])
 
 # REUSE-IgnoreStart
 genrule(
@@ -100,7 +101,6 @@ cat << 'EOF' > $@
 #endif /* RVO_EXPORT_H_ */
 EOF
 """,
-    visibility = ["//visibility:private"],
 )
 # REUSE-IgnoreEnd
 
@@ -113,7 +113,6 @@ filegroup(
         "RVOSimulator.h",
         "Vector2.h",
     ],
-    visibility = ["//visibility:private"],
 )
 
 cc_library(

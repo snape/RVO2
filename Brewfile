@@ -34,8 +34,9 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
-brew 'bazel', conflicts_with: ['bazelisk']
+brew 'bazelisk', conflicts_with: ['bazel']
 brew 'buildifier'
+brew 'buildozer'
 brew 'cmake'
 brew 'cppcheck'
 brew 'cpplint'

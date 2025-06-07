@@ -34,14 +34,12 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
-cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.26)
 project(RVO
   VERSION 2.0.3
   DESCRIPTION "Optimal Reciprocal Collision Avoidance"
   HOMEPAGE_URL https://gamma.cs.unc.edu/RVO2/
   LANGUAGES CXX)
-
-list(INSERT CMAKE_MODULE_PATH 0 "${PROJECT_SOURCE_DIR}/cmake/modules")
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   # cmake-lint: disable=C0301
@@ -51,6 +49,9 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY
     STRINGS Debug Release RelWithDebInfo MinSizeRel)
 endif()
+
+option(ENABLE_CMAKE_EXPERIMENTAL_FEATURES
+  "Enable CMake experimental features" OFF)
 
 include(CTest)
 
@@ -63,6 +64,7 @@ endif()
 include(GNUInstallDirs)
 
 set(RVO_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+set(RVO_CPS_DIR ${CMAKE_INSTALL_LIBDIR}/cps/${PROJECT_NAME})
 set(RVO_INCLUDE_DIR ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 set(RVO_LIBRARY_DIR ${CMAKE_INSTALL_LIBDIR})
 set(RVO_LIBRARY RVO)
@@ -74,6 +76,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED OFF)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+option(BUILD_DOCUMENTATION "Build documentation" OFF)
+
+if(BUILD_DOCUMENTATION)
+  find_package(Doxygen 1.9.1 MODULE OPTIONAL_COMPONENTS dot)
+endif()
 
 option(ENABLE_OPENMP "Enable OpenMP if available" OFF)
 
@@ -100,7 +108,7 @@ else()
 endif()
 
 include(CheckCXXCompilerFlag)
-include(CheckCXXLinkerFlag)
+include(CheckLinkerFlag)
 
 option(ENABLE_HARDENING
   "Enable hardening compiler and linker flags if supported" OFF)
@@ -114,9 +122,9 @@ if(ENABLE_HARDENING)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GS")
     endif()
 
-    check_cxx_linker_flag(/DYNAMICBASE RVO_LINKER_SUPPORTS_DYNAMICBASE)
-    check_cxx_linker_flag(/GUARD:CF RVO_LINKER_SUPPORTS_GUARD_CF)
-    check_cxx_linker_flag(/NXCOMPAT RVO_LINKER_SUPPORTS_NXCOMPAT)
+    check_linker_flag(CXX /DYNAMICBASE RVO_LINKER_SUPPORTS_DYNAMICBASE)
+    check_linker_flag(CXX /GUARD:CF RVO_LINKER_SUPPORTS_GUARD_CF)
+    check_linker_flag(CXX /NXCOMPAT RVO_LINKER_SUPPORTS_NXCOMPAT)
 
     if(RVO_COMPILER_SUPPORTS_GUARD_CF
         AND RVO_LINKER_SUPPORTS_DYNAMICBASE
@@ -170,15 +178,16 @@ if(ENABLE_HARDENING)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fstack-protector")
     endif()
 
-    check_cxx_linker_flag(-Wl,-Bsymbolic-functions
+    check_linker_flag(CXX -Wl,-Bsymbolic-functions
       RVO_LINKER_SUPPORTS_BSYMBOLIC_FUNCTIONS)
-    check_cxx_linker_flag(-fsanitize=safe-stack
+    check_linker_flag(CXX -fsanitize=safe-stack
       RVO_LINKER_SUPPORTS_FSANITIZE_SAFE_STACK)
-    check_cxx_linker_flag(-Wl,-z,defs RVO_LINKER_SUPPORTS_Z_DEFS)
-    check_cxx_linker_flag(-Wl,-z,noexecheap RVO_LINKER_SUPPORTS_Z_NOEXECHEAP)
-    check_cxx_linker_flag(-Wl,-z,noexecstack RVO_LINKER_SUPPORTS_Z_NOEXECSTACK)
-    check_cxx_linker_flag(-Wl,-z,now RVO_LINKER_SUPPORTS_Z_NOW)
-    check_cxx_linker_flag(-Wl,-z,relro RVO_LINKER_SUPPORTS_Z_RELRO)
+    check_linker_flag(CXX -Wl,-z,defs RVO_LINKER_SUPPORTS_Z_DEFS)
+    check_linker_flag(CXX -Wl,-z,noexecheap RVO_LINKER_SUPPORTS_Z_NOEXECHEAP)
+    check_linker_flag(CXX -Wl,-z,noexecstack
+      RVO_LINKER_SUPPORTS_Z_NOEXECSTACK)
+    check_linker_flag(CXX -Wl,-z,now RVO_LINKER_SUPPORTS_Z_NOW)
+    check_linker_flag(CXX -Wl,-z,relro RVO_LINKER_SUPPORTS_Z_RELRO)
 
     if(RVO_LINKER_SUPPORTS_BSYMBOLIC_FUNCTIONS)
       set(CMAKE_EXE_LINKER_FLAGS
@@ -249,7 +258,7 @@ else()
 endif()
 
 if(NOT MSVC)
-  check_cxx_linker_flag(-Wl,--as-needed RVO_LINKER_SUPPORTS__AS_NEEDED)
+  check_linker_flag(CXX -Wl,--as-needed RVO_LINKER_SUPPORTS__AS_NEEDED)
 
   if(RVO_LINKER_SUPPORTS__AS_NEEDED)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--as-needed")
@@ -326,10 +335,12 @@ set(CPACK_SOURCE_IGNORE_FILES
   Brewfile)
 set(CPACK_SOURCE_STRIP_FILES ON)
 
+set(CPACK_DEBIAN_COMPRESSION_TYPE zstd)
 set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_SOURCE_DIR}/triggers")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS)
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE ${PROJECT_HOMEPAGE_URL})
-set(CPACK_DEBIAN_PACKAGE_SECTION contrib/devel)
+set(CPACK_DEBIAN_PACKAGE_SECTION contrib/libdevel)
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 
 set(CPACK_FREEBSD_PACKAGE_DEPS)

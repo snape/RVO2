@@ -81,7 +81,7 @@ README.md            linguist-documentation
 requirements.txt     whitespace-2
 triggers             whitespace-0
 
-.circleci/**         export-ignore
 .github/**           export-ignore
 .github/**/*.md      linguist-documentation
 LICENSES/**/*.txt    linguist-documentation linguist-vendored whitespace-0
+

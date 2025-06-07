@@ -34,21 +34,31 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
-load("@rules_cc//cc:defs.bzl", "cc_binary")
+load("@rules_cc//cc:defs.bzl", "cc_shared_library")
 load("@rules_license//rules:license.bzl", "license")
+load("@rules_license//rules:package_info.bzl", "package_info")
 load("@rules_pkg//pkg:mappings.bzl", "pkg_attributes", "pkg_files")
 load("@rules_pkg//pkg:pkg.bzl", "pkg_deb", "pkg_tar")
 
-package(default_applicable_licenses = [":license"])
-
-licenses(["notice"])  # Apache-2.0
+package(default_package_metadata = [
+    ":license",
+    ":package_info",
+])
 
 license(
     name = "license",
     copyright_notice = "2008 University of North Carolina at Chapel Hill",
     license_kinds = ["@rules_license//licenses/spdx:Apache-2.0"],
     license_text = "LICENSE",
-    visibility = ["//visibility:public"],
+    visibility = ["//:__subpackages__"],
+)
+
+package_info(
+    name = "package_info",
+    package_name = "RVO2 Library",
+    package_url = "https://gamma.cs.unc.edu/RVO2/",
+    package_version = "2.0.3",
+    visibility = ["//:__subpackages__"],
 )
 
 exports_files(
@@ -61,27 +71,59 @@ pkg_files(
     srcs = ["LICENSE"],
     attributes = pkg_attributes(mode = "0644"),
     prefix = "usr/share/doc/RVO",
-    visibility = ["//visibility:private"],
 )
 
-cc_binary(
-    name = "libRVO.so",
-    linkshared = True,
-    visibility = ["//visibility:private"],
+cc_shared_library(
+    name = "RVO",
     deps = ["//src:RVO"],
 )
 
 pkg_files(
     name = "lib",
-    srcs = [":libRVO.so"],
+    srcs = [":RVO"],
     attributes = pkg_attributes(mode = "0644"),
     prefix = "usr/lib",
-    visibility = ["//visibility:private"],
+)
+
+genrule(
+    name = "rvo_cps",
+    outs = ["RVO.cps"],
+    cmd = """
+cat << 'EOF' > $@
+{
+  "compat_version": "1",
+  "components":
+  {
+    "RVO":
+    {
+      "includes": ["@prefix@/include/RVO"],
+      "type": "dylib"
+    }
+  },
+  "cps_path": "@prefix@/lib/cps/RVO",
+  "cps_version": "0.13.0",
+  "default_components": ["RVO"],
+  "description": "Optimal Reciprocal Collision Avoidance",
+  "license": "Apache-2.0",
+  "name": "RVO",
+  "version": "2.0.3",
+  "version_schema": "simple",
+  "website": "https://gamma.cs.unc.edu/RVO2/"
+}
+EOF
+""",
+)
+
+pkg_files(
+    name = "cps",
+    srcs = ["RVO.cps"],
+    attributes = pkg_attributes(mode = "0644"),
+    prefix = "usr/lib/cps/RVO",
 )
 
 # REUSE-IgnoreStart
 genrule(
-    name = "pc",
+    name = "rvo_pc",
     outs = ["RVO.pc"],
     cmd = """
 cat << 'EOF' > $@
@@ -131,7 +173,6 @@ Libs: -L$${libdir} -lRVO
 Cflags: -I$${includedir}
 EOF
 """,
-    visibility = ["//visibility:private"],
 )
 # REUSE-IgnoreEnd
 
@@ -140,25 +181,28 @@ pkg_files(
     srcs = ["RVO.pc"],
     attributes = pkg_attributes(mode = "0644"),
     prefix = "usr/lib/pkgconfig",
-    visibility = ["//visibility:private"],
 )
 
 pkg_tar(
-    name = "RVO",
+    name = "tar",
     srcs = [
+        ":cps",
         ":doc",
         ":lib",
         ":pkgconfig",
         "//src:include",
     ],
     extension = "tar.gz",
-    visibility = ["//visibility:private"],
 )
 
 pkg_deb(
     name = "deb",
-    architecture = "amd64",
-    data = ":RVO",
+    architecture = select({
+        "@platforms//cpu:arm": "amd64",
+        "@platforms//os:macos": "arm64",
+        "//conditions:default": "all",
+    }),
+    data = ":tar",
     depends = [
         "libc6",
         "libgcc-s1",
@@ -166,11 +210,11 @@ pkg_deb(
     ],
     description = "Optimal Reciprocal Collision Avoidance",
     homepage = "https://gamma.cs.unc.edu/RVO2/",
+    license = "Apache-2",
     maintainer = "Jamie Snape",
-    package = "rvo",
+    package = "RVO",
     priority = "optional",
-    section = "libdevel",
+    section = "contrib/libdevel",
     triggers = "triggers",
     version = "2.0.3",
-    visibility = ["//visibility:private"],
 )

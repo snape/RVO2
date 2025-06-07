@@ -36,9 +36,10 @@
 
 load("@rules_cc//cc:defs.bzl", "cc_test")
 
-package(default_applicable_licenses = ["//:license"])
-
-licenses(["notice"])  # Apache-2.0
+package(default_package_metadata = [
+    "//:license",
+    "//:package_info",
+])
 
 cc_test(
     name = "Blocks",
@@ -50,7 +51,6 @@ cc_test(
         "RVO_SEED_RANDOM_NUMBER_GENERATOR=0",
     ],
     tags = ["block-network"],
-    visibility = ["//visibility:private"],
     deps = ["//src:RVO"],
 )
 
@@ -64,7 +64,6 @@ cc_test(
         "RVO_SEED_RANDOM_NUMBER_GENERATOR=0",
     ],
     tags = ["block-network"],
-    visibility = ["//visibility:private"],
     deps = ["//src:RVO"],
 )
 
@@ -78,6 +77,5 @@ cc_test(
         "RVO_SEED_RANDOM_NUMBER_GENERATOR=0",
     ],
     tags = ["block-network"],
-    visibility = ["//visibility:private"],
     deps = ["//src:RVO"],
 )

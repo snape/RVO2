@@ -40,4 +40,3 @@ _build/
 .idea/
 .reuse/
 cmake-build-*/
-cmake/
