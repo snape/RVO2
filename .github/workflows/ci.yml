@@ -48,7 +48,7 @@ jobs:
   bazel-almalinux:
     name: bazel almalinux amd64
     runs-on: ubuntu-latest
-    container: almalinux:9
+    container: almalinux:10
     steps:
       - name: setup
         run: |
@@ -271,7 +271,7 @@ jobs:
   cmake-almalinux:
     name: cmake almalinux amd64
     runs-on: ubuntu-latest
-    container: almalinux:9
+    container: almalinux:10
     steps:
       - name: setup
         run: |
