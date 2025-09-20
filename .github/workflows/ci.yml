@@ -179,7 +179,7 @@ jobs:
   bazel-opensuse:
     name: bazel opensuse leap amd64
     runs-on: ubuntu-latest
-    container: opensuse/leap:15
+    container: opensuse/leap:42
     steps:
       - name: setup
         run: |
@@ -498,7 +498,7 @@ jobs:
   cmake-opensuse:
     name: cmake opensuse leap amd64
     runs-on: ubuntu-latest
-    container: opensuse/leap:15
+    container: opensuse/leap:42
     steps:
       - name: setup
         run: |
