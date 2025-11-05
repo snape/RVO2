@@ -51,7 +51,7 @@ apple_cc_configure = use_extension(
 )
 use_repo(apple_cc_configure, "local_config_apple_cc")
 
-bazel_dep(name = "rules_cc", version = "0.2.8")
+bazel_dep(name = "rules_cc", version = "0.2.14")
 bazel_dep(name = "rules_license", version = "1.0.0")
 
 bazel_dep(name = "rules_python", version = "1.6.1", dev_dependency = True)
