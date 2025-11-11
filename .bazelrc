@@ -44,7 +44,6 @@ build:macos --apple_platform_type=macos
 build:macos --crosstool_top=@local_config_apple_cc//:toolchain
 build:macos --host_crosstool_top=@local_config_apple_cc//:toolchain
 
-common --enable_bzlmod=true
 common --enable_platform_specific_config=true
 common --heap_dump_on_oom=true
 
