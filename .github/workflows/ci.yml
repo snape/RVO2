@@ -69,7 +69,7 @@ jobs:
           ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
         shell: bash
       - name: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: build test package
         run: bazel test --flaky_test_attempts=3 ...
         shell: bash
@@ -96,7 +96,7 @@ jobs:
           ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
         shell: sh
       - name: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       # - name: build test package
       #   run: bazel test --flaky_test_attempts=3 ...
       #   shell: sh
@@ -120,7 +120,7 @@ jobs:
             /var/lib/pacman/sync/*
         shell: bash
       - name: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: build test package
         run: bazel test --flaky_test_attempts=3 ...
         shell: bash
@@ -149,7 +149,7 @@ jobs:
           ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
         shell: bash
       - name: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: build test package
         run: bazel test --flaky_test_attempts=3 ...
         shell: bash
@@ -159,7 +159,7 @@ jobs:
     runs-on: macos-15
     steps:
       - name: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: setup
         run: |
           brew update -q
@@ -199,7 +199,7 @@ jobs:
           ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
         shell: bash
       - name: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: build test package
         run: bazel test --flaky_test_attempts=3 ...
         shell: bash
@@ -231,7 +231,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         shell: bash
       - name: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: build test package
         run: bazel test --flaky_test_attempts=3 ...
         shell: bash
@@ -263,7 +263,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         shell: bash
       - name: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: build test package
         run: bazel test --flaky_test_attempts=3 ...
         shell: bash
@@ -294,7 +294,7 @@ jobs:
           rm -rf /var/cache/yum
         shell: bash
       - name: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: build test package
         run: |
           mkdir _build
@@ -337,7 +337,7 @@ jobs:
             pkgconf
         shell: sh
       - name: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: build test package
         run: |
           mkdir _build
@@ -382,7 +382,7 @@ jobs:
             /var/lib/pacman/sync/*
         shell: bash
       - name: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: build test package
         run: |
           mkdir _build
@@ -430,7 +430,7 @@ jobs:
           rm -rf /var/cache/yum
         shell: bash
       - name: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: build test package
         run: |
           mkdir _build
@@ -459,7 +459,7 @@ jobs:
     runs-on: macos-15
     steps:
       - name: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: setup
         run: |
           brew update -q
@@ -517,7 +517,7 @@ jobs:
           zypper -n -q cc -a
         shell: bash
       - name: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: build test package
         run: |
           mkdir _build
@@ -570,7 +570,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         shell: bash
       - name: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: build test package
         run: |
           mkdir _build
@@ -623,7 +623,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         shell: bash
       - name: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: build test package
         run: |
           mkdir _build
@@ -652,7 +652,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: setup
         run: |
           choco upgrade cmake.install -r -y --install-arguments=ADD_CMAKE_TO_PATH=System `
