@@ -109,15 +109,19 @@ jobs:
       - name: setup
         run: |
           pacman --needed --noconfirm --noprogressbar -S -u -y \
-            bazel \
             ca-certificates \
             gcc \
             git \
             python \
+            wget \
             which
           rm -rf \
             /var/cache/pacman/pkg/* \
             /var/lib/pacman/sync/*
+          wget -qO /usr/local/bin/bazelisk \
+            https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64
+          chmod +x /usr/local/bin/bazelisk
+          ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
         shell: bash
       - name: checkout
         uses: actions/checkout@v6
