@@ -63,7 +63,7 @@ python = use_extension(
 python.toolchain(
     ignore_root_user_error = True,
     is_default = True,
-    python_version = "3.12",
+    python_version = "3.14",
 )
 
 bazel_dep(name = "platforms", version = "1.0.0", dev_dependency = True)
