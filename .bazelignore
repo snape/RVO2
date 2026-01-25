@@ -35,7 +35,6 @@
 #
 
 _build/
-.circleci/
 .github/
 .idea/
 .reuse/
