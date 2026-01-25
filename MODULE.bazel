@@ -54,7 +54,7 @@ use_repo(apple_cc_configure, "local_config_apple_cc")
 bazel_dep(name = "rules_cc", version = "0.2.16")
 bazel_dep(name = "rules_license", version = "1.0.0")
 
-bazel_dep(name = "rules_python", version = "1.8.1", dev_dependency = True)
+bazel_dep(name = "rules_python", version = "1.8.2", dev_dependency = True)
 
 python = use_extension(
     "@rules_python//python/extensions:python.bzl",
