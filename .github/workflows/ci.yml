@@ -132,7 +132,7 @@ jobs:
   bazel-fedora:
     name: bazel fedora linux amd64
     runs-on: ubuntu-latest
-    container: fedora:44
+    container: fedora:45
     steps:
       - name: setup
         run: |
@@ -413,7 +413,7 @@ jobs:
   cmake-fedora:
     name: cmake fedora linux amd64
     runs-on: ubuntu-latest
-    container: fedora:44
+    container: fedora:45
     steps:
       - name: setup
         run: |
