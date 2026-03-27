@@ -64,7 +64,6 @@ endif()
 include(GNUInstallDirs)
 
 set(RVO_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
-set(RVO_CPS_DIR ${CMAKE_INSTALL_LIBDIR}/cps/${PROJECT_NAME})
 set(RVO_INCLUDE_DIR ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 set(RVO_LIBRARY_DIR ${CMAKE_INSTALL_LIBDIR})
 set(RVO_LIBRARY RVO)
@@ -74,7 +73,7 @@ set(RVO_NAME "RVO2 Library")
 set(CMAKE_CXX_STANDARD 98)
 set(CMAKE_CXX_STANDARD_REQUIRED OFF)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_STANDARD_REQUIRED OFF)
+set(CMAKE_CXX_EXTENSIONS_REQUIRED OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 option(BUILD_DOCUMENTATION "Build documentation" OFF)
@@ -111,7 +110,7 @@ include(CheckCXXCompilerFlag)
 include(CheckLinkerFlag)
 
 option(ENABLE_HARDENING
-  "Enable hardening compiler and linker flags if supported" OFF)
+  "Enable hardening compiler and linker flags if supported" ON)
 
 if(ENABLE_HARDENING)
   if(MSVC)
@@ -119,7 +118,7 @@ if(ENABLE_HARDENING)
     check_cxx_compiler_flag(/guard:cf RVO_COMPILER_SUPPORTS_GUARD_CF)
 
     if(RVO_COMPILER_SUPPORTS_GS)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GS")
+      add_compile_options(/GS)
     endif()
 
     check_linker_flag(CXX /DYNAMICBASE RVO_LINKER_SUPPORTS_DYNAMICBASE)
@@ -129,18 +128,20 @@ if(ENABLE_HARDENING)
     if(RVO_COMPILER_SUPPORTS_GUARD_CF
         AND RVO_LINKER_SUPPORTS_DYNAMICBASE
         AND RVO_LINKER_SUPPORTS_GUARD_CF)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /guard:cf")
-      set(CMAKE_EXE_LINKER_FLAGS
-        "${CMAKE_EXE_LINKER_FLAGS} /DYNAMICBASE /GUARD:CF")
-      set(CMAKE_SHARED_LINKER_FLAGS
-        "${CMAKE_SHARED_LINKER_FLAGS} /DYNAMICBASE /GUARD:CF")
+      add_compile_options(/guard:cf)
+      add_link_options(/DYNAMICBASE /GUARD:CF)
     endif()
 
     if(RVO_LINKER_SUPPORTS_NXCOMPAT)
-      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NXCOMPAT")
-      set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /NXCOMPAT")
+      add_link_options(/NXCOMPAT)
     endif()
   else()
+    if(APPLE)
+      set(RVO_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS}")
+      set(CMAKE_REQUIRED_FLAGS
+        "${CMAKE_REQUIRED_FLAGS} -Werror=unused-command-line-argument")
+    endif()
+
     check_cxx_compiler_flag(-D_FORTIFY_SOURCE=2
       RVO_COMPILER_SUPPORTS_D_FORTIFY_SOURCE_2)
     check_cxx_compiler_flag(-fcf-protection
@@ -161,21 +162,21 @@ if(ENABLE_HARDENING)
     endif()
 
     if(RVO_COMPILER_SUPPORTS_D_FORTIFY_SOURCE_2)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORTIFY_SOURCE=2")
+      add_compile_options(-D_FORTIFY_SOURCE=2)
     endif()
     if(RVO_COMPILER_SUPPORTS_FCF_PROTECTION)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcf-protection")
+      add_compile_options(-fcf-protection)
     endif()
     if(RVO_COMPILER_SUPPORTS_FNO_COMMON)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-common")
+      add_compile_options(-fno-common)
     endif()
     if(RVO_COMPILER_SUPPORTS_FSTACK_CLASH_PROTECTION)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fstack-clash-protection")
+      add_compile_options(-fstack-clash-protection)
     endif()
     if(RVO_COMPILER_SUPPORTS_FSTACK_PROTECTOR_STRONG)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fstack-protector-strong")
+      add_compile_options(-fstack-protector-strong)
     elseif(RVO_COMPILER_SUPPORTS_FSTACK_PROTECTOR)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fstack-protector")
+      add_compile_options(-fstack-protector)
     endif()
 
     check_linker_flag(CXX -Wl,-Bsymbolic-functions
@@ -188,42 +189,38 @@ if(ENABLE_HARDENING)
       RVO_LINKER_SUPPORTS_Z_NOEXECSTACK)
     check_linker_flag(CXX -Wl,-z,now RVO_LINKER_SUPPORTS_Z_NOW)
     check_linker_flag(CXX -Wl,-z,relro RVO_LINKER_SUPPORTS_Z_RELRO)
+    check_linker_flag(CXX -Wl,-z,separate-code RVO_LINKER_SUPPORTS_Z_SEPARATE_CODE)
 
     if(RVO_LINKER_SUPPORTS_BSYMBOLIC_FUNCTIONS)
-      set(CMAKE_EXE_LINKER_FLAGS
-        "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bsymbolic-functions")
-      set(CMAKE_SHARED_LINKER_FLAGS
-        "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-Bsymbolic-functions")
+      add_link_options(-Wl,-Bsymbolic-functions)
     endif()
     if(RVO_COMPILER_SUPPORTS_FSANITIZE_SAFE_STACK
         AND RVO_LINKER_SUPPORTS_FSANITIZE_SAFE_STACK)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=safe-stack")
-      set(CMAKE_EXE_LINKER_FLAGS
-        "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=safe-stack")
-      set(CMAKE_SHARED_LINKER_FLAGS
-        "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=safe-stack")
+      add_compile_options(-fsanitize=safe-stack)
+      add_link_options(-fsanitize=safe-stack)
     endif()
     if(RVO_LINKER_SUPPORTS_Z_DEFS)
-      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-z,defs")
-      set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,defs")
+      add_link_options(-Wl,-z,defs)
     endif()
     if(RVO_LINKER_SUPPORTS_Z_NOEXECHEAP)
-      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-z,noexecheap")
-      set(CMAKE_SHARED_LINKER_FLAGS
-        "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,noexecheap")
+      add_link_options(-Wl,-z,noexecheap)
     endif()
     if(RVO_LINKER_SUPPORTS_Z_NOEXECSTACK)
-      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-z,noexecstack")
-      set(CMAKE_SHARED_LINKER_FLAGS
-        "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,noexecstack")
+      add_link_options(-Wl,-z,noexecstack)
     endif()
     if(RVO_LINKER_SUPPORTS_Z_NOW)
-      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-z,now")
-      set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,now")
+      add_link_options(-Wl,-z,now)
     endif()
     if(RVO_LINKER_SUPPORTS_Z_RELRO)
-      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-z,relro")
-      set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,relro")
+      add_link_options(-Wl,-z,relro)
+    endif()
+    if(RVO_LINKER_SUPPORTS_Z_SEPARATE_CODE)
+      add_link_options(-Wl,-z,separate-code)
+    endif()
+
+    if(APPLE)
+      set(CMAKE_REQUIRED_FLAGS "${RVO_REQUIRED_FLAGS}")
+      unset(RVO_REQUIRED_FLAGS)
     endif()
   endif()
 endif()
@@ -232,7 +229,7 @@ if(MSVC)
   check_cxx_compiler_flag(/W4 RVO_COMPILER_SUPPORTS_W4)
 
   if(RVO_COMPILER_SUPPORTS_W4)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+    add_compile_options(/W4)
   endif()
 else()
   check_cxx_compiler_flag(-Wall RVO_COMPILER_SUPPORTS_WALL)
@@ -244,16 +241,16 @@ else()
     RVO_COMPILER_SUPPORTS_WNO_UNUSED)
 
   if(RVO_COMPILER_SUPPORTS_WALL)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+    add_compile_options(-Wall)
   endif()
   if(RVO_COMPILER_SUPPORTS_WFORMAT_SECURITY)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wformat-security")
+    add_compile_options(-Wformat-security)
   endif()
   if(RVO_COMPILER_SUPPORTS_WERROR_FORMAT_SECURITY)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=format-security")
+    add_compile_options(-Werror=format-security)
   endif()
   if(RVO_COMPILER_SUPPORTS_WNO_UNUSED)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused")
+    add_compile_options(-Wno-unused)
   endif()
 endif()
 
@@ -261,9 +258,7 @@ if(NOT MSVC)
   check_linker_flag(CXX -Wl,--as-needed RVO_LINKER_SUPPORTS__AS_NEEDED)
 
   if(RVO_LINKER_SUPPORTS__AS_NEEDED)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--as-needed")
-    set(CMAKE_SHARED_LINKER_FLAGS
-      "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--as-needed")
+      add_link_options(-Wl,--as-needed)
   endif()
 endif()
 
@@ -274,83 +269,91 @@ if(WARNINGS_AS_ERRORS)
     check_cxx_compiler_flag(/WX RVO_COMPILER_SUPPORTS_WX)
 
     if(RVO_COMPILER_SUPPORTS_WX)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX")
+      add_compile_options(/WX)
     endif()
   else()
     check_cxx_compiler_flag(-Werror RVO_COMPILER_SUPPORTS_WERROR)
 
     if(RVO_COMPILER_SUPPORTS_WERROR)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+      add_compile_options(-Werror)
     endif()
   endif()
 endif()
+
+option(ENABLE_INSTALLATION "Enable installation" ${PROJECT_IS_TOP_LEVEL})
 
 add_subdirectory(src)
 add_subdirectory(examples)
 add_subdirectory(doc)
 
-install(FILES LICENSE
-  COMPONENT runtime
-  DESTINATION ${CMAKE_INSTALL_DOCDIR})
+if(ENABLE_INSTALLATION)
+  install(FILES LICENSE
+    COMPONENT runtime
+    TYPE DOC)
 
-include(CMakePackageConfigHelpers)
+  include(CMakePackageConfigHelpers)
 
-configure_package_config_file(
-  ${PROJECT_NAME}Config.cmake.in ${PROJECT_NAME}Config.cmake
-  INSTALL_DESTINATION ${RVO_DIR}
-  PATH_VARS RVO_INCLUDE_DIR RVO_LIBRARY_DIR)
+  configure_package_config_file(
+    ${PROJECT_NAME}Config.cmake.in ${PROJECT_NAME}Config.cmake
+    INSTALL_DESTINATION ${RVO_DIR}
+    PATH_VARS RVO_INCLUDE_DIR RVO_LIBRARY_DIR)
 
-write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
-  COMPATIBILITY SameMajorVersion)
+  write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
+    COMPATIBILITY SameMajorVersion)
 
-install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
-  COMPONENT development
-  DESTINATION ${RVO_DIR})
-
-find_package(PkgConfig MODULE)
-
-if(PkgConfig_FOUND)
-  configure_file(${PROJECT_NAME}.pc.in ${PROJECT_NAME}.pc @ONLY)
-  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
+  install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
     COMPONENT development
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+    DESTINATION ${RVO_DIR})
+
+  find_package(PkgConfig MODULE)
+
+  if(PkgConfig_FOUND)
+    configure_file(${PROJECT_NAME}.pc.in ${PROJECT_NAME}.pc @ONLY)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
+      COMPONENT development
+      DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+  endif()
 endif()
 
-include(InstallRequiredSystemLibraries)
+option(ENABLE_PACKAGING "Enable packaging" ${PROJECT_IS_TOP_LEVEL})
 
-set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
-set(CPACK_PACKAGE_CONTACT "Jamie Snape")
-set(CPACK_PACKAGE_VENDOR "University of North Carolina at Chapel Hill")
-set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_DESCRIPTION}")
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-set(CPACK_STRIP_FILES ON)
+if(ENABLE_PACKAGING)
+  include(InstallRequiredSystemLibraries)
 
-set(CPACK_SOURCE_IGNORE_FILES
-  _build/ \\\\.git/ \\\\.gitattributes \\\\.github/ \\\\.gitignore bazel-
-  Brewfile)
-set(CPACK_SOURCE_STRIP_FILES ON)
+  set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
+  set(CPACK_PACKAGE_CONTACT "Jamie Snape")
+  set(CPACK_PACKAGE_VENDOR "University of North Carolina at Chapel Hill")
+  set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+  set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+  set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+  set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_DESCRIPTION}")
+  set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+  set(CPACK_STRIP_FILES ON)
 
-set(CPACK_DEBIAN_COMPRESSION_TYPE zstd)
-set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
-set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_SOURCE_DIR}/triggers")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS)
-set(CPACK_DEBIAN_PACKAGE_HOMEPAGE ${PROJECT_HOMEPAGE_URL})
-set(CPACK_DEBIAN_PACKAGE_SECTION contrib/libdevel)
-set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+  set(CPACK_SOURCE_IGNORE_FILES
+    _build/ \\\\.git/ \\\\.gitattributes \\\\.github/ \\\\.gitignore bazel-
+    Brewfile)
+  set(CPACK_SOURCE_STRIP_FILES ON)
 
-set(CPACK_FREEBSD_PACKAGE_DEPS)
-set(CPACK_FREEBSD_PACKAGE_LICENSE APACHE20)
-set(CPACK_FREEBSD_PACKAGE_WWW ${PROJECT_HOMEPAGE_URL})
+  set(CPACK_DEBIAN_COMPRESSION_TYPE zstd)
+  set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+  set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_CURRENT_SOURCE_DIR}/triggers")
+  set(CPACK_DEBIAN_PACKAGE_DEPENDS)
+  set(CPACK_DEBIAN_PACKAGE_HOMEPAGE ${PROJECT_HOMEPAGE_URL})
+  set(CPACK_DEBIAN_PACKAGE_SECTION contrib/libdevel)
+  set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 
-set(CPACK_RPM_FILE_NAME RPM-DEFAULT)
-set(CPACK_RPM_PACKAGE_AUTOREQPROV ON)
-set(CPACK_RPM_PACKAGE_LICENSE "ASL 2.0")
-set(CPACK_RPM_PACKAGE_REQUIRES)
-set(CPACK_RPM_PACKAGE_URL ${PROJECT_HOMEPAGE_URL})
+  set(CPACK_FREEBSD_PACKAGE_DEPS)
+  set(CPACK_FREEBSD_PACKAGE_LICENSE APACHE20)
+  set(CPACK_FREEBSD_PACKAGE_WWW ${PROJECT_HOMEPAGE_URL})
 
-include(CPack)
+  set(CPACK_RPM_FILE_NAME RPM-DEFAULT)
+  set(CPACK_RPM_PACKAGE_AUTOREQPROV ON)
+  set(CPACK_RPM_PACKAGE_LICENSE "ASL 2.0")
+  set(CPACK_RPM_PACKAGE_REQUIRES)
+  set(CPACK_RPM_PACKAGE_URL ${PROJECT_HOMEPAGE_URL})
+
+  include(CPack)
+endif()

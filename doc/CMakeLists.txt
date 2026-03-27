@@ -67,7 +67,9 @@ if(BUILD_DOCUMENTATION AND Doxygen_FOUND)
     ALL
     USE_STAMP_FILE)
 
-  install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html"
-    COMPONENT documentation
-    DESTINATION ${CMAKE_INSTALL_DOCDIR})
+  if(ENABLE_INSTALLATION)
+    install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html"
+      COMPONENT documentation
+      TYPE DOC)
+  endif()
 endif()
