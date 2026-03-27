@@ -75,6 +75,7 @@ pkg_files(
 
 cc_shared_library(
     name = "RVO",
+    visibility = ["//visibility:public"],
     deps = ["//src:RVO"],
 )
 
@@ -91,7 +92,7 @@ genrule(
     cmd = """
 cat << 'EOF' > $@
 {
-  "compat_version": "1",
+  "compat_version": "2",
   "components":
   {
     "RVO":
@@ -101,7 +102,7 @@ cat << 'EOF' > $@
     }
   },
   "cps_path": "@prefix@/lib/cps/RVO",
-  "cps_version": "0.13.0",
+  "cps_version": "0.14.1",
   "default_components": ["RVO"],
   "description": "Optimal Reciprocal Collision Avoidance",
   "license": "Apache-2.0",
@@ -114,9 +115,64 @@ EOF
 """,
 )
 
+genrule(
+    name = "rvo_release_cps",
+    outs = ["RVO@release.cps"],
+    cmd = select({
+        "@platforms//os:macos": """
+cat << 'EOF' > $@
+{
+  "components":
+  {
+    "RVO":
+    {
+      "location": "@prefix@/lib/libRVO.dylib"
+    }
+  },
+  "configuration": "Release",
+  "name": "RVO"
+}
+EOF
+""",
+        "@platforms//os:windows": """
+cat << 'EOF' > $@
+{
+  "components":
+  {
+    "RVO":
+    {
+      "location": "@prefix@/lib/RVO.dll"
+    }
+  },
+  "configuration": "Release",
+  "name": "RVO"
+}
+EOF
+""",
+        "//conditions:default": """
+cat << 'EOF' > $@
+{
+  "components":
+  {
+    "RVO":
+    {
+      "location": "@prefix@/lib/libRVO.so"
+    }
+  },
+  "configuration": "Release",
+  "name": "RVO"
+}
+EOF
+""",
+    }),
+)
+
 pkg_files(
     name = "cps",
-    srcs = ["RVO.cps"],
+    srcs = [
+        "RVO.cps",
+        "RVO@release.cps",
+    ],
     attributes = pkg_attributes(mode = "0644"),
     prefix = "usr/lib/cps/RVO",
 )
@@ -197,11 +253,13 @@ pkg_tar(
 
 pkg_deb(
     name = "deb",
-    architecture = select({
-        "@platforms//cpu:arm": "amd64",
-        "@platforms//os:macos": "arm64",
-        "//conditions:default": "all",
-    }),
+    architecture = select(
+        {
+            "@platforms//cpu:aarch64": "arm64",
+            "@platforms//cpu:x86_64": "amd64",
+        },
+        no_match_error = "Unsupported CPU for //:deb. Supported CPUs: aarch64, x86_64.",
+    ),
     data = ":tar",
     depends = [
         "libc6",
@@ -215,6 +273,7 @@ pkg_deb(
     package = "RVO",
     priority = "optional",
     section = "contrib/libdevel",
+    target_compatible_with = ["@platforms//os:linux"],
     triggers = "triggers",
     version = "2.0.3",
 )

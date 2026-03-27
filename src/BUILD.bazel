@@ -120,7 +120,6 @@ cc_library(
     srcs = [
         "Agent.cc",
         "Agent.h",
-        "Export.cc",
         "KdTree.cc",
         "KdTree.h",
         "Line.cc",
@@ -130,11 +129,20 @@ cc_library(
         "Vector2.cc",
     ],
     hdrs = [":hdrs"],
-    copts = [
-        "-fvisibility-inlines-hidden",
-        "-fvisibility=hidden",
-    ],
-    includes = ["."],
+    copts = select({
+        "@platforms//os:windows": ["/W4"],
+        "//conditions:default": [
+            "-fvisibility-inlines-hidden",
+            "-fvisibility=hidden",
+            "-Wall",
+            "-Werror=format-security",
+        ],
+    }),
+    local_defines = select({
+        "@platforms//os:windows": ["RVO_EXPORTS"],
+        "//conditions:default": [],
+    }),
+    strip_include_prefix = "/src",
     visibility = ["//visibility:public"],
 )
 

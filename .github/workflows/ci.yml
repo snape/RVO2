@@ -167,7 +167,6 @@ jobs:
       - name: setup
         run: |
           brew update -q
-          brew upgrade -f -q
           brew bundle install -q
           brew cleanup -q -s
           rm -rf $(brew --cache)
@@ -467,7 +466,6 @@ jobs:
       - name: setup
         run: |
           brew update -q
-          brew upgrade -f -q
           brew bundle install -q
           brew cleanup -q -s
           rm -rf $(brew --cache)

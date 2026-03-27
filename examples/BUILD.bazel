@@ -46,6 +46,13 @@ cc_test(
     size = "medium",
     timeout = "short",
     srcs = ["Blocks.cc"],
+    copts = select({
+        "@platforms//os:windows": ["/W4"],
+        "//conditions:default": [
+            "-Wall",
+            "-Werror=format-security",
+        ],
+    }),
     defines = [
         "RVO_OUTPUT_TIME_AND_POSITIONS=0",
         "RVO_SEED_RANDOM_NUMBER_GENERATOR=0",
@@ -59,6 +66,13 @@ cc_test(
     size = "medium",
     timeout = "short",
     srcs = ["Circle.cc"],
+    copts = select({
+        "@platforms//os:windows": ["/W4"],
+        "//conditions:default": [
+            "-Wall",
+            "-Werror=format-security",
+        ],
+    }),
     defines = [
         "RVO_OUTPUT_TIME_AND_POSITIONS=0",
         "RVO_SEED_RANDOM_NUMBER_GENERATOR=0",
@@ -72,6 +86,13 @@ cc_test(
     size = "medium",
     timeout = "short",
     srcs = ["Roadmap.cc"],
+    copts = select({
+        "@platforms//os:windows": ["/W4"],
+        "//conditions:default": [
+            "-Wall",
+            "-Werror=format-security",
+        ],
+    }),
     defines = [
         "RVO_OUTPUT_TIME_AND_POSITIONS=0",
         "RVO_SEED_RANDOM_NUMBER_GENERATOR=0",

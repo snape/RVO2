@@ -34,7 +34,9 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
-if(BUILD_TESTING)
+option(BUILD_EXAMPLES "Build examples" ${PROJECT_IS_TOP_LEVEL})
+
+if(BUILD_EXAMPLES)
   option(OUTPUT_TIME_AND_POSITIONS "Output time and positions" ON)
 
   if(OUTPUT_TIME_AND_POSITIONS)
@@ -60,6 +62,9 @@ if(BUILD_TESTING)
     set(RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION OFF)
   endif()
 
+  include(CheckPIESupported)
+  check_pie_supported()
+
   add_executable(Blocks Blocks.cc)
   target_compile_definitions(Blocks PRIVATE
     ${RVO_EXAMPLES_COMPILE_DEFINITIONS})
@@ -69,36 +74,48 @@ if(BUILD_TESTING)
   endif()
   set_target_properties(Blocks PROPERTIES
     INTERPROCEDURAL_OPTIMIZATION ${RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION})
+  if(CMAKE_VERSION VERSION_GREATER_EQUAL 4.1)
+    set_target_properties(Blocks PROPERTIES
+      SPDX_LICENSE Apache-2.0)
+  endif()
   add_test(NAME Blocks COMMAND Blocks)
   set_tests_properties(Blocks PROPERTIES
     LABELS medium
     TIMEOUT 60)
 
-    add_executable(Circle Circle.cc)
-    target_compile_definitions(Circle PRIVATE
-      ${RVO_EXAMPLES_COMPILE_DEFINITIONS})
-    target_link_libraries(Circle PRIVATE ${RVO_LIBRARY})
-    if(ENABLE_OPENMP AND OpenMP_FOUND)
-      target_link_libraries(Circle PRIVATE OpenMP::OpenMP_CXX)
-    endif()
+  add_executable(Circle Circle.cc)
+  target_compile_definitions(Circle PRIVATE
+    ${RVO_EXAMPLES_COMPILE_DEFINITIONS})
+  target_link_libraries(Circle PRIVATE ${RVO_LIBRARY})
+  if(ENABLE_OPENMP AND OpenMP_FOUND)
+    target_link_libraries(Circle PRIVATE OpenMP::OpenMP_CXX)
+  endif()
+  set_target_properties(Circle PROPERTIES
+    INTERPROCEDURAL_OPTIMIZATION ${RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION})
+  if(CMAKE_VERSION VERSION_GREATER_EQUAL 4.1)
     set_target_properties(Circle PROPERTIES
-      INTERPROCEDURAL_OPTIMIZATION ${RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION})
-    add_test(NAME Circle COMMAND Circle)
-    set_tests_properties(Circle PROPERTIES
-      LABELS medium
-      TIMEOUT 60)
+      SPDX_LICENSE Apache-2.0)
+  endif()
+  add_test(NAME Circle COMMAND Circle)
+  set_tests_properties(Circle PROPERTIES
+    LABELS medium
+    TIMEOUT 60)
 
-      add_executable(Roadmap Roadmap.cc)
-      target_compile_definitions(Roadmap PRIVATE
-        ${RVO_EXAMPLES_COMPILE_DEFINITIONS})
-      target_link_libraries(Roadmap PRIVATE ${RVO_LIBRARY})
-      if(ENABLE_OPENMP AND OpenMP_FOUND)
-        target_link_libraries(Roadmap PRIVATE OpenMP::OpenMP_CXX)
-      endif()
-      set_target_properties(Roadmap PROPERTIES
-        INTERPROCEDURAL_OPTIMIZATION ${RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION})
-      add_test(NAME Roadmap COMMAND Roadmap)
-      set_tests_properties(Roadmap PROPERTIES
-        LABELS medium
-        TIMEOUT 60)
+  add_executable(Roadmap Roadmap.cc)
+  target_compile_definitions(Roadmap PRIVATE
+    ${RVO_EXAMPLES_COMPILE_DEFINITIONS})
+  target_link_libraries(Roadmap PRIVATE ${RVO_LIBRARY})
+  if(ENABLE_OPENMP AND OpenMP_FOUND)
+    target_link_libraries(Roadmap PRIVATE OpenMP::OpenMP_CXX)
+  endif()
+  set_target_properties(Roadmap PROPERTIES
+    INTERPROCEDURAL_OPTIMIZATION ${RVO_EXAMPLES_INTERPROCEDURAL_OPTIMIZATION})
+  if(CMAKE_VERSION VERSION_GREATER_EQUAL 4.1)
+    set_target_properties(Roadmap PROPERTIES
+      SPDX_LICENSE Apache-2.0)
+  endif()
+  add_test(NAME Roadmap COMMAND Roadmap)
+  set_tests_properties(Roadmap PROPERTIES
+    LABELS medium
+    TIMEOUT 60)
 endif()
