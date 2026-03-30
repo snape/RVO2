@@ -41,7 +41,7 @@ module(
 
 bazel_dep(
     name = "apple_support",
-    version = "2.5.0",
+    version = "2.5.2",
     dev_dependency = True,
     repo_name = "build_bazel_apple_support",
 )
