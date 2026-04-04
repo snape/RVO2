@@ -329,7 +329,7 @@ void Agent::computeNewVelocity(float timeStep) {
 
     if (s > 1.0F && distSq2 <= radiusSq) {
       /* Collision with right vertex. Ignore if non-convex or if it will be
-       * taken care of by neighoring obstace */
+       * taken care of by neighboring obstacle */
       if (obstacle2->isConvex_ &&
           det(relativePosition2, obstacle2->direction_) >= 0.0F) {
         line.point = Vector2(0.0F, 0.0F);

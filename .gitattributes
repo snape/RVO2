@@ -83,4 +83,3 @@ triggers             whitespace-0
 .github/**           export-ignore
 .github/**/*.md      linguist-documentation
 LICENSES/**/*.txt    linguist-documentation linguist-vendored whitespace-0
-
