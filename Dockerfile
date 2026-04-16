@@ -72,6 +72,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     lldb \
     make \
     markdownlint \
+    meson \
     nano \
     netbase \
     ninja-build \

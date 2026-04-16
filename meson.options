@@ -1,8 +1,8 @@
-# -*- mode: ruby; -*-
-# vi: set ft=ruby:
+# -*- mode: meson; -*-
+# vi: set ft=meson:
 
 #
-# Brewfile
+# meson.options
 # RVO2 Library
 #
 # SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
@@ -34,23 +34,8 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
-brew 'bazelisk', conflicts_with: ['bazel']
-brew 'buildifier'
-brew 'buildozer'
-brew 'cmake'
-brew 'cppcheck'
-brew 'cpplint'
-brew 'doxygen'
-brew 'gcc'
-brew 'git'
-brew 'graphviz'
-brew 'include-what-you-use'
-brew 'jsonlint'
-brew 'lcov'
-brew 'llvm'
-brew 'markdownlint-cli'
-brew 'meson'
-brew 'ninja'
-brew 'pkgconf', conflicts_with: ['pkg-config']
-brew 'python'
-brew 'yamllint'
+option('examples', type : 'feature', value : 'auto',
+  description : 'Build example programs (default: enabled when top-level, disabled when a subproject)')
+
+option('openmp', type : 'feature', value : 'disabled',
+  description : 'Enable OpenMP parallelization if available')

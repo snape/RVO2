@@ -48,6 +48,12 @@ trim_trailing_whitespace = true
 [*.bazel]
 indent_size = 4
 
+[*.build]
+indent_size = 2
+
+[*.options]
+indent_size = 2
+
 [*.md]
 trim_trailing_whitespace = false
 
