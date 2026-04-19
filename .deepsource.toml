@@ -1,0 +1,27 @@
+version = 1
+
+[[analyzers]]
+name = "cxx"
+enabled = true
+
+  [analyzers.meta]
+  cyclomatic_complexity_threshold = "medium"
+  misra_compliance = true
+
+[[analyzers]]
+name = "docker"
+enabled = true
+
+  [analyzers.meta]
+  dockerfile_paths = ["Dockerfile"]
+  trusted_registries = ["docker.io"]
+
+[[analyzers]]
+name = "python"
+enabled = true
+
+  [analyzers.meta]
+  cyclomatic_complexity_threshold = "medium"
+  max_line_length = 88
+  runtime_version = "3.x.x"
+  type_checker = "mypy"

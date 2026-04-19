@@ -1,0 +1,138 @@
+#
+# coverage.yml
+# RVO2 Library
+#
+# SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Please send all bug reports to <geom@cs.unc.edu>.
+#
+# The authors may be contacted via:
+#
+# Jur van den Berg, Stephen J. Guy, Jamie Snape, Ming C. Lin, Dinesh Manocha
+# Dept. of Computer Science
+# 201 S. Columbia St.
+# Frederick P. Brooks, Jr. Computer Science Bldg.
+# Chapel Hill, N.C. 27599-3175
+# United States of America
+#
+# <https://gamma.cs.unc.edu/RVO2/>
+#
+
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+---
+name: coverage
+
+on:  # yamllint disable-line rule:truthy
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: '20 5 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  coverage:
+    name: debian amd64
+    runs-on: ubuntu-latest
+    container: debian:trixie-slim
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          apt-get -qq -o APT::Acquire::Retries=4 update \
+            || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
+          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
+              --no-install-recommends install \
+            ca-certificates \
+            g++ \
+            gcovr \
+            git \
+            meson \
+            ninja-build \
+            pkgconf \
+            python3
+          apt-get -qq -o Dpkg::Use-Pty=0 autoremove
+          rm -rf /var/lib/apt/lists/*
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v6
+      - name: setup build
+        run: |
+          meson setup \
+            -Db_coverage=true \
+            -Db_lto=false \
+            -Dbuildtype=debug \
+            -Dopenmp=disabled \
+            -Dwerror=true \
+            _build
+        shell: bash
+      - name: build
+        run: |
+          meson compile -C _build
+        shell: bash
+      - name: test
+        run: |
+          meson test -C _build --print-errorlogs
+        shell: bash
+      - name: coverage-xml
+        run: |
+          meson compile -C _build coverage-xml
+        shell: bash
+      - name: summary
+        run: |
+          python3 - <<'EOF' >> "$GITHUB_STEP_SUMMARY"
+          import xml.etree.ElementTree as ET
+          root = ET.parse('_build/meson-logs/coverage.xml').getroot()
+          lr = float(root.get('line-rate', 0))
+          lc = int(root.get('lines-covered', 0))
+          lv = int(root.get('lines-valid', 0))
+          br = float(root.get('branch-rate', 0))
+          bc = int(root.get('branches-covered', 0))
+          bv = int(root.get('branches-valid', 0))
+          print('## Coverage')
+          print()
+          print('| Metric | Covered | Total | Rate |')
+          print('|--------|---------|-------|------|')
+          print(f'| Lines | {lc} | {lv} | {lr:.1%} |')
+          if bv > 0:
+              print(f'| Branches | {bc} | {bv} | {br:.1%} |')
+          EOF
+        shell: bash
+      - name: upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: _build/meson-logs/coverage.xml
+          retention-days: 7
+      - name: upload coverage-xml to deepsource
+        if: github.ref == 'refs/heads/main'
+        uses: deepsourcelabs/test-coverage-action@master
+        with:
+          key: cxx
+          coverage-file: _build/meson-logs/coverage.xml
+          dsn: ${{ secrets.DEEPSOURCE_DSN }}

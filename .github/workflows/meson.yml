@@ -31,6 +31,7 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 ---
 name: meson
 
@@ -67,9 +68,10 @@ jobs:
             gcc-c++ \
             git \
             glibc-langpack-en \
+            libomp-devel \
             meson \
             ninja-build \
-            pkgconf-pkg-config
+            pkgconf
           dnf config-manager --set-enabled crb
           dnf clean all
           rm -rf /var/cache/yum
@@ -105,6 +107,7 @@ jobs:
             git \
             meson \
             ninja \
+            openmp-dev \
             pkgconf
         shell: sh
       - name: checkout
@@ -138,6 +141,7 @@ jobs:
             git \
             meson \
             ninja \
+            openmp \
             pkgconf
           rm -rf \
             /var/cache/pacman/pkg/* \
@@ -174,9 +178,10 @@ jobs:
             gcc-c++ \
             git \
             glibc-langpack-en \
+            libomp-devel \
             meson \
             ninja-build \
-            pkgconf-pkg-config
+            pkgconf
           dnf clean all
           rm -rf /var/cache/yum
         shell: bash
@@ -199,7 +204,7 @@ jobs:
 
   meson-macos:
     name: macos arm64
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 30
     steps:
       - name: checkout
@@ -224,7 +229,7 @@ jobs:
       - name: build test package
         run: |
           meson setup \
-            --prefix "$PWD/_build/install" \
+            --prefix "$(pwd)/_build/install" \
             -Db_lto=true \
             -Dopenmp=disabled \
             -Dwerror=true \
@@ -249,6 +254,7 @@ jobs:
             ca-certificates \
             gcc-c++ \
             git \
+            libomp-devel \
             meson \
             ninja \
             pkgconf
@@ -286,6 +292,7 @@ jobs:
             ca-certificates \
             g++ \
             git \
+            libomp-dev \
             meson \
             ninja-build \
             pkgconf
@@ -326,6 +333,7 @@ jobs:
             ca-certificates \
             g++ \
             git \
+            libomp-dev \
             meson \
             ninja-build \
             pkgconf

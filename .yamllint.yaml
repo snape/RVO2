@@ -31,10 +31,12 @@
 # <https://gamma.cs.unc.edu/AVO/>
 #
 
+# yaml-language-server: $schema=https://json.schemastore.org/yamllint.json
 ---
 extends: default
 
+ignore: |
+  .venv/
+
 rules:
-  line-length:
-    max: 80
-    level: warning
+  line-length: disable

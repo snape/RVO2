@@ -55,6 +55,7 @@ Checks: >
   -cert-msc51-cpp,
   -clang-analyzer-security.insecureAPI.rand,
   -cppcoreguidelines-avoid-magic-numbers,
+  -misc-include-cleaner,
   -misc-no-recursion,
   -readability-function-cognitive-complexity,
   -readability-identifier-length,

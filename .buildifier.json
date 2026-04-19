@@ -1,7 +1,7 @@
 {
   "type": "auto",
-  "mode": "fix",
-  "lint": "fix",
+  "mode": "check",
+  "lint": "warn",
   "warningsList": [
     "all"
   ]

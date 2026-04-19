@@ -52,30 +52,34 @@
 *.css                text diff=css linguist-documentation whitespace=trailing-space
 *.h                  text diff=cpp linguist-language=c++ whitespace-2
 *.html               text diff=html linguist-documentation whitespace=trailing-space
-*.imp                text linguist-language=json whitespace-2
+*.imp                text linguist-language=yaml whitespace-2
 *.json               text whitespace-2
 *.license            text linguist-documentation whitespace-0
 *.md                 text diff=markdown whitespace-md
 *.options            text diff=python linguist-language=meson whitespace-4
 *.pc.in              text whitespace-2
+*.py                 text diff=python whitespace-2
+*.toml               text whitespace-2
 *.txt                text
+*.xml                text whitespace-2
 *.yaml               text whitespace-2
 *.yml                text whitespace-2
 
 .bazelignore         text whitespace-4
 .bazelrc             text whitespace-4
-.bazelversion        text whitespace-4
+.bazelversion        text whitespace-0
 .clang-format        text whitespace-2
 .clang-tidy          text whitespace-2
 .dockerignore        text whitespace-2
 .editorconfig        text whitespace-2
+.gersemirc           text whitespace-2
 .gitattributes       text export-ignore whitespace-2
 .gitignore           text export-ignore whitespace-2
+.secrets.baseline    text whitespace-2
 .zenodo.json         export-ignore linguist-documentation
 Brewfile             text diff=ruby export-ignore whitespace-4
 CMakeLists.txt       whitespace-2
 CODEOWNERS           text whitespace-2
-dep5                 text linguist-documentation whitespace-1
 Dockerfile           text whitespace-2
 LICENSE              text linguist-documentation linguist-vendored whitespace-0
 README.md            linguist-documentation

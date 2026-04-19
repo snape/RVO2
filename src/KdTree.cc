@@ -229,7 +229,6 @@ void KdTree::buildAgentTreeRecursive(std::size_t begin, std::size_t end,
 
     if (left == begin) {
       ++left;
-      ++right;
     }
 
     agentTree_[node].left = node + 1U;

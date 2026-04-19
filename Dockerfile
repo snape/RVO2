@@ -135,9 +135,13 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && curl -fsSL \
     https://github.com/bazelbuild/buildtools/releases/latest/download/buildozer-linux-${TARGETARCH:-amd64} \
     -o /usr/local/bin/buildozer \
+  && curl -fsSL \
+    "https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-$([ "${TARGETARCH:-amd64}" = amd64 ] && echo x86_64 || echo "${TARGETARCH:-amd64}")" \
+    -o /usr/local/bin/hadolint \
   && chmod +x \
     /usr/local/bin/buildifier \
     /usr/local/bin/buildozer \
+    /usr/local/bin/hadolint \
   && curl -fsSL \
     https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash \
     | bash -s -- '' /usr/local/bin \
@@ -145,8 +149,11 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && . /home/ubuntu/.venv/bin/activate \
   && pip install --no-cache-dir -qq \
     cffconvert \
+    check-jsonschema \
+    detect-secrets \
     lizard \
     pre-commit \
+    ruff \
   && echo "ubuntu ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/ubuntu \
   && chmod 0440 /etc/sudoers.d/ubuntu
 COPY --from=muon-builder /tmp/muon-0.5.0/_build/muon /usr/local/bin/muon

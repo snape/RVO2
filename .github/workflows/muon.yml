@@ -31,6 +31,7 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 ---
 name: muon
 
@@ -56,7 +57,7 @@ jobs:
     name: build alpine linux amd64
     runs-on: ubuntu-latest
     container: alpine:3
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: setup
         run: |
@@ -101,7 +102,7 @@ jobs:
       - name: upload
         uses: actions/upload-artifact@v7
         with:
-          name:-linux-amd64
+          name: muon-linux-amd64
           path: /tmp/muon-0.5.0/_build/muon
           retention-days: 1
 
@@ -109,7 +110,7 @@ jobs:
     name: build alpine linux arm64
     runs-on: ubuntu-24.04-arm
     container: alpine:3
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: setup
         run: |
@@ -127,7 +128,7 @@ jobs:
             | tar -xz -C /tmp
           cd /tmp/muon-0.5.0
           ./bootstrap.sh _bootstrap
-          _bootstrap/muon setup \
+          _bootstrap/muon-bootstrap setup \
             -Ddefault_library=static \
             -Dstatic=true \
             _build
@@ -136,7 +137,7 @@ jobs:
       - name: upload
         uses: actions/upload-artifact@v7
         with:
-          name:-linux-arm64
+          name: muon-linux-arm64
           path: /tmp/muon-0.5.0/_build/muon
           retention-days: 1
 
@@ -144,14 +145,14 @@ jobs:
     name: fmt
     needs: muon-build-alpine-amd64
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     steps:
       - name: checkout
         uses: actions/checkout@v6
       - name: download muon
         uses: actions/download-artifact@v8
         with:
-          name:-linux-amd64
+          name: muon-linux-amd64
           path: .
       - name: fmt
         run: |
@@ -175,8 +176,9 @@ jobs:
             gcc-c++ \
             git \
             glibc-langpack-en \
+            libomp-devel \
             ninja-build \
-            pkgconf-pkg-config
+            pkgconf
           dnf clean all
           rm -rf /var/cache/yum
         shell: bash
@@ -185,17 +187,17 @@ jobs:
       - name: download muon
         uses: actions/download-artifact@v8
         with:
-          name:-linux-amd64
+          name: muon-linux-amd64
           path: .
       - name: build test install
         run: |
           install -m 755 muon /usr/local/bin/muon
           muon setup \
-            --prefix "$(pwd)/_build/install" \
             -Dopenmp=enabled \
+            -Dprefix="$(pwd)/_build/install" \
             -Dwerror=true \
             _build
-          muon -C _build samu
+          ninja -C _build
           muon -C _build test -v
           muon -C _build install
         shell: bash
@@ -214,6 +216,7 @@ jobs:
             g++ \
             git \
             ninja-build \
+            openmp-dev \
             pkgconf
         shell: sh
       - name: checkout
@@ -221,17 +224,17 @@ jobs:
       - name: download muon
         uses: actions/download-artifact@v8
         with:
-          name:-linux-amd64
+          name: muon-linux-amd64
           path: .
       - name: build test install
         run: |
           install -m 755 muon /usr/local/bin/muon
           muon setup \
-            --prefix "$(pwd)/_build/install" \
             -Dopenmp=enabled \
+            -Dprefix="$(pwd)/_build/install" \
             -Dwerror=true \
             _build
-          muon -C _build samu
+          ninja -C _build
           muon -C _build test -v
           muon -C _build install
         shell: sh
@@ -249,8 +252,9 @@ jobs:
             ca-certificates \
             gcc \
             git \
+            openmp \
             pkgconf \
-            samu
+            samurai
           rm -rf \
             /var/cache/pacman/pkg/* \
             /var/lib/pacman/sync/*
@@ -260,14 +264,14 @@ jobs:
       - name: download muon
         uses: actions/download-artifact@v8
         with:
-          name:-linux-amd64
+          name: muon-linux-amd64
           path: .
       - name: build test install
         run: |
           install -m 755 muon /usr/local/bin/muon
           muon setup \
-            --prefix "$(pwd)/_build/install" \
             -Dopenmp=enabled \
+            -Dprefix="$(pwd)/_build/install" \
             -Dwerror=true \
             _build
           samu -C _build
@@ -290,7 +294,8 @@ jobs:
             gcc-c++ \
             git \
             glibc-langpack-en \
-            pkgconf-pkg-config \
+            libomp-devel \
+            pkgconf \
             samu
           dnf clean all
           rm -rf /var/cache/yum
@@ -300,14 +305,14 @@ jobs:
       - name: download muon
         uses: actions/download-artifact@v8
         with:
-          name:-linux-amd64
+          name: muon-linux-amd64
           path: .
       - name: build test install
         run: |
           install -m 755 muon /usr/local/bin/muon
           muon setup \
-            --prefix "$(pwd)/_build/install" \
             -Dopenmp=enabled \
+            -Dprefix="$(pwd)/_build/install" \
             -Dwerror=true \
             _build
           samu -C _build
@@ -317,7 +322,7 @@ jobs:
 
   muon-macos:
     name: macos arm64
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 30
     steps:
       - name: checkout
@@ -342,8 +347,8 @@ jobs:
       - name: build test install
         run: |
           muon setup \
-            --prefix "$PWD/_build/install" \
             -Dopenmp=disabled \
+            -Dprefix="$(pwd)/_build/install" \
             -Dwerror=true \
             _build
           samu -C _build
@@ -365,8 +370,9 @@ jobs:
             ca-certificates \
             gcc-c++ \
             git \
-            pkgconf \
-            samu
+            libomp-devel \
+            ninja \
+            pkgconf
           zypper -n -q cc -a
         shell: bash
       - name: checkout
@@ -374,17 +380,17 @@ jobs:
       - name: download muon
         uses: actions/download-artifact@v8
         with:
-          name:-linux-amd64
+          name: muon-linux-amd64
           path: .
       - name: build test install
         run: |
           install -m 755 muon /usr/local/bin/muon
           muon setup \
-            --prefix "$(pwd)/_build/install" \
             -Dopenmp=enabled \
+            -Dprefix="$(pwd)/_build/install" \
             -Dwerror=true \
             _build
-          samu -C _build
+          ninja -C _build
           muon -C _build test -v
           muon -C _build install
         shell: bash
@@ -405,6 +411,7 @@ jobs:
             ca-certificates \
             g++ \
             git \
+            libomp-dev \
             ninja-build \
             pkgconf
           apt-get -qq -o Dpkg::Use-Pty=0 autoremove
@@ -417,17 +424,17 @@ jobs:
       - name: download muon
         uses: actions/download-artifact@v8
         with:
-          name:-linux-amd64
+          name: muon-linux-amd64
           path: .
       - name: build test install
         run: |
           install -m 755 muon /usr/local/bin/muon
           muon setup \
-            --prefix "$(pwd)/_build/install" \
             -Dopenmp=enabled \
+            -Dprefix="$(pwd)/_build/install" \
             -Dwerror=true \
             _build
-          muon -C _build samu
+          ninja -C _build
           muon -C _build test -v
           muon -C _build install
         shell: bash
@@ -448,6 +455,7 @@ jobs:
             ca-certificates \
             g++ \
             git \
+            libomp-dev \
             ninja-build \
             pkgconf
           apt-get -qq -o Dpkg::Use-Pty=0 autoremove
@@ -460,17 +468,17 @@ jobs:
       - name: download muon
         uses: actions/download-artifact@v8
         with:
-          name:-linux-arm64
+          name: muon-linux-arm64
           path: .
       - name: build test install
         run: |
           install -m 755 muon /usr/local/bin/muon
           muon setup \
-            --prefix "$(pwd)/_build/install" \
             -Dopenmp=enabled \
+            -Dprefix="$(pwd)/_build/install" \
             -Dwerror=true \
             _build
-          muon -C _build samu
+          ninja -C _build
           muon -C _build test -v
           muon -C _build install
         shell: bash

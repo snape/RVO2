@@ -32,6 +32,13 @@
 #
 
 cffconvert
+check-jsonschema
 cmakelang
+codespell
 cpplint
+detect-secrets
+gersemi
+lizard
 reuse
+ruff
+yamllint
