@@ -1,8 +1,8 @@
-# -*- mode: gitignore; -*-
-# vi: set ft=gitignore:
+# -*- mode: meson; -*-
+# vi: set ft=meson:
 
 #
-# .dockerignore
+# examples/meson.build
 # RVO2 Library
 #
 # SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
@@ -34,10 +34,29 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
-_build/
-.idea/
-.user.bazelrc
-bazel-*
-cmake-build-*/
-CMakeUserPresets.json
-MODULE.bazel.lock
+examples_opt = get_option('examples')
+if examples_opt.disabled() or (examples_opt.auto() and meson.is_subproject())
+    subdir_done()
+endif
+
+example_args = [
+    '-DRVO_OUTPUT_TIME_AND_POSITIONS=0',
+    '-DRVO_SEED_RANDOM_NUMBER_GENERATOR=0',
+]
+
+foreach name : ['Blocks', 'Circle', 'Roadmap']
+    exe = executable(
+        name,
+        sources: name + '.cc',
+        cpp_args: example_args,
+        dependencies: dep_rvo,
+        install: false,
+    )
+
+    test(
+        name,
+        exe,
+        suite: 'examples',
+        timeout: 300,
+    )
+endforeach

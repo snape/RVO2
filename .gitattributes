@@ -43,6 +43,7 @@
 *                    text=auto
 
 *.bazel              text diff=python linguist-language=starlark whitespace-4
+*.build              text diff=python linguist-language=meson whitespace-4
 *.cc                 text diff=cpp linguist-language=c++ whitespace-2
 *.cff                text linguist-documentation whitespace-2
 *.cfg                text whitespace-2
@@ -55,6 +56,7 @@
 *.json               text whitespace-2
 *.license            text linguist-documentation whitespace-0
 *.md                 text diff=markdown whitespace-md
+*.options            text diff=python linguist-language=meson whitespace-4
 *.pc.in              text whitespace-2
 *.txt                text
 *.yaml               text whitespace-2
