@@ -208,6 +208,46 @@ cd RVO2
 bazel test ...
 @endcode
 
+@section meson Meson
+
+@code{.sh}
+git clone https://github.com/snape/RVO2.git
+cd RVO2
+meson setup _build
+meson compile -C _build
+meson test -C _build
+meson install -C _build
+@endcode
+
+Enable optional OpenMP support with:
+
+@code{.sh}
+meson setup _build -Dopenmp=enabled
+@endcode
+
+On Windows, configure Meson with a static default library:
+
+@code{.sh}
+meson setup _build -Ddefault_library=static
+@endcode
+
+@section muon Muon
+
+@code{.sh}
+git clone https://github.com/snape/RVO2.git
+cd RVO2
+muon setup _build
+samu -C _build
+muon -C _build test -v
+muon -C _build install
+@endcode
+
+Enable optional OpenMP support with:
+
+@code{.sh}
+muon setup _build -Dopenmp=enabled
+@endcode
+
 @page using_rvo2_library Using RVO2 Library
 
 @section structure Structure

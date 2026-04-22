@@ -1,0 +1,387 @@
+#
+# meson.yml
+# RVO2 Library
+#
+# SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Please send all bug reports to <geom@cs.unc.edu>.
+#
+# The authors may be contacted via:
+#
+# Jur van den Berg, Stephen J. Guy, Jamie Snape, Ming C. Lin, Dinesh Manocha
+# Dept. of Computer Science
+# 201 S. Columbia St.
+# Frederick P. Brooks, Jr. Computer Science Bldg.
+# Chapel Hill, N.C. 27599-3175
+# United States of America
+#
+# <https://gamma.cs.unc.edu/RVO2/>
+#
+
+---
+name: meson
+
+on:  # yamllint disable-line rule:truthy
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: '30 5 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  meson-almalinux:
+    name: almalinux amd64
+    runs-on: ubuntu-latest
+    container: almalinux:10
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          dnf makecache -q --refresh || (sleep 15; dnf makecache -q --refresh)
+          dnf install -q -y \
+            ca-certificates \
+            dnf-plugins-core \
+            gcc-c++ \
+            git \
+            glibc-langpack-en \
+            meson \
+            ninja-build \
+            pkgconf-pkg-config
+          dnf config-manager --set-enabled crb
+          dnf clean all
+          rm -rf /var/cache/yum
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v6
+      - name: build test package
+        run: |
+          meson setup \
+            --prefix "$(pwd)/_build/install" \
+            -Db_lto=true \
+            -Dopenmp=enabled \
+            -Dwerror=true \
+            _build
+          meson compile -C _build
+          meson test -C _build --print-errorlogs
+          meson install -C _build
+          git config --global --add safe.directory "$(pwd)"
+          meson dist -C _build
+        shell: bash
+
+  meson-alpine:
+    name: alpine linux amd64
+    runs-on: ubuntu-latest
+    container: alpine:3
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          apk add -q --no-cache \
+            ca-certificates \
+            g++ \
+            git \
+            meson \
+            ninja \
+            pkgconf
+        shell: sh
+      - name: checkout
+        uses: actions/checkout@v6
+      - name: build test package
+        run: |
+          meson setup \
+            --prefix "$(pwd)/_build/install" \
+            -Db_lto=true \
+            -Dopenmp=enabled \
+            -Dwerror=true \
+            _build
+          meson compile -C _build
+          meson test -C _build --print-errorlogs
+          meson install -C _build
+          git config --global --add safe.directory "$(pwd)"
+          meson dist -C _build
+        shell: sh
+
+  meson-arch:
+    name: arch linux amd64
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          pacman --needed --noconfirm --noprogressbar -Sy \
+            ca-certificates \
+            gcc \
+            git \
+            meson \
+            ninja \
+            pkgconf
+          rm -rf \
+            /var/cache/pacman/pkg/* \
+            /var/lib/pacman/sync/*
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v6
+      - name: build test package
+        run: |
+          meson setup \
+            --prefix "$(pwd)/_build/install" \
+            -Db_lto=true \
+            -Dopenmp=enabled \
+            -Dwerror=true \
+            _build
+          meson compile -C _build
+          meson test -C _build --print-errorlogs
+          meson install -C _build
+          git config --global --add safe.directory "$(pwd)"
+          meson dist -C _build
+        shell: bash
+
+  meson-fedora:
+    name: fedora linux amd64
+    runs-on: ubuntu-latest
+    container: fedora:44
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          dnf makecache -q --refresh || (sleep 15; dnf makecache -q --refresh)
+          dnf install -q -y \
+            ca-certificates \
+            gcc-c++ \
+            git \
+            glibc-langpack-en \
+            meson \
+            ninja-build \
+            pkgconf-pkg-config
+          dnf clean all
+          rm -rf /var/cache/yum
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v6
+      - name: build test package
+        run: |
+          meson setup \
+            --prefix "$(pwd)/_build/install" \
+            -Db_lto=true \
+            -Dopenmp=enabled \
+            -Dwerror=true \
+            _build
+          meson compile -C _build
+          meson test -C _build --print-errorlogs
+          meson install -C _build
+          git config --global --add safe.directory "$(pwd)"
+          meson dist -C _build
+        shell: bash
+
+  meson-macos:
+    name: macos arm64
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - name: checkout
+        uses: actions/checkout@v6
+      - name: cache homebrew
+        uses: actions/cache@v5
+        with:
+          path: ~/Library/Caches/Homebrew/downloads
+          key: ${{ runner.os }}-brew-${{ hashFiles('Brewfile') }}
+          restore-keys: |
+            ${{ runner.os }}-brew-
+      - name: setup
+        run: |
+          brew update -q
+          brew bundle install -q
+          brew cleanup -q -s
+        env:
+          HOMEBREW_NO_ANALYTICS: 1
+          HOMEBREW_NO_AUTO_UPDATE: 1
+          HOMEBREW_NO_INSTALL_CLEANUP: 1
+        shell: zsh -efuo pipefail {0}
+      - name: build test package
+        run: |
+          meson setup \
+            --prefix "$PWD/_build/install" \
+            -Db_lto=true \
+            -Dopenmp=disabled \
+            -Dwerror=true \
+            _build
+          meson compile -C _build
+          meson test -C _build --print-errorlogs
+          meson install -C _build
+          git config --global --add safe.directory "$(pwd)"
+          meson dist -C _build
+        shell: zsh -efuo pipefail {0}
+
+  meson-opensuse:
+    name: opensuse leap amd64
+    runs-on: ubuntu-latest
+    container: opensuse/leap:16.0
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          zypper -n -q ref || (sleep 15; zypper -n -q ref)
+          zypper -n -q in --no-recommends \
+            ca-certificates \
+            gcc-c++ \
+            git \
+            meson \
+            ninja \
+            pkgconf
+          zypper -n -q cc -a
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v6
+      - name: build test package
+        run: |
+          meson setup \
+            --prefix "$(pwd)/_build/install" \
+            -Db_lto=true \
+            -Dopenmp=enabled \
+            -Dwerror=true \
+            _build
+          meson compile -C _build
+          meson test -C _build --print-errorlogs
+          meson install -C _build
+          git config --global --add safe.directory "$(pwd)"
+          meson dist -C _build
+        shell: bash
+
+  meson-ubuntu:
+    name: ubuntu amd64
+    runs-on: ubuntu-latest
+    container: ubuntu:24.04
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          apt-get -qq -o APT::Acquire::Retries=4 update \
+            || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
+          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
+              --no-install-recommends install \
+            ca-certificates \
+            g++ \
+            git \
+            meson \
+            ninja-build \
+            pkgconf
+          apt-get -qq -o Dpkg::Use-Pty=0 autoremove
+          rm -rf /var/lib/apt/lists/*
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v6
+      - name: build test package
+        run: |
+          meson setup \
+            --prefix "$(pwd)/_build/install" \
+            -Db_lto=true \
+            -Dopenmp=enabled \
+            -Dwerror=true \
+            _build
+          meson compile -C _build
+          meson test -C _build --print-errorlogs
+          meson install -C _build
+          git config --global --add safe.directory "$(pwd)"
+          meson dist -C _build
+        shell: bash
+
+  meson-ubuntu-arm64:
+    name: ubuntu arm64
+    runs-on: ubuntu-24.04-arm
+    container: ubuntu:24.04
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          apt-get -qq -o APT::Acquire::Retries=4 update \
+            || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
+          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
+              --no-install-recommends install \
+            ca-certificates \
+            g++ \
+            git \
+            meson \
+            ninja-build \
+            pkgconf
+          apt-get -qq -o Dpkg::Use-Pty=0 autoremove
+          rm -rf /var/lib/apt/lists/*
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v6
+      - name: build test package
+        run: |
+          meson setup \
+            --prefix "$(pwd)/_build/install" \
+            -Db_lto=true \
+            -Dopenmp=enabled \
+            -Dwerror=true \
+            _build
+          meson compile -C _build
+          meson test -C _build --print-errorlogs
+          meson install -C _build
+          git config --global --add safe.directory "$(pwd)"
+          meson dist -C _build
+        shell: bash
+
+  meson-windows:
+    name: windows amd64
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: checkout
+        uses: actions/checkout@v6
+      - name: cache pip
+        uses: actions/cache@v5
+        with:
+          path: ~\AppData\Local\pip\Cache
+          key: ${{ runner.os }}-pip-${{ hashFiles('.github/workflows/meson.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      - name: setup
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install meson ninja
+        shell: pwsh
+      - name: build test package
+        run: |
+          meson setup `
+            --prefix "${PWD}/_build/install" `
+            -Db_lto=true `
+            -Ddefault_library=static `
+            -Dopenmp=disabled `
+            -Dwerror=true `
+            _build
+          meson compile -C _build
+          meson test -C _build --print-errorlogs
+          meson install -C _build
+          git config --global --add safe.directory "${PWD}"
+          meson dist -C _build
+        shell: pwsh

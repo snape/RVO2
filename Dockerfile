@@ -1,4 +1,5 @@
 # syntax=docker.io/docker/dockerfile:1
+# check=error=true
 
 #
 # Dockerfile
@@ -33,10 +34,33 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
+FROM ubuntu:24.04 AS muon-builder
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN export DEBIAN_FRONTEND=noninteractive \
+  && apt-get update -qq \
+  && apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
+    build-essential \
+    ca-certificates \
+    curl \
+    gcc \
+    libarchive-dev \
+    libc6-dev \
+    libcurl4-openssl-dev \
+    ninja-build \
+    pkgconf \
+  && rm -rf /var/lib/apt/lists/* \
+  && curl -fsSL \
+    https://github.com/muon-build/muon/archive/refs/tags/0.5.0.tar.gz \
+    | tar -xz -C /tmp
+WORKDIR /tmp/muon-0.5.0
+RUN ./bootstrap.sh _bootstrap \
+  && _bootstrap/muon-bootstrap setup _build \
+  && ninja -C _build
+
 FROM ubuntu:24.04
 ARG TARGETARCH
 LABEL org.opencontainers.image.authors="Jur van den Berg, Stephen J. Guy, Jamie Snape, Ming C. Lin, Dinesh Manocha"
-LABEL org.opencontainers.image.base.name="docker.io/library/ubuntu:latest"
+LABEL org.opencontainers.image.base.name="docker.io/library/ubuntu:24.04"
 LABEL org.opencontainers.image.description="Optimal Reciprocal Collision Avoidance"
 LABEL org.opencontainers.image.licenses="Apache-2.0"
 LABEL org.opencontainers.image.source="https://github.com/snape/RVO2/"
@@ -47,16 +71,21 @@ LABEL org.opencontainers.image.version="2.0.3"
 ENV LANG=C.UTF-8
 ENV LOGNAME=root
 ENV USER=root
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN export DEBIAN_FRONTEND=noninteractive \
   && apt-get update -qq \
   && apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
     ca-certificates \
     clang \
+    clang-format \
     clang-tidy \
+    clang-tools \
     cmake \
     cmake-format \
+    codespell \
     cppcheck \
     cpplint \
+    curl \
     dirmngr \
     doxygen \
     dpkg-dev \
@@ -65,13 +94,14 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     gdb \
     git \
     gnupg \
+    gcovr \
     graphviz \
     iwyu \
     jsonlint \
-    lcov \
     lldb \
     make \
     markdownlint \
+    meson \
     nano \
     netbase \
     ninja-build \
@@ -82,7 +112,9 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     python3-dateutil \
     python3-docopt \
     python3-jsonschema \
+    python3-pathspec \
     python3-pip \
+    python3-pygments \
     python3-pykwalify \
     python3-requests \
     python3-ruamel.yaml \
@@ -93,22 +125,31 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     valgrind \
     yamllint \
   && rm -rf /var/lib/apt/lists/* \
-  && wget -q https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-${TARGETARCH:-amd64}.deb \
+  && curl -fsSLO \
+    https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-${TARGETARCH:-amd64}.deb \
   && dpkg -i bazelisk-${TARGETARCH:-amd64}.deb \
   && rm -rf bazelisk-${TARGETARCH:-amd64}.deb \
-  && wget -qO /usr/local/bin/buildifier \
+  && curl -fsSL \
     https://github.com/bazelbuild/buildtools/releases/latest/download/buildifier-linux-${TARGETARCH:-amd64} \
-  && wget -qO /usr/local/bin/buildozer \
+    -o /usr/local/bin/buildifier \
+  && curl -fsSL \
     https://github.com/bazelbuild/buildtools/releases/latest/download/buildozer-linux-${TARGETARCH:-amd64} \
+    -o /usr/local/bin/buildozer \
   && chmod +x \
     /usr/local/bin/buildifier \
     /usr/local/bin/buildozer \
+  && curl -fsSL \
+    https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash \
+    | bash -s -- '' /usr/local/bin \
   && python3 -m venv --system-site-packages /home/ubuntu/.venv \
   && . /home/ubuntu/.venv/bin/activate \
   && pip install --no-cache-dir -qq \
     cffconvert \
+    lizard \
+    pre-commit \
   && echo "ubuntu ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/ubuntu \
   && chmod 0440 /etc/sudoers.d/ubuntu
+COPY --from=muon-builder /tmp/muon-0.5.0/_build/muon /usr/local/bin/muon
 ENV LOGNAME=ubuntu
 ENV PATH="/home/ubuntu/.venv/bin:${PATH}"
 ENV SHELL=/bin/bash
