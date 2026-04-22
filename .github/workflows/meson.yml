@@ -205,7 +205,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v6
       - name: cache homebrew
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/Library/Caches/Homebrew/downloads
           key: ${{ runner.os }}-brew-${{ hashFiles('Brewfile') }}
@@ -359,7 +359,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v6
       - name: cache pip
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~\AppData\Local\pip\Cache
           key: ${{ runner.os }}-pip-${{ hashFiles('.github/workflows/meson.yml') }}
