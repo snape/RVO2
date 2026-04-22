@@ -60,5 +60,8 @@ indent_size = 4
 [Brewfile]
 indent_size = 4
 
-[dep5]
-indent_size = 1
+[*.build]
+indent_size = 4
+
+[*.options]
+indent_size = 4

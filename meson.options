@@ -1,8 +1,8 @@
-# -*- mode: gitignore; -*-
-# vi: set ft=gitignore:
+# -*- mode: meson; -*-
+# vi: set ft=meson:
 
 #
-# .dockerignore
+# meson.options
 # RVO2 Library
 #
 # SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
@@ -34,10 +34,16 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
-_build/
-.idea/
-.user.bazelrc
-bazel-*
-cmake-build-*/
-CMakeUserPresets.json
-MODULE.bazel.lock
+option(
+    'examples',
+    type: 'feature',
+    value: 'auto',
+    description: 'Build example programs (default: enabled when top-level, disabled when a subproject)',
+)
+
+option(
+    'openmp',
+    type: 'feature',
+    value: 'disabled',
+    description: 'Enable OpenMP parallelization if available',
+)

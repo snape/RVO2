@@ -33,10 +33,28 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
+FROM alpine:3 AS muon-builder
+RUN apk add -q --no-cache \
+    ca-certificates \
+    gcc \
+    musl-dev \
+    ninja \
+    pkgconf-dev \
+  && wget -qO- \
+    https://github.com/muon-build/muon/archive/refs/tags/0.5.0.tar.gz \
+    | tar -xz -C /tmp \
+  && cd /tmp/muon-0.5.0 \
+  && sh bootstrap.sh _bootstrap \
+  && _bootstrap/muon setup \
+    -Ddefault_library=static \
+    -Dstatic=true \
+    _build \
+  && _bootstrap/muon compile -C _build
+
 FROM ubuntu:24.04
 ARG TARGETARCH
 LABEL org.opencontainers.image.authors="Jur van den Berg, Stephen J. Guy, Jamie Snape, Ming C. Lin, Dinesh Manocha"
-LABEL org.opencontainers.image.base.name="docker.io/library/ubuntu:latest"
+LABEL org.opencontainers.image.base.name="docker.io/library/ubuntu:24.04"
 LABEL org.opencontainers.image.description="Optimal Reciprocal Collision Avoidance"
 LABEL org.opencontainers.image.licenses="Apache-2.0"
 LABEL org.opencontainers.image.source="https://github.com/snape/RVO2/"
@@ -52,9 +70,12 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
     ca-certificates \
     clang \
+    clang-format \
     clang-tidy \
+    clang-tools \
     cmake \
     cmake-format \
+    codespell \
     cppcheck \
     cpplint \
     dirmngr \
@@ -65,13 +86,16 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     gdb \
     git \
     gnupg \
+    gcovr \
     graphviz \
     iwyu \
     jsonlint \
     lcov \
+    lizard \
     lldb \
     make \
     markdownlint \
+    meson \
     nano \
     netbase \
     ninja-build \
@@ -88,6 +112,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     python3-ruamel.yaml \
     python3-venv \
     reuse \
+    samu \
     strace \
     sudo \
     valgrind \
@@ -103,12 +128,17 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && chmod +x \
     /usr/local/bin/buildifier \
     /usr/local/bin/buildozer \
+  && wget -qO- \
+    https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash \
+    | bash -s -- '' /usr/local/bin \
   && python3 -m venv --system-site-packages /home/ubuntu/.venv \
   && . /home/ubuntu/.venv/bin/activate \
   && pip install --no-cache-dir -qq \
     cffconvert \
+    pre-commit \
   && echo "ubuntu ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/ubuntu \
   && chmod 0440 /etc/sudoers.d/ubuntu
+COPY --from=muon-builder /tmp/muon-0.5.0/_build/muon /usr/local/bin/muon
 ENV LOGNAME=ubuntu
 ENV PATH="/home/ubuntu/.venv/bin:${PATH}"
 ENV SHELL=/bin/bash
