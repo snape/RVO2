@@ -149,7 +149,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v6
       - name: download muon
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: muon-linux-amd64
           path: .
@@ -183,7 +183,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v6
       - name: download muon
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: muon-linux-amd64
           path: .
@@ -219,7 +219,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v6
       - name: download muon
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: muon-linux-amd64
           path: .
@@ -258,7 +258,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v6
       - name: download muon
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: muon-linux-amd64
           path: .
@@ -298,7 +298,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v6
       - name: download muon
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: muon-linux-amd64
           path: .
@@ -372,7 +372,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v6
       - name: download muon
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: muon-linux-amd64
           path: .
@@ -415,7 +415,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v6
       - name: download muon
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: muon-linux-amd64
           path: .
@@ -458,7 +458,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v6
       - name: download muon
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: muon-linux-arm64
           path: .
