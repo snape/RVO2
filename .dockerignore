@@ -40,3 +40,4 @@ _build/
 bazel-*
 cmake-build-*/
 CMakeUserPresets.json
+MODULE.bazel.lock

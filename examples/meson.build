@@ -1,8 +1,8 @@
-# -*- mode: ruby; -*-
-# vi: set ft=ruby:
+# -*- mode: meson; -*-
+# vi: set ft=meson:
 
 #
-# Brewfile
+# examples/meson.build
 # RVO2 Library
 #
 # SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
@@ -34,23 +34,29 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
-brew 'bazelisk', conflicts_with: ['bazel']
-brew 'buildifier'
-brew 'buildozer'
-brew 'cmake'
-brew 'cppcheck'
-brew 'cpplint'
-brew 'doxygen'
-brew 'gcc'
-brew 'git'
-brew 'graphviz'
-brew 'include-what-you-use'
-brew 'jsonlint'
-brew 'lcov'
-brew 'llvm'
-brew 'markdownlint-cli'
-brew 'meson'
-brew 'ninja'
-brew 'pkgconf', conflicts_with: ['pkg-config']
-brew 'python'
-brew 'yamllint'
+examples_opt = get_option('examples')
+if examples_opt.disabled() or (examples_opt.auto() and meson.is_subproject())
+    subdir_done()
+endif
+
+example_args = [
+    '-DRVO_OUTPUT_TIME_AND_POSITIONS=0',
+    '-DRVO_SEED_RANDOM_NUMBER_GENERATOR=0',
+]
+
+foreach name : ['Blocks', 'Circle', 'Roadmap']
+    exe = executable(
+        name,
+        sources: name + '.cc',
+        cpp_args: example_args,
+        dependencies: dep_rvo,
+        install: false,
+    )
+
+    test(
+        name,
+        exe,
+        suite: 'examples',
+        timeout: 900,
+    )
+endforeach
