@@ -210,7 +210,7 @@ jobs:
   bazel-ubuntu:
     name: bazel ubuntu amd64
     runs-on: ubuntu-latest
-    container: ubuntu:24.04
+    container: ubuntu:26.04
     steps:
       - name: setup
         run: |
@@ -242,7 +242,7 @@ jobs:
   bazel-ubuntu-arm64:
     name: bazel ubuntu arm64
     runs-on: ubuntu-24.04-arm
-    container: ubuntu:24.04
+    container: ubuntu:26.04
     steps:
       - name: setup
         run: |
@@ -546,7 +546,7 @@ jobs:
   cmake-ubuntu:
     name: cmake ubuntu amd64
     runs-on: ubuntu-latest
-    container: ubuntu:24.04
+    container: ubuntu:26.04
     steps:
       - name: setup
         run: |
@@ -599,7 +599,7 @@ jobs:
   cmake-ubuntu-arm64:
     name: cmake ubuntu arm64
     runs-on: ubuntu-24.04-arm
-    container: ubuntu:24.04
+    container: ubuntu:26.04
     steps:
       - name: setup
         run: |
