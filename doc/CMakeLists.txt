@@ -39,8 +39,11 @@ if(BUILD_DOCUMENTATION AND Doxygen_FOUND)
   set(DOXYGEN_PROJECT_NUMBER ${PROJECT_VERSION})
   set(DOXYGEN_PROJECT_BRIEF "${PROJECT_DESCRIPTION}")
 
-  set(DOXYGEN_STRIP_FROM_PATH
-    "${PROJECT_BINARY_DIR}/src" "${PROJECT_SOURCE_DIR}/src")
+  set(
+    DOXYGEN_STRIP_FROM_PATH
+    "${PROJECT_BINARY_DIR}/src"
+    "${PROJECT_SOURCE_DIR}/src"
+  )
   set(DOXYGEN_BUILTIN_STL_SUPPORT YES)
 
   set(DOXYGEN_EXTRACT_ALL YES)
@@ -51,25 +54,31 @@ if(BUILD_DOCUMENTATION AND Doxygen_FOUND)
 
   set(DOXYGEN_HTML_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/header.html")
   set(DOXYGEN_HTML_FOOTER "${CMAKE_CURRENT_SOURCE_DIR}/footer.html")
-  set(DOXYGEN_HTML_EXTRA_STYLESHEET
-    "${CMAKE_CURRENT_SOURCE_DIR}/stylesheet.css")
+  set(
+    DOXYGEN_HTML_EXTRA_STYLESHEET
+    "${CMAKE_CURRENT_SOURCE_DIR}/stylesheet.css"
+  )
   set(DOXYGEN_SEARCHENGINE NO)
 
   set(DOXYGEN_DOT_IMAGE_FORMAT svg)
   set(DOXYGEN_INTERACTIVE_SVG YES)
 
-  doxygen_add_docs(documentation
+  doxygen_add_docs(
+    documentation
     "${PROJECT_BINARY_DIR}/src/Export.h"
     "${PROJECT_SOURCE_DIR}/src/Line.h"
     "${PROJECT_SOURCE_DIR}/src/RVO.h"
     "${PROJECT_SOURCE_DIR}/src/RVOSimulator.h"
     "${PROJECT_SOURCE_DIR}/src/Vector2.h"
     ALL
-    USE_STAMP_FILE)
+    USE_STAMP_FILE
+  )
 
   if(ENABLE_INSTALLATION)
-    install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html"
+    install(
+      DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html"
       COMPONENT documentation
-      TYPE DOC)
+      TYPE DOC
+    )
   endif()
 endif()

@@ -58,6 +58,7 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
+# yaml-language-server: $schema=https://raw.githubusercontent.com/citation-file-format/citation-file-format/1.2.0/schema.json
 ---
 cff-version: 1.2.0
 abstract: >-

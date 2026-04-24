@@ -1,0 +1,123 @@
+#
+# cppcheck.yml
+# RVO2 Library
+#
+# SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Please send all bug reports to <geom@cs.unc.edu>.
+#
+# The authors may be contacted via:
+#
+# Jur van den Berg, Stephen J. Guy, Jamie Snape, Ming C. Lin, Dinesh Manocha
+# Dept. of Computer Science
+# 201 S. Columbia St.
+# Frederick P. Brooks, Jr. Computer Science Bldg.
+# Chapel Hill, N.C. 27599-3175
+# United States of America
+#
+# <https://gamma.cs.unc.edu/RVO2/>
+#
+
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+---
+name: cppcheck
+
+on:  # yamllint disable-line rule:truthy
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: '40 6 * * *'
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cppcheck:
+    name: debian amd64
+    runs-on: ubuntu-latest
+    container: debian:trixie-slim
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          apt-get -qq -o APT::Acquire::Retries=4 update \
+            || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
+          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
+              --no-install-recommends install \
+            ca-certificates \
+            cppcheck \
+            g++ \
+            git \
+            jq \
+            meson \
+            ninja-build \
+            pkgconf
+          apt-get -qq -o Dpkg::Use-Pty=0 autoremove
+          rm -rf /var/lib/apt/lists/*
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v6
+      - name: setup build
+        run: |
+          meson setup \
+            -Db_lto=false \
+            -Dopenmp=disabled \
+            _build
+        shell: bash
+      - name: cppcheck
+        run: |
+          cppcheck \
+            -q \
+            --check-level=exhaustive \
+            --cppcheck-build-dir=_build \
+            --enable=all \
+            --error-exitcode=1 \
+            --inline-suppr \
+            --library=std \
+            --max-ctu-depth=10 \
+            --output-file=/dev/stdout \
+            --output-format=sarif \
+            --platform=unix64 \
+            --project=_build/compile_commands.json \
+            --safety \
+            --suppress-xml=.cppcheck-suppressions.xml | \
+            jq '.["$schema"] = "https://schemastore.org" | .runs[].artifacts = []' \
+            > cppcheck-results.sarif
+        shell: bash
+      - name: upload sarif
+        if: always()
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: cppcheck-results.sarif
+          category: cppcheck
+      - name: upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: cppcheck-results
+          path: cppcheck-results.sarif
+          retention-days: 7
+          if-no-files-found: ignore

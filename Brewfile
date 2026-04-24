@@ -34,23 +34,31 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
+brew 'actionlint'
 brew 'bazelisk', conflicts_with: ['bazel']
 brew 'buildifier'
 brew 'buildozer'
+brew 'check-jsonschema'
 brew 'cmake'
+brew 'codespell'
 brew 'cppcheck'
 brew 'cpplint'
+brew 'detect-secrets'
 brew 'doxygen'
 brew 'gcc'
+brew 'gcovr'
 brew 'git'
 brew 'graphviz'
+brew 'hadolint'
 brew 'include-what-you-use'
 brew 'jsonlint'
 brew 'lcov'
+brew 'lizard'
 brew 'llvm'
 brew 'markdownlint-cli'
 brew 'meson'
 brew 'ninja'
 brew 'pkgconf', conflicts_with: ['pkg-config']
 brew 'python'
+brew 'reuse'
 brew 'yamllint'
