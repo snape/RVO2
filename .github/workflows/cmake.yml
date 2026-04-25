@@ -1,5 +1,5 @@
 #
-# ci.yml
+# cmake.yml
 # RVO2 Library
 #
 # SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
@@ -31,8 +31,9 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 ---
-name: ci
+name: cmake
 
 on:  # yamllint disable-line rule:truthy
   push:
@@ -42,244 +43,25 @@ on:  # yamllint disable-line rule:truthy
     branches:
       - main
   schedule:
-    - cron: '0 5 * * *'
+    - cron: '10 5 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  bazel-almalinux:
-    name: bazel almalinux amd64
-    runs-on: ubuntu-latest
-    container: almalinux:10
-    steps:
-      - name: setup
-        run: |
-          dnf makecache -q --refresh || (sleep 15; dnf makecache -q --refresh)
-          dnf upgrade -q -y
-          dnf install -q -y \
-            ca-certificates \
-            gcc-c++ \
-            git \
-            python3 \
-            wget \
-            which
-          dnf clean all
-          rm -rf /var/cache/yum
-          wget -qO /usr/local/bin/bazelisk \
-            https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64
-          chmod +x /usr/local/bin/bazelisk
-          ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
-        shell: bash
-      - name: checkout
-        uses: actions/checkout@v6
-      - name: build test package
-        run: bazel test --flaky_test_attempts=3 ...
-        shell: bash
-
-  bazel-alpine:
-    name: bazel alpine linux amd64
-    runs-on: ubuntu-latest
-    container: alpine:3
-    steps:
-      - name: setup
-        run: |
-          apk upgrade -q --no-cache
-          apk add -q --no-cache \
-            ca-certificates \
-            g++ \
-            git \
-            libc6-compat \
-            python3 \
-            wget \
-            which
-          wget -qO /usr/local/bin/bazelisk \
-            https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64
-          chmod +x /usr/local/bin/bazelisk
-          ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
-        shell: sh
-      - name: checkout
-        uses: actions/checkout@v6
-      # - name: build test package
-      #   run: bazel test --flaky_test_attempts=3 ...
-      #   shell: sh
-
-  bazel-arch:
-    name: bazel arch linux amd64
-    runs-on: ubuntu-latest
-    container: archlinux:latest
-    steps:
-      - name: setup
-        run: |
-          pacman --needed --noconfirm --noprogressbar -S -u -y \
-            ca-certificates \
-            gcc \
-            git \
-            python \
-            wget \
-            which
-          rm -rf \
-            /var/cache/pacman/pkg/* \
-            /var/lib/pacman/sync/*
-          wget -qO /usr/local/bin/bazelisk \
-            https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64
-          chmod +x /usr/local/bin/bazelisk
-          ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
-        shell: bash
-      - name: checkout
-        uses: actions/checkout@v6
-      - name: build test package
-        run: bazel test --flaky_test_attempts=3 ...
-        shell: bash
-
-  bazel-fedora:
-    name: bazel fedora linux amd64
-    runs-on: ubuntu-latest
-    container: fedora:44
-    steps:
-      - name: setup
-        run: |
-          dnf makecache -q --refresh || (sleep 15; dnf makecache -q --refresh)
-          dnf upgrade -q -y
-          dnf install -q -y \
-            ca-certificates \
-            gcc-c++ \
-            git \
-            python3 \
-            wget \
-            which
-          dnf clean all
-          rm -rf /var/cache/yum
-          wget -qO /usr/local/bin/bazelisk \
-            https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64
-          chmod +x /usr/local/bin/bazelisk
-          ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
-        shell: bash
-      - name: checkout
-        uses: actions/checkout@v6
-      - name: build test package
-        run: bazel test --flaky_test_attempts=3 ...
-        shell: bash
-
-  bazel-macos:
-    name: bazel macos arm64
-    runs-on: macos-15
-    steps:
-      - name: checkout
-        uses: actions/checkout@v6
-      - name: setup
-        run: |
-          brew update -q
-          brew bundle install -q
-          brew cleanup -q -s
-          rm -rf $(brew --cache)
-        env:
-          HOMEBREW_NO_ANALYTICS: 1
-          HOMEBREW_NO_AUTO_UPDATE: 1
-          HOMEBREW_NO_INSTALL_CLEANUP: 1
-        shell: zsh -efuo pipefail {0}
-      - name: build test package
-        run: bazel test --flaky_test_attempts=3 ...
-        shell: zsh -efuo pipefail {0}
-
-  bazel-opensuse:
-    name: bazel opensuse leap amd64
-    runs-on: ubuntu-latest
-    container: opensuse/leap:16.0
-    steps:
-      - name: setup
-        run: |
-          zypper -n -q ref || (sleep 15; zypper -n -q ref)
-          zypper -n -q up
-          zypper -n -q in --no-recommends \
-            ca-certificates \
-            gcc-c++ \
-            git \
-            python3 \
-            wget \
-            which
-          zypper -n -q cc -a
-          wget -qO /usr/local/bin/bazelisk \
-            https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64
-          chmod +x /usr/local/bin/bazelisk
-          ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
-        shell: bash
-      - name: checkout
-        uses: actions/checkout@v6
-      - name: build test package
-        run: bazel test --flaky_test_attempts=3 ...
-        shell: bash
-
-  bazel-ubuntu:
-    name: bazel ubuntu amd64
-    runs-on: ubuntu-latest
-    container: ubuntu:24.04
-    steps:
-      - name: setup
-        run: |
-          apt-get -qq -o APT::Acquire::Retries=4 update \
-            || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
-          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
-            upgrade
-          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
-              --no-install-recommends install \
-            ca-certificates \
-            g++ \
-            git \
-            python-is-python3 \
-            wget
-          apt-get -qq -o Dpkg::Use-Pty=0 autoremove
-          rm -rf /var/lib/apt/lists/*
-          wget -q https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-amd64.deb
-          dpkg -i bazelisk-amd64.deb
-          rm -rf bazelisk-amd64.deb
-        env:
-          DEBIAN_FRONTEND: noninteractive
-        shell: bash
-      - name: checkout
-        uses: actions/checkout@v6
-      - name: build test package
-        run: bazel test --flaky_test_attempts=3 ...
-        shell: bash
-
-  bazel-ubuntu-arm64:
-    name: bazel ubuntu arm64
-    runs-on: ubuntu-24.04-arm
-    container: ubuntu:24.04
-    steps:
-      - name: setup
-        run: |
-          apt-get -qq -o APT::Acquire::Retries=4 update \
-            || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
-          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
-            upgrade
-          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
-              --no-install-recommends install \
-            ca-certificates \
-            g++ \
-            git \
-            python-is-python3 \
-            wget
-          apt-get -qq -o Dpkg::Use-Pty=0 autoremove
-          rm -rf /var/lib/apt/lists/*
-          wget -q https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-arm64.deb
-          dpkg -i bazelisk-arm64.deb
-          rm -rf bazelisk-arm64.deb
-        env:
-          DEBIAN_FRONTEND: noninteractive
-        shell: bash
-      - name: checkout
-        uses: actions/checkout@v6
-      - name: build test package
-        run: bazel test --flaky_test_attempts=3 ...
-        shell: bash
-
   cmake-almalinux:
-    name: cmake almalinux amd64
+    name: almalinux amd64
     runs-on: ubuntu-latest
     container: almalinux:10
+    timeout-minutes: 30
     steps:
       - name: setup
         run: |
           dnf makecache -q --refresh || (sleep 15; dnf makecache -q --refresh)
-          dnf upgrade -q -y
           dnf install -q -y \
             ca-certificates \
             cmake \
@@ -322,13 +104,13 @@ jobs:
         shell: bash
 
   cmake-alpine:
-    name: cmake alpine linux amd64
+    name: alpine linux amd64
     runs-on: ubuntu-latest
     container: alpine:3
+    timeout-minutes: 30
     steps:
       - name: setup
         run: |
-          apk upgrade -q --no-cache
           apk add -q --no-cache \
             ca-certificates \
             cmake \
@@ -365,13 +147,14 @@ jobs:
         shell: sh
 
   cmake-arch:
-    name: cmake arch linux amd64
+    name: arch linux amd64
     runs-on: ubuntu-latest
     container: archlinux:latest
+    timeout-minutes: 30
     steps:
       - name: setup
         run: |
-          pacman --needed --noconfirm --noprogressbar -S -u -y \
+          pacman --needed --noconfirm --noprogressbar -Sy \
             ca-certificates \
             cmake \
             doxygen \
@@ -410,14 +193,14 @@ jobs:
         shell: bash
 
   cmake-fedora:
-    name: cmake fedora linux amd64
+    name: fedora linux amd64
     runs-on: ubuntu-latest
     container: fedora:44
+    timeout-minutes: 30
     steps:
       - name: setup
         run: |
           dnf makecache -q --refresh || (sleep 15; dnf makecache -q --refresh)
-          dnf upgrade -q -y
           dnf install -q -y \
             ca-certificates \
             cmake \
@@ -458,17 +241,24 @@ jobs:
         shell: bash
 
   cmake-macos:
-    name: cmake macos arm64
-    runs-on: macos-15
+    name: macos arm64
+    runs-on: macos-26
+    timeout-minutes: 30
     steps:
       - name: checkout
         uses: actions/checkout@v6
+      - name: cache homebrew
+        uses: actions/cache@v5
+        with:
+          path: ~/Library/Caches/Homebrew/downloads
+          key: ${{ runner.os }}-brew-${{ hashFiles('Brewfile') }}
+          restore-keys: |
+            ${{ runner.os }}-brew-
       - name: setup
         run: |
           brew update -q
           brew bundle install -q
           brew cleanup -q -s
-          rm -rf $(brew --cache)
         env:
           HOMEBREW_NO_ANALYTICS: 1
           HOMEBREW_NO_AUTO_UPDATE: 1
@@ -498,14 +288,14 @@ jobs:
         shell: zsh -efuo pipefail {0}
 
   cmake-opensuse:
-    name: cmake opensuse leap amd64
+    name: opensuse leap amd64
     runs-on: ubuntu-latest
     container: opensuse/leap:16.0
+    timeout-minutes: 30
     steps:
       - name: setup
         run: |
           zypper -n -q ref || (sleep 15; zypper -n -q ref)
-          zypper -n -q up
           zypper -n -q in --no-recommends \
             ca-certificates \
             cmake \
@@ -544,16 +334,15 @@ jobs:
         shell: bash
 
   cmake-ubuntu:
-    name: cmake ubuntu amd64
+    name: ubuntu amd64
     runs-on: ubuntu-latest
     container: ubuntu:24.04
+    timeout-minutes: 30
     steps:
       - name: setup
         run: |
           apt-get -qq -o APT::Acquire::Retries=4 update \
             || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
-          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
-            upgrade
           apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
               --no-install-recommends install \
             ca-certificates \
@@ -597,16 +386,15 @@ jobs:
         shell: bash
 
   cmake-ubuntu-arm64:
-    name: cmake ubuntu arm64
+    name: ubuntu arm64
     runs-on: ubuntu-24.04-arm
     container: ubuntu:24.04
+    timeout-minutes: 30
     steps:
       - name: setup
         run: |
           apt-get -qq -o APT::Acquire::Retries=4 update \
             || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
-          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
-            upgrade
           apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
               --no-install-recommends install \
             ca-certificates \
@@ -650,8 +438,9 @@ jobs:
         shell: bash
 
   cmake-windows:
-    name: cmake windows amd64
+    name: windows amd64
     runs-on: windows-latest
+    timeout-minutes: 30
     steps:
       - name: checkout
         uses: actions/checkout@v6

@@ -37,6 +37,7 @@
 _build/
 .idea/
 .user.bazelrc
+.venv/
 bazel-*
 cmake-build-*/
 CMakeUserPresets.json

@@ -1,0 +1,17 @@
+{
+  "problemMatcher": [
+    {
+      "owner": "buildifier",
+      "severity": "warning",
+      "pattern": [
+        {
+          "regexp": "^(.+):(\\d+): ([^:]+): (.+)$",
+          "file": 1,
+          "line": 2,
+          "code": 3,
+          "message": 4
+        }
+      ]
+    }
+  ]
+}

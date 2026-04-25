@@ -35,31 +35,45 @@
 #
 
 cmake_minimum_required(VERSION 3.26)
-project(RVO
+project(
+  RVO
   VERSION 2.0.3
   DESCRIPTION "Optimal Reciprocal Collision Avoidance"
   HOMEPAGE_URL https://gamma.cs.unc.edu/RVO2/
-  LANGUAGES CXX)
+  LANGUAGES CXX
+)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   # cmake-lint: disable=C0301
-  set(CMAKE_BUILD_TYPE Release CACHE STRING
+  set(
+    CMAKE_BUILD_TYPE
+    Release
+    CACHE STRING
     "Choose the type of build; options are Debug Release RelWithDebInfo MinSizeRel"
-    FORCE)
-  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY
-    STRINGS Debug Release RelWithDebInfo MinSizeRel)
+    FORCE
+  )
+  set_property(
+    CACHE CMAKE_BUILD_TYPE
+    PROPERTY STRINGS Debug Release RelWithDebInfo MinSizeRel
+  )
 endif()
 
-option(ENABLE_CMAKE_EXPERIMENTAL_FEATURES
-  "Enable CMake experimental features" OFF)
+option(
+  ENABLE_CMAKE_EXPERIMENTAL_FEATURES
+  "Enable CMake experimental features"
+  OFF
+)
 
 include(CTest)
 
 if(WIN32)
   set(BUILD_SHARED_LIBS OFF)
 else()
-  option(BUILD_SHARED_LIBS "Build all libraries as shared"
-    ${PROJECT_IS_TOP_LEVEL})
+  option(
+    BUILD_SHARED_LIBS
+    "Build all libraries as shared"
+    ${PROJECT_IS_TOP_LEVEL}
+  )
 endif()
 
 include(GNUInstallDirs)
@@ -88,14 +102,19 @@ if(ENABLE_OPENMP)
   find_package(OpenMP MODULE)
 endif()
 
-option(ENABLE_INTERPROCEDURAL_OPTIMIZATION
-  "Enable interprocedural optimization if supported" OFF)
+option(
+  ENABLE_INTERPROCEDURAL_OPTIMIZATION
+  "Enable interprocedural optimization if supported"
+  OFF
+)
 
 if(ENABLE_INTERPROCEDURAL_OPTIMIZATION)
   include(CheckIPOSupported)
 
-  check_ipo_supported(RESULT RVO_INTERPROCEDURAL_OPTIMIZATION_SUPPORTED
-    LANGUAGES CXX)
+  check_ipo_supported(
+    RESULT RVO_INTERPROCEDURAL_OPTIMIZATION_SUPPORTED
+    LANGUAGES CXX
+  )
 
   if(RVO_INTERPROCEDURAL_OPTIMIZATION_SUPPORTED)
     message(STATUS "Interprocedural optimization is supported")
@@ -109,8 +128,11 @@ endif()
 include(CheckCXXCompilerFlag)
 include(CheckLinkerFlag)
 
-option(ENABLE_HARDENING
-  "Enable hardening compiler and linker flags if supported" ON)
+option(
+  ENABLE_HARDENING
+  "Enable hardening compiler and linker flags if supported"
+  ON
+)
 
 if(ENABLE_HARDENING)
   if(MSVC)
@@ -125,9 +147,11 @@ if(ENABLE_HARDENING)
     check_linker_flag(CXX /GUARD:CF RVO_LINKER_SUPPORTS_GUARD_CF)
     check_linker_flag(CXX /NXCOMPAT RVO_LINKER_SUPPORTS_NXCOMPAT)
 
-    if(RVO_COMPILER_SUPPORTS_GUARD_CF
-        AND RVO_LINKER_SUPPORTS_DYNAMICBASE
-        AND RVO_LINKER_SUPPORTS_GUARD_CF)
+    if(
+      RVO_COMPILER_SUPPORTS_GUARD_CF
+      AND RVO_LINKER_SUPPORTS_DYNAMICBASE
+      AND RVO_LINKER_SUPPORTS_GUARD_CF
+    )
       add_compile_options(/guard:cf)
       add_link_options(/DYNAMICBASE /GUARD:CF)
     endif()
@@ -139,32 +163,48 @@ if(ENABLE_HARDENING)
     if(APPLE)
       set(RVO_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS}")
 
-      check_cxx_compiler_flag(-Werror=unused-command-line-argument
-        RVO_COMPILER_SUPPORTS_WERROR_UNUSED_COMMAND_LINE_ARGUMENT)
+      check_cxx_compiler_flag(
+        -Werror=unused-command-line-argument
+        RVO_COMPILER_SUPPORTS_WERROR_UNUSED_COMMAND_LINE_ARGUMENT
+      )
 
       if(RVO_COMPILER_SUPPORTS_WERROR_UNUSED_COMMAND_LINE_ARGUMENT)
-        set(CMAKE_REQUIRED_FLAGS
-          "${CMAKE_REQUIRED_FLAGS} -Werror=unused-command-line-argument")
+        set(
+          CMAKE_REQUIRED_FLAGS
+          "${CMAKE_REQUIRED_FLAGS} -Werror=unused-command-line-argument"
+        )
       endif()
     endif()
 
-    check_cxx_compiler_flag(-D_FORTIFY_SOURCE=2
-      RVO_COMPILER_SUPPORTS_D_FORTIFY_SOURCE_2)
-    check_cxx_compiler_flag(-fcf-protection
-      RVO_COMPILER_SUPPORTS_FCF_PROTECTION)
+    check_cxx_compiler_flag(
+      -D_FORTIFY_SOURCE=2
+      RVO_COMPILER_SUPPORTS_D_FORTIFY_SOURCE_2
+    )
+    check_cxx_compiler_flag(
+      -fcf-protection
+      RVO_COMPILER_SUPPORTS_FCF_PROTECTION
+    )
     check_cxx_compiler_flag(-fno-common RVO_COMPILER_SUPPORTS_FNO_COMMON)
-    check_cxx_compiler_flag(-fsanitize=safe-stack
-      RVO_COMPILER_SUPPORTS_FSANITIZE_SAFE_STACK)
-    check_cxx_compiler_flag(-fstack-clash-protection
-      RVO_COMPILER_SUPPORTS_FSTACK_CLASH_PROTECTION)
-    check_cxx_compiler_flag(-fstack-protector-strong
-      RVO_COMPILER_SUPPORTS_FSTACK_PROTECTOR_STRONG)
+    check_cxx_compiler_flag(
+      -fsanitize=safe-stack
+      RVO_COMPILER_SUPPORTS_FSANITIZE_SAFE_STACK
+    )
+    check_cxx_compiler_flag(
+      -fstack-clash-protection
+      RVO_COMPILER_SUPPORTS_FSTACK_CLASH_PROTECTION
+    )
+    check_cxx_compiler_flag(
+      -fstack-protector-strong
+      RVO_COMPILER_SUPPORTS_FSTACK_PROTECTOR_STRONG
+    )
 
     if(RVO_COMPILER_SUPPORTS_FSTACK_PROTECTOR_STRONG)
       set(RVO_COMPILER_SUPPORTS_FSTACK_PROTECTOR)
     else()
-      check_cxx_compiler_flag(-fstack-protector
-        RVO_COMPILER_SUPPORTS_FSTACK_PROTECTOR)
+      check_cxx_compiler_flag(
+        -fstack-protector
+        RVO_COMPILER_SUPPORTS_FSTACK_PROTECTOR
+      )
     endif()
 
     if(RVO_COMPILER_SUPPORTS_D_FORTIFY_SOURCE_2)
@@ -185,23 +225,34 @@ if(ENABLE_HARDENING)
       add_compile_options(-fstack-protector)
     endif()
 
-    check_linker_flag(CXX -Wl,-Bsymbolic-functions
-      RVO_LINKER_SUPPORTS_BSYMBOLIC_FUNCTIONS)
-    check_linker_flag(CXX -fsanitize=safe-stack
-      RVO_LINKER_SUPPORTS_FSANITIZE_SAFE_STACK)
+    check_linker_flag(
+      CXX
+      -Wl,-Bsymbolic-functions
+      RVO_LINKER_SUPPORTS_BSYMBOLIC_FUNCTIONS
+    )
+    check_linker_flag(
+      CXX
+      -fsanitize=safe-stack
+      RVO_LINKER_SUPPORTS_FSANITIZE_SAFE_STACK
+    )
     check_linker_flag(CXX -Wl,-z,defs RVO_LINKER_SUPPORTS_Z_DEFS)
     check_linker_flag(CXX -Wl,-z,noexecheap RVO_LINKER_SUPPORTS_Z_NOEXECHEAP)
-    check_linker_flag(CXX -Wl,-z,noexecstack
-      RVO_LINKER_SUPPORTS_Z_NOEXECSTACK)
+    check_linker_flag(CXX -Wl,-z,noexecstack RVO_LINKER_SUPPORTS_Z_NOEXECSTACK)
     check_linker_flag(CXX -Wl,-z,now RVO_LINKER_SUPPORTS_Z_NOW)
     check_linker_flag(CXX -Wl,-z,relro RVO_LINKER_SUPPORTS_Z_RELRO)
-    check_linker_flag(CXX -Wl,-z,separate-code RVO_LINKER_SUPPORTS_Z_SEPARATE_CODE)
+    check_linker_flag(
+      CXX
+      -Wl,-z,separate-code
+      RVO_LINKER_SUPPORTS_Z_SEPARATE_CODE
+    )
 
     if(RVO_LINKER_SUPPORTS_BSYMBOLIC_FUNCTIONS)
       add_link_options($<$<NOT:$<CONFIG:Debug>>:-Wl,-Bsymbolic-functions>)
     endif()
-    if(RVO_COMPILER_SUPPORTS_FSANITIZE_SAFE_STACK
-        AND RVO_LINKER_SUPPORTS_FSANITIZE_SAFE_STACK)
+    if(
+      RVO_COMPILER_SUPPORTS_FSANITIZE_SAFE_STACK
+      AND RVO_LINKER_SUPPORTS_FSANITIZE_SAFE_STACK
+    )
       add_compile_options($<$<NOT:$<CONFIG:Debug>>:-fsanitize=safe-stack>)
       add_link_options($<$<NOT:$<CONFIG:Debug>>:-fsanitize=safe-stack>)
     endif()
@@ -239,10 +290,14 @@ if(MSVC)
   endif()
 else()
   check_cxx_compiler_flag(-Wall RVO_COMPILER_SUPPORTS_WALL)
-  check_cxx_compiler_flag(-Wformat-security
-    RVO_COMPILER_SUPPORTS_WFORMAT_SECURITY)
-  check_cxx_compiler_flag(-Werror=format-security
-    RVO_COMPILER_SUPPORTS_WERROR_FORMAT_SECURITY)
+  check_cxx_compiler_flag(
+    -Wformat-security
+    RVO_COMPILER_SUPPORTS_WFORMAT_SECURITY
+  )
+  check_cxx_compiler_flag(
+    -Werror=format-security
+    RVO_COMPILER_SUPPORTS_WERROR_FORMAT_SECURITY
+  )
 
   if(RVO_COMPILER_SUPPORTS_WALL)
     add_compile_options(-Wall)
@@ -259,7 +314,7 @@ if(NOT MSVC)
   check_linker_flag(CXX -Wl,--as-needed RVO_LINKER_SUPPORTS__AS_NEEDED)
 
   if(RVO_LINKER_SUPPORTS__AS_NEEDED)
-      add_link_options(-Wl,--as-needed)
+    add_link_options(-Wl,--as-needed)
   endif()
 endif()
 
@@ -288,33 +343,39 @@ add_subdirectory(examples)
 add_subdirectory(doc)
 
 if(ENABLE_INSTALLATION)
-  install(FILES LICENSE
-    COMPONENT runtime
-    TYPE DOC)
+  install(FILES LICENSE COMPONENT runtime TYPE DOC)
 
   include(CMakePackageConfigHelpers)
 
   configure_package_config_file(
-    ${PROJECT_NAME}Config.cmake.in ${PROJECT_NAME}Config.cmake
+    ${PROJECT_NAME}Config.cmake.in
+    ${PROJECT_NAME}Config.cmake
     INSTALL_DESTINATION ${RVO_DIR}
-    PATH_VARS RVO_INCLUDE_DIR RVO_LIBRARY_DIR)
+    PATH_VARS RVO_INCLUDE_DIR RVO_LIBRARY_DIR
+  )
 
-  write_basic_package_version_file(${PROJECT_NAME}ConfigVersion.cmake
-    COMPATIBILITY SameMajorVersion)
+  write_basic_package_version_file(
+    ${PROJECT_NAME}ConfigVersion.cmake
+    COMPATIBILITY SameMajorVersion
+  )
 
-  install(FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+  install(
+    FILES
+      "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+      "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
     COMPONENT development
-    DESTINATION ${RVO_DIR})
+    DESTINATION ${RVO_DIR}
+  )
 
   find_package(PkgConfig MODULE)
 
   if(PkgConfig_FOUND)
     configure_file(${PROJECT_NAME}.pc.in ${PROJECT_NAME}.pc @ONLY)
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
+    install(
+      FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
       COMPONENT development
-      DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+      DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+    )
   endif()
 endif()
 
@@ -333,9 +394,16 @@ if(ENABLE_PACKAGING)
   set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
   set(CPACK_STRIP_FILES ON)
 
-  set(CPACK_SOURCE_IGNORE_FILES
-    _build/ \\\\.git/ \\\\.gitattributes \\\\.github/ \\\\.gitignore bazel-
-    Brewfile)
+  set(
+    CPACK_SOURCE_IGNORE_FILES
+    _build/
+    \\\\.git/
+    \\\\.gitattributes
+    \\\\.github/
+    \\\\.gitignore
+    bazel-
+    Brewfile
+  )
   set(CPACK_SOURCE_STRIP_FILES ON)
 
   set(CPACK_DEBIAN_COMPRESSION_TYPE zstd)

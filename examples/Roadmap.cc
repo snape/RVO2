@@ -214,7 +214,7 @@ void updateVisualization(RVO::RVOSimulator *simulator) {
 #endif /* RVO_OUTPUT_TIME_AND_POSITIONS */
 
 void buildRoadmap(
-    RVO::RVOSimulator *simulator,
+    const RVO::RVOSimulator *simulator,
     std::vector<RoadmapVertex> &roadmap) { /* NOLINT(runtime/references) */
   /* Connect the roadmap vertices by edges if mutually visible. */
 #ifdef _OPENMP
@@ -318,10 +318,10 @@ void setPreferredVelocities(RVO::RVOSimulator *simulator,
     }
 
     /* Perturb a little to avoid deadlocks due to perfect symmetry. */
-    float angle = static_cast<float>(std::rand()) * RVO_TWO_PI /
-                  static_cast<float>(RAND_MAX);
-    float dist = static_cast<float>(std::rand()) * 0.0001F /
-                 static_cast<float>(RAND_MAX);
+    const float angle = static_cast<float>(std::rand()) * RVO_TWO_PI /
+                        static_cast<float>(RAND_MAX);
+    const float dist = static_cast<float>(std::rand()) * 0.0001F /
+                       static_cast<float>(RAND_MAX);
 
     simulator->setAgentPrefVelocity(
         i, simulator->getAgentPrefVelocity(i) +
@@ -329,7 +329,7 @@ void setPreferredVelocities(RVO::RVOSimulator *simulator,
   }
 }
 
-bool reachedGoal(RVO::RVOSimulator *simulator,
+bool reachedGoal(const RVO::RVOSimulator *simulator,
                  const std::vector<RoadmapVertex> &roadmap,
                  const std::vector<int> &goals) {
   /* Check if all agents have reached their goals. */

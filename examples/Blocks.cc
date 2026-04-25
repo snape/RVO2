@@ -176,10 +176,10 @@ void setPreferredVelocities(RVO::RVOSimulator *simulator,
     simulator->setAgentPrefVelocity(i, goalVector);
 
     /* Perturb a little to avoid deadlocks due to perfect symmetry. */
-    float angle = static_cast<float>(std::rand()) * RVO_TWO_PI /
-                  static_cast<float>(RAND_MAX);
-    float dist = static_cast<float>(std::rand()) * 0.0001F /
-                 static_cast<float>(RAND_MAX);
+    const float angle = static_cast<float>(std::rand()) * RVO_TWO_PI /
+                        static_cast<float>(RAND_MAX);
+    const float dist = static_cast<float>(std::rand()) * 0.0001F /
+                       static_cast<float>(RAND_MAX);
 
     simulator->setAgentPrefVelocity(
         i, simulator->getAgentPrefVelocity(i) +
@@ -187,7 +187,7 @@ void setPreferredVelocities(RVO::RVOSimulator *simulator,
   }
 }
 
-bool reachedGoal(RVO::RVOSimulator *simulator,
+bool reachedGoal(const RVO::RVOSimulator *simulator,
                  const std::vector<RVO::Vector2> &goals) {
   /* Check if all agents have reached their goals. */
   for (std::size_t i = 0U; i < simulator->getNumAgents(); ++i) {

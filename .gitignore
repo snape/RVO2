@@ -41,4 +41,5 @@
 /bazel-*
 /cmake-build-*/
 /CMakeUserPresets.json
+/cppcheck-results.sarif
 /MODULE.bazel.lock
