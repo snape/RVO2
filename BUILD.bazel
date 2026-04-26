@@ -261,11 +261,7 @@ pkg_deb(
         no_match_error = "Unsupported CPU for //:deb. Supported CPUs: aarch64, x86_64.",
     ),
     data = ":tar",
-    depends = [
-        "libc6",
-        "libgcc-s1",
-        "libstdc++6",
-    ],
+    depends = ["libc6"],
     description = "Optimal Reciprocal Collision Avoidance",
     homepage = "https://gamma.cs.unc.edu/RVO2/",
     license = "Apache-2",

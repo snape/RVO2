@@ -119,11 +119,11 @@ CI is performed via GitHub Actions on every push and pull request to `main`,
 and on a daily schedule:
 
 - [`.github/workflows/ci.yml`](.github/workflows/ci.yml): builds and tests
-  with CMake and Bazel on AlmaLinux, Arch Linux, Fedora, openSUSE, and
-  Ubuntu (amd64 and arm64), and macOS (arm64); builds and tests with CMake
-  on Alpine Linux (Bazel is not tested on Alpine due to musl libc
-  incompatibility). CMake builds enable `BUILD_TESTING`,
-  `ENABLE_HARDENING`, `ENABLE_INTERPROCEDURAL_OPTIMIZATION`,
+  with CMake and Bazel on AlmaLinux, Fedora, openSUSE, and Ubuntu (amd64
+  and arm64), and macOS (arm64); builds and tests with CMake on Alpine Linux
+  and Arch Linux (Bazel is not tested on these distributions due to
+  incompatibility with the hermetic LLVM toolchain). CMake builds enable
+  `BUILD_TESTING`, `ENABLE_HARDENING`, `ENABLE_INTERPROCEDURAL_OPTIMIZATION`,
   `ENABLE_OPENMP`, and `WARNINGS_AS_ERRORS`.
 - [`.github/workflows/meson.yml`](.github/workflows/meson.yml): builds and
   tests with Meson on AlmaLinux, Arch Linux, Fedora, openSUSE, and Ubuntu
@@ -268,7 +268,7 @@ following platforms:
 |----------------|--------------|---------------------|
 | AlmaLinux      | amd64        | CMake, Bazel, Meson |
 | Alpine Linux   | amd64        | CMake, Meson        |
-| Arch Linux     | amd64        | CMake, Bazel, Meson |
+| Arch Linux     | amd64        | CMake, Meson        |
 | Fedora         | amd64        | CMake, Bazel, Meson |
 | openSUSE Leap  | amd64        | CMake, Bazel, Meson |
 | Ubuntu         | amd64, arm64 | CMake, Bazel, Meson |

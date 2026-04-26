@@ -39,18 +39,23 @@ module(
     version = "2.0.3",
 )
 
-bazel_dep(
-    name = "apple_support",
-    version = "2.5.3",
-    dev_dependency = True,
-    repo_name = "build_bazel_apple_support",
-)
+bazel_dep(name = "toolchains_llvm", version = "1.7.0", dev_dependency = True)
 
-apple_cc_configure = use_extension(
-    "@build_bazel_apple_support//crosstool:setup.bzl",
-    "apple_cc_configure_extension",
+llvm = use_extension(
+    "@toolchains_llvm//toolchain/extensions:llvm.bzl",
+    "llvm",
+    dev_dependency = True,
 )
-use_repo(apple_cc_configure, "local_config_apple_cc")
+llvm.toolchain(
+    llvm_version = "20.1.4",
+    stdlib = {"": "builtin-libc++"},
+)
+use_repo(llvm, "llvm_toolchain")
+
+register_toolchains(
+    "@llvm_toolchain//:all",
+    dev_dependency = True,
+)
 
 bazel_dep(name = "rules_cc", version = "0.2.17")
 bazel_dep(name = "rules_license", version = "1.0.0")
