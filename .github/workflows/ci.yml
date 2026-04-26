@@ -49,6 +49,7 @@ jobs:
     name: bazel almalinux amd64
     runs-on: ubuntu-latest
     container: almalinux:10
+    timeout-minutes: 30
     steps:
       - name: setup
         run: |
@@ -56,8 +57,9 @@ jobs:
           dnf upgrade -q -y
           dnf install -q -y \
             ca-certificates \
-            gcc-c++ \
             git \
+            glibc-devel \
+            libxml2 \
             python3 \
             wget \
             which
@@ -70,61 +72,14 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v6
-      - name: build test package
-        run: bazel test --flaky_test_attempts=3 ...
-        shell: bash
-
-  bazel-alpine:
-    name: bazel alpine linux amd64
-    runs-on: ubuntu-latest
-    container: alpine:3
-    steps:
-      - name: setup
-        run: |
-          apk upgrade -q --no-cache
-          apk add -q --no-cache \
-            ca-certificates \
-            g++ \
-            git \
-            libc6-compat \
-            python3 \
-            wget \
-            which
-          wget -qO /usr/local/bin/bazelisk \
-            https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64
-          chmod +x /usr/local/bin/bazelisk
-          ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
-        shell: sh
-      - name: checkout
-        uses: actions/checkout@v6
-      # - name: build test package
-      #   run: bazel test --flaky_test_attempts=3 ...
-      #   shell: sh
-
-  bazel-arch:
-    name: bazel arch linux amd64
-    runs-on: ubuntu-latest
-    container: archlinux:latest
-    steps:
-      - name: setup
-        run: |
-          pacman --needed --noconfirm --noprogressbar -S -u -y \
-            ca-certificates \
-            gcc \
-            git \
-            python \
-            wget \
-            which
-          rm -rf \
-            /var/cache/pacman/pkg/* \
-            /var/lib/pacman/sync/*
-          wget -qO /usr/local/bin/bazelisk \
-            https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64
-          chmod +x /usr/local/bin/bazelisk
-          ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
-        shell: bash
-      - name: checkout
-        uses: actions/checkout@v6
+      - name: cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cache/bazel
+            ~/.cache/bazelisk
+          key: ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-bazel-
       - name: build test package
         run: bazel test --flaky_test_attempts=3 ...
         shell: bash
@@ -133,6 +88,7 @@ jobs:
     name: bazel fedora linux amd64
     runs-on: ubuntu-latest
     container: fedora:44
+    timeout-minutes: 30
     steps:
       - name: setup
         run: |
@@ -140,8 +96,9 @@ jobs:
           dnf upgrade -q -y
           dnf install -q -y \
             ca-certificates \
-            gcc-c++ \
             git \
+            glibc-devel \
+            libxml2 \
             python3 \
             wget \
             which
@@ -154,6 +111,14 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v6
+      - name: cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cache/bazel
+            ~/.cache/bazelisk
+          key: ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-bazel-
       - name: build test package
         run: bazel test --flaky_test_attempts=3 ...
         shell: bash
@@ -161,15 +126,29 @@ jobs:
   bazel-macos:
     name: bazel macos arm64
     runs-on: macos-15
+    timeout-minutes: 30
     steps:
       - name: checkout
         uses: actions/checkout@v6
+      - name: cache bazel
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cache/bazel
+            ~/Library/Caches/bazelisk
+          key: ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-bazel-
+      - name: cache homebrew
+        uses: actions/cache@v5
+        with:
+          path: ~/Library/Caches/Homebrew/downloads
+          key: ${{ runner.os }}-brew-${{ hashFiles('Brewfile') }}
+          restore-keys: ${{ runner.os }}-brew-
       - name: setup
         run: |
           brew update -q
           brew bundle install -q
           brew cleanup -q -s
-          rm -rf $(brew --cache)
         env:
           HOMEBREW_NO_ANALYTICS: 1
           HOMEBREW_NO_AUTO_UPDATE: 1
@@ -183,6 +162,7 @@ jobs:
     name: bazel opensuse leap amd64
     runs-on: ubuntu-latest
     container: opensuse/leap:16.0
+    timeout-minutes: 30
     steps:
       - name: setup
         run: |
@@ -190,8 +170,9 @@ jobs:
           zypper -n -q up
           zypper -n -q in --no-recommends \
             ca-certificates \
-            gcc-c++ \
             git \
+            glibc-devel \
+            libxml2-2 \
             python3 \
             wget \
             which
@@ -203,6 +184,14 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v6
+      - name: cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cache/bazel
+            ~/.cache/bazelisk
+          key: ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-bazel-
       - name: build test package
         run: bazel test --flaky_test_attempts=3 ...
         shell: bash
@@ -211,6 +200,7 @@ jobs:
     name: bazel ubuntu amd64
     runs-on: ubuntu-latest
     container: ubuntu:24.04
+    timeout-minutes: 30
     steps:
       - name: setup
         run: |
@@ -221,8 +211,9 @@ jobs:
           apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
               --no-install-recommends install \
             ca-certificates \
-            g++ \
             git \
+            libc6-dev \
+            libxml2 \
             python-is-python3 \
             wget
           apt-get -qq -o Dpkg::Use-Pty=0 autoremove
@@ -235,6 +226,14 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v6
+      - name: cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cache/bazel
+            ~/.cache/bazelisk
+          key: ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-bazel-
       - name: build test package
         run: bazel test --flaky_test_attempts=3 ...
         shell: bash
@@ -243,6 +242,7 @@ jobs:
     name: bazel ubuntu arm64
     runs-on: ubuntu-24.04-arm
     container: ubuntu:24.04
+    timeout-minutes: 30
     steps:
       - name: setup
         run: |
@@ -253,8 +253,9 @@ jobs:
           apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
               --no-install-recommends install \
             ca-certificates \
-            g++ \
             git \
+            libc6-dev \
+            libxml2 \
             python-is-python3 \
             wget
           apt-get -qq -o Dpkg::Use-Pty=0 autoremove
@@ -267,6 +268,14 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v6
+      - name: cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cache/bazel
+            ~/.cache/bazelisk
+          key: ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-bazel-
       - name: build test package
         run: bazel test --flaky_test_attempts=3 ...
         shell: bash
