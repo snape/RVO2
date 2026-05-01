@@ -98,9 +98,8 @@ ABI-breaking changes.
 
 ### Change Requests [2.i]
 
-All changes to `RVO2 Library` are submitted through pull requests on
-[GitHub](https://github.com/snape/RVO2). Direct commits to the `main` branch
-are not permitted outside of automated tooling.
+Changes to `RVO2 Library` are submitted through pull requests on
+[GitHub](https://github.com/snape/RVO2).
 
 ### Contributor Origin [2.ii]
 
@@ -120,9 +119,9 @@ and on a daily schedule:
 
 - [`.github/workflows/ci.yml`](.github/workflows/ci.yml): builds and tests
   with CMake and Bazel on AlmaLinux, Fedora, openSUSE, and Ubuntu (amd64
-  and arm64), and macOS (arm64); builds and tests with CMake on Alpine Linux
-  and Arch Linux (Bazel is not tested on these distributions due to
-  incompatibility with the hermetic LLVM toolchain). CMake builds enable
+  and arm64), macOS (arm64), and Windows (amd64); builds and tests with CMake
+  on Alpine Linux and Arch Linux (Bazel is not tested on these distributions
+  due to incompatibility with the hermetic LLVM toolchain). CMake builds enable
   `BUILD_TESTING`, `ENABLE_HARDENING`, `ENABLE_INTERPROCEDURAL_OPTIMIZATION`,
   `ENABLE_OPENMP`, and `WARNINGS_AS_ERRORS`.
 - [`.github/workflows/meson.yml`](.github/workflows/meson.yml): builds and
@@ -180,8 +179,8 @@ SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
 
 ### Quality Declaration [3.v]
 
-This document is the quality declaration for `RVO2 Library` and is linked from
-the project README.
+This document is the quality declaration for `RVO2 Library` and is maintained
+in the repository root as [`QUALITY_DECLARATION.md`](QUALITY_DECLARATION.md).
 
 ## Testing [4]
 
@@ -273,7 +272,7 @@ following platforms:
 | openSUSE Leap  | amd64        | CMake, Bazel, Meson |
 | Ubuntu         | amd64, arm64 | CMake, Bazel, Meson |
 | macOS          | arm64        | CMake, Bazel, Meson |
-| Windows        | amd64        | CMake, Meson        |
+| Windows        | amd64        | CMake, Bazel, Meson |
 
 ## Security [7]
 

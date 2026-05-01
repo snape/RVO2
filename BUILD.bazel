@@ -38,7 +38,7 @@ load("@rules_cc//cc:defs.bzl", "cc_shared_library")
 load("@rules_license//rules:license.bzl", "license")
 load("@rules_license//rules:package_info.bzl", "package_info")
 load("@rules_pkg//pkg:mappings.bzl", "pkg_attributes", "pkg_files")
-load("@rules_pkg//pkg:pkg.bzl", "pkg_deb", "pkg_tar")
+load("@rules_pkg//pkg:pkg.bzl", "pkg_deb", "pkg_tar", "pkg_zip")
 
 package(default_package_metadata = [
     ":license",
@@ -84,97 +84,6 @@ pkg_files(
     srcs = [":RVO"],
     attributes = pkg_attributes(mode = "0644"),
     prefix = "usr/lib",
-)
-
-genrule(
-    name = "rvo_cps",
-    outs = ["RVO.cps"],
-    cmd = """
-cat << 'EOF' > $@
-{
-  "compat_version": "2",
-  "components":
-  {
-    "RVO":
-    {
-      "includes": ["@prefix@/include/RVO"],
-      "type": "dylib"
-    }
-  },
-  "cps_path": "@prefix@/lib/cps/RVO",
-  "cps_version": "0.14.1",
-  "default_components": ["RVO"],
-  "description": "Optimal Reciprocal Collision Avoidance",
-  "license": "Apache-2.0",
-  "name": "RVO",
-  "version": "2.0.3",
-  "version_schema": "simple",
-  "website": "https://gamma.cs.unc.edu/RVO2/"
-}
-EOF
-""",
-)
-
-genrule(
-    name = "rvo_release_cps",
-    outs = ["RVO@release.cps"],
-    cmd = select({
-        "@platforms//os:macos": """
-cat << 'EOF' > $@
-{
-  "components":
-  {
-    "RVO":
-    {
-      "location": "@prefix@/lib/libRVO.dylib"
-    }
-  },
-  "configuration": "Release",
-  "name": "RVO"
-}
-EOF
-""",
-        "@platforms//os:windows": """
-cat << 'EOF' > $@
-{
-  "components":
-  {
-    "RVO":
-    {
-      "location": "@prefix@/lib/RVO.dll"
-    }
-  },
-  "configuration": "Release",
-  "name": "RVO"
-}
-EOF
-""",
-        "//conditions:default": """
-cat << 'EOF' > $@
-{
-  "components":
-  {
-    "RVO":
-    {
-      "location": "@prefix@/lib/libRVO.so"
-    }
-  },
-  "configuration": "Release",
-  "name": "RVO"
-}
-EOF
-""",
-    }),
-)
-
-pkg_files(
-    name = "cps",
-    srcs = [
-        "RVO.cps",
-        "RVO@release.cps",
-    ],
-    attributes = pkg_attributes(mode = "0644"),
-    prefix = "usr/lib/cps/RVO",
 )
 
 # REUSE-IgnoreStart
@@ -237,18 +146,25 @@ pkg_files(
     srcs = ["RVO.pc"],
     attributes = pkg_attributes(mode = "0644"),
     prefix = "usr/lib/pkgconfig",
+    target_compatible_with = select({
+        "@platforms//os:windows": ["@platforms//:incompatible"],
+        "//conditions:default": [],
+    }),
 )
 
 pkg_tar(
     name = "tar",
     srcs = [
-        ":cps",
         ":doc",
         ":lib",
         ":pkgconfig",
         "//src:include",
     ],
     extension = "tar.gz",
+    target_compatible_with = select({
+        "@platforms//os:windows": ["@platforms//:incompatible"],
+        "//conditions:default": [],
+    }),
 )
 
 pkg_deb(
@@ -272,4 +188,17 @@ pkg_deb(
     target_compatible_with = ["@platforms//os:linux"],
     triggers = "triggers",
     version = "2.0.3",
+)
+
+pkg_zip(
+    name = "zip",
+    srcs = [
+        ":doc",
+        ":lib",
+        "//src:include",
+    ],
+    target_compatible_with = select({
+        "@platforms//os:windows": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
 )
