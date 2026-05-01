@@ -280,6 +280,34 @@ jobs:
         run: bazel test --flaky_test_attempts=3 ...
         shell: bash
 
+  bazel-windows:
+    name: bazel windows amd64
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: checkout
+        uses: actions/checkout@v6
+      - name: cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~\_bazel_RUNNERADMIN
+            ~\AppData\Local\bazelisk
+          key: ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-bazel-
+      - name: setup
+        run: |
+          $ProgressPreference = 'SilentlyContinue'
+          New-Item -ItemType Directory -Force -Path C:\tools | Out-Null
+          Invoke-WebRequest `
+            -Uri https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-windows-amd64.exe `
+            -OutFile C:\tools\bazel.exe
+          Add-Content $env:GITHUB_PATH "C:\tools"
+        shell: pwsh
+      - name: build test package
+        run: bazel test --flaky_test_attempts=3 ...
+        shell: pwsh
+
   cmake-almalinux:
     name: cmake almalinux amd64
     runs-on: ubuntu-latest
