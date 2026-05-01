@@ -214,7 +214,7 @@ bazel test ...
 git clone https://github.com/snape/RVO2.git
 cd RVO2
 meson setup _build
-meson compile -C _build
+ninja -C _build
 meson test -C _build
 meson install -C _build
 @endcode
