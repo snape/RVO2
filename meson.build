@@ -87,7 +87,7 @@ if is_msvc
     hardening_link_flags += cpp_compiler.get_supported_link_arguments('/NXCOMPAT')
 else
     if optimized_build
-        hardening_compile_flags += cpp_compiler.get_supported_arguments('-D_FORTIFY_SOURCE=2')
+        hardening_compile_flags += cpp_compiler.get_supported_arguments('-D_FORTIFY_SOURCE=3')
     endif
 
     hardening_compile_flags += cpp_compiler.get_supported_arguments(

@@ -53,6 +53,23 @@ filegroup(
     ],
 )
 
+#  Linux (all)
+#   - -Wformat=2 — stronger than what -Wall enables; combined with your existing -Werror=format-security it's the correct pairing
+#
+#   macOS arm64
+#   - -mbranch-protection=standard — PAC is enforced at the ABI level by the OS, so the compiler flag has less impact here than on Linux, but it's still the right posture with LLVM 20
+#
+#   Windows
+#   - /sdl — SDL checks that are a proper superset of /GS; you could replace /GS with /sdl (which implies it)
+#   - /guard:ehcont — EH continuation metadata, pairs with your existing /guard:cf
+#   - /Qspectre — Spectre v1 mitigations; low overhead for a library
+#
+#   Linux linkopts — looks solid. -z relro, -z now, -z noexecstack, -z separate-code are all there.
+#
+#   macOS linkopts — macOS's linker applies PIE and dead-strip security defaults automatically, so the empty set is fine.
+#
+#   Priority order: linux_aarch64 -mbranch-protection=standard first (real CFI gap), then -Wformat=2 everywhere, then the Windows items.
+
 cc_library(
     name = "RVO",
     srcs = [
@@ -70,48 +87,51 @@ cc_library(
     copts = select({
         "//conditions:linux_aarch64": [
             "-Wall",
-            "-D_FORTIFY_SOURCE=2",
+            "-fno-common",
+            "-fstack-clash-protection",
+            "-fstack-protector-strong",
+            "-fvisibility-inlines-hidden",
+            "-fvisibility=hidden",
+            "-mbranch-protection=standard",
+            "-std=c++98",
+            "-Werror=conversion",
+            "-Werror=format-security",
+        ],
+        "@platforms//os:linux": [
+            "-Wall",
+            "-fcf-protection=full",
             "-fno-common",
             "-fstack-clash-protection",
             "-fstack-protector-strong",
             "-fvisibility-inlines-hidden",
             "-fvisibility=hidden",
             "-std=c++98",
+            "-Werror=conversion",
             "-Werror=format-security",
         ],
         "@platforms//os:macos": [
             "-Wall",
-            "-D_FORTIFY_SOURCE=2",
             "-fno-common",
             "-fstack-protector-strong",
             "-fvisibility-inlines-hidden",
             "-fvisibility=hidden",
             "-std=c++98",
+            "-Werror=conversion",
             "-Werror=format-security",
         ],
         "@platforms//os:windows": [
-            "/GS",
-            "/W4",
             "/guard:cf",
+            "/guard:ehcont",
+            "/Qspectre",
+            "/sdl",
+            "/W4",
         ],
-        "//conditions:default": [
-            "-Wall",
-            "-D_FORTIFY_SOURCE=2",
-            "-fcf-protection",
-            "-fno-common",
-            "-fstack-clash-protection",
-            "-fstack-protector-strong",
-            "-fvisibility-inlines-hidden",
-            "-fvisibility=hidden",
-            "-std=c++98",
-            "-Werror=format-security",
-        ],
+        "//conditions:default": [],
     }),
     linkopts = select({
         "@platforms//os:linux": [
             "-Wl,-Bsymbolic-functions",
             "-Wl,-z,defs",
-            "-Wl,-z,noexecheap",
             "-Wl,-z,noexecstack",
             "-Wl,-z,now",
             "-Wl,-z,relro",
@@ -120,6 +140,8 @@ cc_library(
         "//conditions:default": [],
     }),
     local_defines = select({
+        "//conditions:linux_opt": ["_FORTIFY_SOURCE=3"],
+        "//conditions:macos_opt": ["_FORTIFY_SOURCE=3"],
         "@platforms//os:windows": ["RVO_EXPORTS"],
         "//conditions:default": [],
     }),
