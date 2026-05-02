@@ -86,10 +86,10 @@ jobs:
             -Dwerror=true \
             _build
           ninja -C _build
-          meson test -C _build --print-errorlogs
+          meson test --print-errorlogs -C _build
           meson install -C _build
           git config --global --add safe.directory "$(pwd)"
-          meson dist -C _build
+          meson dist --no-tests -C _build
         shell: bash
 
   meson-alpine:
@@ -119,10 +119,10 @@ jobs:
             -Dwerror=true \
             _build
           ninja -C _build
-          meson test -C _build --print-errorlogs
+          meson test --print-errorlogs -C _build
           meson install -C _build
           git config --global --add safe.directory "$(pwd)"
-          meson dist -C _build
+          meson dist --no-tests -C _build
         shell: sh
 
   meson-arch:
@@ -155,10 +155,10 @@ jobs:
             -Dwerror=true \
             _build
           ninja -C _build
-          meson test -C _build --print-errorlogs
+          meson test --print-errorlogs -C _build
           meson install -C _build
           git config --global --add safe.directory "$(pwd)"
-          meson dist -C _build
+          meson dist --no-tests -C _build
         shell: bash
 
   meson-fedora:
@@ -192,10 +192,10 @@ jobs:
             -Dwerror=true \
             _build
           ninja -C _build
-          meson test -C _build --print-errorlogs
+          meson test --print-errorlogs -C _build
           meson install -C _build
           git config --global --add safe.directory "$(pwd)"
-          meson dist -C _build
+          meson dist --no-tests -C _build
         shell: bash
 
   meson-macos:
@@ -231,10 +231,10 @@ jobs:
             -Dwerror=true \
             _build
           ninja -C _build
-          meson test -C _build --print-errorlogs
+          meson test --print-errorlogs -C _build
           meson install -C _build
           git config --global --add safe.directory "$(pwd)"
-          meson dist -C _build
+          meson dist --no-tests -C _build
         shell: zsh -efuo pipefail {0}
 
   meson-opensuse:
@@ -266,16 +266,16 @@ jobs:
             -Dwerror=true \
             _build
           ninja -C _build
-          meson test -C _build --print-errorlogs
+          meson test --print-errorlogs -C _build
           meson install -C _build
           git config --global --add safe.directory "$(pwd)"
-          meson dist -C _build
+          meson dist --no-tests -C _build
         shell: bash
 
   meson-ubuntu:
     name: ubuntu amd64
     runs-on: ubuntu-latest
-    container: ubuntu:24.04
+    container: ubuntu:26.04
     timeout-minutes: 30
     steps:
       - name: setup
@@ -306,16 +306,16 @@ jobs:
             -Dwerror=true \
             _build
           ninja -C _build
-          meson test -C _build --print-errorlogs
+          meson test --print-errorlogs -C _build
           meson install -C _build
           git config --global --add safe.directory "$(pwd)"
-          meson dist -C _build
+          meson dist --no-tests -C _build
         shell: bash
 
   meson-ubuntu-arm64:
     name: ubuntu arm64
     runs-on: ubuntu-24.04-arm
-    container: ubuntu:24.04
+    container: ubuntu:26.04
     timeout-minutes: 30
     steps:
       - name: setup
@@ -346,10 +346,10 @@ jobs:
             -Dwerror=true \
             _build
           ninja -C _build
-          meson test -C _build --print-errorlogs
+          meson test --print-errorlogs -C _build
           meson install -C _build
           git config --global --add safe.directory "$(pwd)"
-          meson dist -C _build
+          meson dist --no-tests -C _build
         shell: bash
 
   meson-windows:
@@ -381,8 +381,8 @@ jobs:
             -Dwerror=true `
             _build
           ninja -C _build
-          meson test -C _build --print-errorlogs
+          meson test --print-errorlogs -C _build
           meson install -C _build
           git config --global --add safe.directory "${PWD}"
-          meson dist -C _build
+          meson dist --no-tests -C _build
         shell: pwsh

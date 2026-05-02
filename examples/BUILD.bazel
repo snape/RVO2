@@ -47,9 +47,19 @@ cc_test(
     timeout = "short",
     srcs = ["Blocks.cc"],
     copts = select({
-        "//conditions:linux_aarch64": [
+        "//platforms:linux_aarch64": [
             "-Wall",
             "-D_FORTIFY_SOURCE=2",
+            "-fno-common",
+            "-fstack-clash-protection",
+            "-fstack-protector-strong",
+            "-std=c++98",
+            "-Werror=format-security",
+        ],
+        "@platforms//os:linux": [
+            "-Wall",
+            "-D_FORTIFY_SOURCE=2",
+            "-fcf-protection",
             "-fno-common",
             "-fstack-clash-protection",
             "-fstack-protector-strong",
@@ -69,16 +79,7 @@ cc_test(
             "/W4",
             "/guard:cf",
         ],
-        "//conditions:default": [
-            "-Wall",
-            "-D_FORTIFY_SOURCE=2",
-            "-fcf-protection",
-            "-fno-common",
-            "-fstack-clash-protection",
-            "-fstack-protector-strong",
-            "-std=c++98",
-            "-Werror=format-security",
-        ],
+        "//conditions:default": [],
     }),
     defines = [
         "RVO_OUTPUT_TIME_AND_POSITIONS=0",
@@ -92,7 +93,6 @@ cc_test(
         "@platforms//os:linux": [
             "-Wl,-Bsymbolic-functions",
             "-Wl,-z,defs",
-            "-Wl,-z,noexecheap",
             "-Wl,-z,noexecstack",
             "-Wl,-z,now",
             "-Wl,-z,relro",
@@ -110,9 +110,19 @@ cc_test(
     timeout = "short",
     srcs = ["Circle.cc"],
     copts = select({
-        "//conditions:linux_aarch64": [
+        "//platforms:linux_aarch64": [
             "-Wall",
             "-D_FORTIFY_SOURCE=2",
+            "-fno-common",
+            "-fstack-clash-protection",
+            "-fstack-protector-strong",
+            "-std=c++98",
+            "-Werror=format-security",
+        ],
+        "@platforms//os:linux": [
+            "-Wall",
+            "-D_FORTIFY_SOURCE=2",
+            "-fcf-protection",
             "-fno-common",
             "-fstack-clash-protection",
             "-fstack-protector-strong",
@@ -132,16 +142,7 @@ cc_test(
             "/W4",
             "/guard:cf",
         ],
-        "//conditions:default": [
-            "-Wall",
-            "-D_FORTIFY_SOURCE=2",
-            "-fcf-protection",
-            "-fno-common",
-            "-fstack-clash-protection",
-            "-fstack-protector-strong",
-            "-std=c++98",
-            "-Werror=format-security",
-        ],
+        "//conditions:default": [],
     }),
     defines = [
         "RVO_OUTPUT_TIME_AND_POSITIONS=0",
@@ -155,7 +156,6 @@ cc_test(
         "@platforms//os:linux": [
             "-Wl,-Bsymbolic-functions",
             "-Wl,-z,defs",
-            "-Wl,-z,noexecheap",
             "-Wl,-z,noexecstack",
             "-Wl,-z,now",
             "-Wl,-z,relro",
@@ -173,9 +173,19 @@ cc_test(
     timeout = "short",
     srcs = ["Roadmap.cc"],
     copts = select({
-        "//conditions:linux_aarch64": [
+        "//platforms:linux_aarch64": [
             "-Wall",
             "-D_FORTIFY_SOURCE=2",
+            "-fno-common",
+            "-fstack-clash-protection",
+            "-fstack-protector-strong",
+            "-std=c++98",
+            "-Werror=format-security",
+        ],
+        "@platforms//os:linux": [
+            "-Wall",
+            "-D_FORTIFY_SOURCE=2",
+            "-fcf-protection",
             "-fno-common",
             "-fstack-clash-protection",
             "-fstack-protector-strong",
@@ -195,16 +205,7 @@ cc_test(
             "/W4",
             "/guard:cf",
         ],
-        "//conditions:default": [
-            "-Wall",
-            "-D_FORTIFY_SOURCE=2",
-            "-fcf-protection",
-            "-fno-common",
-            "-fstack-clash-protection",
-            "-fstack-protector-strong",
-            "-std=c++98",
-            "-Werror=format-security",
-        ],
+        "//conditions:default": [],
     }),
     defines = [
         "RVO_OUTPUT_TIME_AND_POSITIONS=0",
@@ -218,7 +219,6 @@ cc_test(
         "@platforms//os:linux": [
             "-Wl,-Bsymbolic-functions",
             "-Wl,-z,defs",
-            "-Wl,-z,noexecheap",
             "-Wl,-z,noexecstack",
             "-Wl,-z,now",
             "-Wl,-z,relro",
