@@ -34,10 +34,10 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 ARG TARGETARCH
 LABEL org.opencontainers.image.authors="Jur van den Berg, Stephen J. Guy, Jamie Snape, Ming C. Lin, Dinesh Manocha"
-LABEL org.opencontainers.image.base.name="docker.io/library/ubuntu:24.04"
+LABEL org.opencontainers.image.base.name="docker.io/library/ubuntu:26.04"
 LABEL org.opencontainers.image.description="Optimal Reciprocal Collision Avoidance"
 LABEL org.opencontainers.image.licenses="Apache-2.0"
 LABEL org.opencontainers.image.source="https://github.com/snape/RVO2/"

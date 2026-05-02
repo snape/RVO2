@@ -56,7 +56,8 @@ foreach name : ['Blocks', 'Circle', 'Roadmap']
     test(
         name,
         exe,
+        is_parallel: false,
         suite: 'examples',
-        timeout: 900,
+        timeout: 60,
     )
 endforeach

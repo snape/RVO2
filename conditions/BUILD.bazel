@@ -42,3 +42,17 @@ config_setting(
     ],
     visibility = ["//:__subpackages__"],
 )
+
+config_setting(
+    name = "linux_opt",
+    constraint_values = ["@platforms//os:linux"],
+    values = {"compilation_mode": "opt"},
+    visibility = ["//:__subpackages__"],
+)
+
+config_setting(
+    name = "macos_opt",
+    constraint_values = ["@platforms//os:macos"],
+    values = {"compilation_mode": "opt"},
+    visibility = ["//:__subpackages__"],
+)
