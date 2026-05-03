@@ -39,12 +39,6 @@ build --sandbox_default_allow_network=false
 
 build:alpine --@rules_python//python/config_settings:py_linux_libc=muslc
 
-build:linux --platforms=@zig_sdk//platform:host
-
-build:macos --platforms=@zig_sdk//platform:host
-
-build:windows --platforms=@toolchains_msvc//:windows_x86_64
-
 common --enable_platform_specific_config=true
 common --heap_dump_on_oom=true
 
