@@ -39,22 +39,29 @@ module(
     version = "2.0.3",
 )
 
-bazel_dep(name = "toolchains_llvm", version = "1.7.0", dev_dependency = True)
+bazel_dep(name = "hermetic_cc_toolchain", version = "3.1.1", dev_dependency = True)
 
-llvm = use_extension(
-    "@toolchains_llvm//toolchain/extensions:llvm.bzl",
-    "llvm",
+hermetic_cc_toolchain = use_extension(
+    "@hermetic_cc_toolchain//toolchain:ext.bzl",
+    "toolchains",
     dev_dependency = True,
 )
-llvm.toolchain(
-    name = "llvm_toolchain",
-    llvm_version = "20.1.4",
-    stdlib = {"": "builtin-libc++"},
+use_repo(hermetic_cc_toolchain, "zig_sdk")
+
+bazel_dep(name = "toolchains_msvc", version = "0.1.0", dev_dependency = True)
+archive_override(
+    module_name = "toolchains_msvc",
+    integrity = "sha256-8/bQk6rKsN2IgORv51oIiuR/A2vHKVPLLmnP3lPRl+g=",
+    strip_prefix = "toolchains_msvc-e5b8d113480ce43970bdb034c939eb19a721b244",
+    urls = ["https://github.com/Dragnalith/toolchains_msvc/archive/e5b8d113480ce43970bdb034c939eb19a721b244.tar.gz"],
 )
-use_repo(llvm, "llvm_toolchain")
+
+msvc = use_extension("@toolchains_msvc//:extensions.bzl", "msvc", dev_dependency = True)
+use_repo(msvc, "msvc_toolchain")
 
 register_toolchains(
-    "@llvm_toolchain//:all",
+    "@msvc_toolchain//:all",
+    "@zig_sdk//toolchain:all",
     dev_dependency = True,
 )
 

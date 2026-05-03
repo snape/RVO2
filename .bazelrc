@@ -32,14 +32,18 @@
 #
 
 build --@rules_python//python/config_settings:bootstrap_impl=script
+build --force_pic=true
 build --remote_upload_local_results=false
+build --repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
 build --sandbox_default_allow_network=false
 
-build:linux --force_pic=true
-build:linux --sandbox_add_mount_pair=/usr/lib
-build:linux --sandbox_add_mount_pair=/usr/lib64
+build:alpine --@rules_python//python/config_settings:py_linux_libc=muslc
 
-build:macos --force_pic=false
+build:linux --platforms=@zig_sdk//platform:host
+
+build:macos --platforms=@zig_sdk//platform:host
+
+build:windows --platforms=@toolchains_msvc//:windows_x86_64
 
 common --enable_platform_specific_config=true
 common --heap_dump_on_oom=true

@@ -42,13 +42,3 @@ config_setting(
     ],
     visibility = ["//:__subpackages__"],
 )
-
-platform(
-    name = "linux_x86_64_musl",
-    constraint_values = [
-        "@platforms//os:linux",
-        "@platforms//cpu:x86_64",
-        "@rules_python//python/constraints:musl",
-    ],
-    visibility = ["//visibility:public"]
-)

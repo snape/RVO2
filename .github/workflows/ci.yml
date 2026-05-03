@@ -96,7 +96,6 @@ jobs:
           apk add --no-cache \
             bazel8 \
             ca-certificates \
-            g++ \
             git
         shell: sh
       - name: checkout
@@ -110,9 +109,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ runner.arch }}-bazel-
       - name: build test
-        run: |
-          bazel test --platforms=//platforms:linux_x86_64_musl --extra_toolchains=@local_config_cc_toolchains//:all \
-            --sandbox_debug --toolchain_resolution_debug=@rules_python//python:toolchain_type --flaky_test_attempts=3 ...
+        run: bazel test --config=alpine --flaky_test_attempts=3 ...
         shell: sh
 
   bazel-arch:
@@ -125,7 +122,6 @@ jobs:
         run: |
           pacman --needed --noconfirm --noprogressbar -Sy \
             ca-certificates \
-            gcc \
             git \
             wget \
             which
@@ -149,9 +145,7 @@ jobs:
             ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
           restore-keys: ${{ runner.os }}-${{ runner.arch }}-bazel-
       - name: build test package
-        run: |
-          bazel test --extra_toolchains=@local_config_cc_toolchains//:all \
-            --flaky_test_attempts=3 --linkopt=-fuse-ld=bfd ...
+        run: bazel test --flaky_test_attempts=3 ...
         shell: bash
 
   bazel-fedora:
@@ -303,9 +297,7 @@ jobs:
             ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
           restore-keys: ${{ runner.os }}-${{ runner.arch }}-bazel-
       - name: build test package
-        run: |
-          bazel test --extra_toolchains=@local_config_cc_toolchains//:all \
-            --flaky_test_attempts=3 ...
+        run: bazel test --flaky_test_attempts=3 ...
         shell: bash
 
   bazel-ubuntu-arm64:
@@ -346,9 +338,7 @@ jobs:
             ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
           restore-keys: ${{ runner.os }}-${{ runner.arch }}-bazel-
       - name: build test package
-        run: |
-          bazel test --extra_toolchains=@local_config_cc_toolchains//:all \
-            --flaky_test_attempts=3 ...
+        run: bazel test --flaky_test_attempts=3 ...
         shell: bash
 
   bazel-windows:
