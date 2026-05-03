@@ -2,7 +2,7 @@
 # vi: set ft=bazel:
 
 #
-# conditions/BUILD.bazel
+# platforms/BUILD.bazel
 # RVO2 Library
 #
 # SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
