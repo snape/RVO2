@@ -200,7 +200,7 @@ jobs:
 
   meson-macos:
     name: macos arm64
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 30
     steps:
       - name: checkout
