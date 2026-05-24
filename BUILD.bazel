@@ -138,6 +138,10 @@ Libs: -L$${libdir} -lRVO
 Cflags: -I$${includedir}
 EOF
 """,
+    target_compatible_with = select({
+        "@platforms//os:windows": ["@platforms//:incompatible"],
+        "//conditions:default": [],
+    }),
 )
 # REUSE-IgnoreEnd
 

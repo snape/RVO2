@@ -86,10 +86,10 @@ jobs:
             -Dwerror=true \
             _build
           ninja -C _build
-          meson test -C _build --print-errorlogs
+          meson test --print-errorlogs -C _build
           meson install -C _build
           git config --global --add safe.directory "$(pwd)"
-          meson dist -C _build
+          meson dist --no-tests -C _build
         shell: bash
 
   meson-alpine:
@@ -119,10 +119,10 @@ jobs:
             -Dwerror=true \
             _build
           ninja -C _build
-          meson test -C _build --print-errorlogs
+          meson test --print-errorlogs -C _build
           meson install -C _build
           git config --global --add safe.directory "$(pwd)"
-          meson dist -C _build
+          meson dist --no-tests -C _build
         shell: sh
 
   meson-arch:
@@ -155,10 +155,10 @@ jobs:
             -Dwerror=true \
             _build
           ninja -C _build
-          meson test -C _build --print-errorlogs
+          meson test --print-errorlogs -C _build
           meson install -C _build
           git config --global --add safe.directory "$(pwd)"
-          meson dist -C _build
+          meson dist --no-tests -C _build
         shell: bash
 
   meson-fedora:
@@ -192,10 +192,10 @@ jobs:
             -Dwerror=true \
             _build
           ninja -C _build
-          meson test -C _build --print-errorlogs
+          meson test --print-errorlogs -C _build
           meson install -C _build
           git config --global --add safe.directory "$(pwd)"
-          meson dist -C _build
+          meson dist --no-tests -C _build
         shell: bash
 
   meson-macos:
@@ -209,15 +209,17 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ~/Library/Caches/Homebrew/downloads
-          key: ${{ runner.os }}-brew-${{ hashFiles('Brewfile') }}
+          key: |
+            ${{ runner.os }}-${{ runner.arch }}-brew-${{ hashFiles('Brewfile') }}
           restore-keys: |
-            ${{ runner.os }}-brew-
+            ${{ runner.os }}-${{ runner.arch }}-brew-
       - name: setup
         run: |
-          brew update -q
+          brew update -q || (sleep 15; brew update -q)
           brew bundle install -q
           brew cleanup -q -s
         env:
+          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HOMEBREW_NO_ANALYTICS: 1
           HOMEBREW_NO_AUTO_UPDATE: 1
           HOMEBREW_NO_INSTALL_CLEANUP: 1
@@ -231,10 +233,51 @@ jobs:
             -Dwerror=true \
             _build
           ninja -C _build
-          meson test -C _build --print-errorlogs
+          meson test --print-errorlogs -C _build
           meson install -C _build
           git config --global --add safe.directory "$(pwd)"
-          meson dist -C _build
+          meson dist --no-tests -C _build
+        shell: zsh -efuo pipefail {0}
+
+  meson-macos-x86_64:
+    name: macos x86_64
+    runs-on: macos-26-intel
+    timeout-minutes: 30
+    steps:
+      - name: checkout
+        uses: actions/checkout@v6
+      - name: cache homebrew
+        uses: actions/cache@v5
+        with:
+          path: ~/Library/Caches/Homebrew/downloads
+          key: |
+            ${{ runner.os }}-${{ runner.arch }}-brew-${{ hashFiles('Brewfile') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-brew-
+      - name: setup
+        run: |
+          brew update -q || (sleep 15; brew update -q)
+          brew bundle install -q
+          brew cleanup -q -s
+        env:
+          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HOMEBREW_NO_ANALYTICS: 1
+          HOMEBREW_NO_AUTO_UPDATE: 1
+          HOMEBREW_NO_INSTALL_CLEANUP: 1
+        shell: zsh -efuo pipefail {0}
+      - name: build test package
+        run: |
+          meson setup \
+            --prefix "$(pwd)/_build/install" \
+            -Db_lto=true \
+            -Dopenmp=disabled \
+            -Dwerror=true \
+            _build
+          ninja -C _build
+          meson test --print-errorlogs -C _build
+          meson install -C _build
+          git config --global --add safe.directory "$(pwd)"
+          meson dist --no-tests -C _build
         shell: zsh -efuo pipefail {0}
 
   meson-opensuse:
@@ -266,16 +309,16 @@ jobs:
             -Dwerror=true \
             _build
           ninja -C _build
-          meson test -C _build --print-errorlogs
+          meson test --print-errorlogs -C _build
           meson install -C _build
           git config --global --add safe.directory "$(pwd)"
-          meson dist -C _build
+          meson dist --no-tests -C _build
         shell: bash
 
   meson-ubuntu:
     name: ubuntu amd64
     runs-on: ubuntu-latest
-    container: ubuntu:24.04
+    container: ubuntu:26.04
     timeout-minutes: 30
     steps:
       - name: setup
@@ -306,16 +349,16 @@ jobs:
             -Dwerror=true \
             _build
           ninja -C _build
-          meson test -C _build --print-errorlogs
+          meson test --print-errorlogs -C _build
           meson install -C _build
           git config --global --add safe.directory "$(pwd)"
-          meson dist -C _build
+          meson dist --no-tests -C _build
         shell: bash
 
   meson-ubuntu-arm64:
     name: ubuntu arm64
     runs-on: ubuntu-24.04-arm
-    container: ubuntu:24.04
+    container: ubuntu:26.04
     timeout-minutes: 30
     steps:
       - name: setup
@@ -346,31 +389,41 @@ jobs:
             -Dwerror=true \
             _build
           ninja -C _build
-          meson test -C _build --print-errorlogs
+          meson test --print-errorlogs -C _build
           meson install -C _build
           git config --global --add safe.directory "$(pwd)"
-          meson dist -C _build
+          meson dist --no-tests -C _build
         shell: bash
 
   meson-windows:
-    name: windows amd64
+    name: windows x64
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
-      - name: checkout
-        uses: actions/checkout@v6
-      - name: cache pip
+      - name: cache
         uses: actions/cache@v5
         with:
-          path: ~\AppData\Local\pip\Cache
-          key: ${{ runner.os }}-pip-${{ hashFiles('.github/workflows/meson.yml') }}
+          path: |
+            ~\AppData\Local\Microsoft\WinGet\Links
+            ~\AppData\Local\Microsoft\WinGet\SourceData
+          key: |
+            ${{ runner.os }}-${{ runner.arch }}-winget-${{ hashFiles('.github/workflows/*.yml') }}
           restore-keys: |
-            ${{ runner.os }}-pip-
+            ${{ runner.os }}-${{ runner.arch }}-winget-
       - name: setup
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install meson ninja
+          winget install -e --accept-package-agreements --accept-source-agreements `
+            --id Git.Git
+          winget install -e --accept-package-agreements --accept-source-agreements `
+            --id mesonbuild.meson
+          winget install -e --accept-package-agreements --accept-source-agreements `
+            --id Ninja-build.Ninja
+          Add-Content $env:GITHUB_PATH (
+            [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
+            [System.Environment]::GetEnvironmentVariable("Path", "User"))
         shell: pwsh
+      - name: checkout
+        uses: actions/checkout@v6
       - name: build test package
         run: |
           meson setup `
@@ -381,8 +434,55 @@ jobs:
             -Dwerror=true `
             _build
           ninja -C _build
-          meson test -C _build --print-errorlogs
+          meson test --print-errorlogs -C _build
           meson install -C _build
           git config --global --add safe.directory "${PWD}"
-          meson dist -C _build
+          meson dist --no-tests -C _build
+        shell: pwsh
+
+  meson-windows-arm64:
+    name: windows arm64
+    runs-on: windows-11-arm
+    timeout-minutes: 30
+    steps:
+      - name: cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~\AppData\Local\Microsoft\WinGet\Links
+            ~\AppData\Local\Microsoft\WinGet\SourceData
+          key: |
+            ${{ runner.os }}-${{ runner.arch }}-winget-${{ hashFiles('.github/workflows/*.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-winget-
+      - name: setup
+        run: |
+          Install-Module -Force -Name Microsoft.WinGet.Client
+          Repair-WinGetPackageManager -Force -Latest
+          winget install -e --accept-package-agreements --accept-source-agreements `
+            --id Git.Git
+          winget install -e --accept-package-agreements --accept-source-agreements `
+            --id mesonbuild.meson
+          winget install -e --accept-package-agreements --accept-source-agreements `
+            --id Ninja-build.Ninja
+          Add-Content $env:GITHUB_PATH (
+            [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
+            [System.Environment]::GetEnvironmentVariable("Path", "User"))
+        shell: pwsh
+      - name: checkout
+        uses: actions/checkout@v6
+      - name: build test package
+        run: |
+          meson setup `
+            --prefix "${PWD}/_build/install" `
+            -Db_lto=true `
+            -Ddefault_library=static `
+            -Dopenmp=disabled `
+            -Dwerror=true `
+            _build
+          ninja -C _build
+          meson test --print-errorlogs -C _build
+          meson install -C _build
+          git config --global --add safe.directory "${PWD}"
+          meson dist --no-tests -C _build
         shell: pwsh

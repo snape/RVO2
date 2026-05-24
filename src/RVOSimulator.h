@@ -652,8 +652,15 @@ class RVO_EXPORT RVOSimulator {
   /* Not implemented. */
   RVOSimulator &operator=(const RVOSimulator &other);
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif /* _MSC_VER */
   std::vector<Agent *> agents_;
   std::vector<Obstacle *> obstacles_;
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif /* _MSC_VER */
   Agent *defaultAgent_;
   KdTree *kdTree_;
   float globalTime_;

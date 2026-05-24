@@ -76,14 +76,14 @@ const float RVO_TWO_PI = 6.28318530717958647692F;
 class RoadmapVertex {
  public:
   RVO::Vector2 position;
-  std::vector<int> neighbors;
+  std::vector<std::size_t> neighbors;
   std::vector<float> distToGoal;
 };
 
 void setupScenario(
     RVO::RVOSimulator *simulator,
     std::vector<RoadmapVertex> &roadmap, /* NOLINT(runtime/references) */
-    std::vector<int> &goals) {           /* NOLINT(runtime/references) */
+    std::vector<std::size_t> &goals) {           /* NOLINT(runtime/references) */
 #if RVO_SEED_RANDOM_NUMBER_GENERATOR
   std::srand(static_cast<unsigned int>(std::time(NULL)));
 #endif /* RVO_SEED_RANDOM_NUMBER_GENERATOR */
@@ -220,8 +220,8 @@ void buildRoadmap(
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif /* _OPENMP */
-  for (int i = 0; i < static_cast<int>(roadmap.size()); ++i) {
-    for (int j = 0; j < static_cast<int>(roadmap.size()); ++j) {
+  for (std::size_t i = 0; i < roadmap.size(); ++i) {
+    for (std::size_t j = 0; j < roadmap.size(); ++j) {
       if (simulator->queryVisibility(roadmap[i].position, roadmap[j].position,
                                      simulator->getAgentRadius(0U))) {
         roadmap[i].neighbors.push_back(j);
@@ -237,21 +237,21 @@ void buildRoadmap(
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif /* _OPENMP */
-  for (int i = 0; i < 4; ++i) {
-    std::multimap<float, int> Q;
-    std::vector<std::multimap<float, int>::iterator> posInQ(roadmap.size(),
-                                                            Q.end());
+  for (std::size_t i = 0U; i < 4U; ++i) {
+    std::multimap<float, std::size_t> Q;
+    std::vector<std::multimap<float, std::size_t>::iterator> posInQ(roadmap.size(),
+                                                                    Q.end());
 
     roadmap[i].distToGoal[i] = 0.0F;
     posInQ[i] = Q.insert(std::make_pair(0.0F, i));
 
     while (!Q.empty()) {
-      const int u = Q.begin()->second;
+      const std::size_t u = Q.begin()->second;
       Q.erase(Q.begin());
       posInQ[u] = Q.end();
 
-      for (int j = 0; j < static_cast<int>(roadmap[u].neighbors.size()); ++j) {
-        const int v = roadmap[u].neighbors[j];
+      for (std::size_t j = 0U; j < roadmap[u].neighbors.size(); ++j) {
+        const std::size_t v = roadmap[u].neighbors[j];
         const float distUV =
             RVO::abs(roadmap[v].position - roadmap[u].position);
 
@@ -272,18 +272,18 @@ void buildRoadmap(
 
 void setPreferredVelocities(RVO::RVOSimulator *simulator,
                             const std::vector<RoadmapVertex> &roadmap,
-                            const std::vector<int> &goals) {
+                            const std::vector<std::size_t> &goals) {
   /* Set the preferred velocity to be a vector of unit magnitude (speed) in the
    * direction of the visible roadmap vertex that is on the shortest path to the
    * goal. */
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif /* _OPENMP */
-  for (int i = 0; i < static_cast<int>(simulator->getNumAgents()); ++i) {
+  for (std::size_t i = 0U; i < simulator->getNumAgents(); ++i) {
     float minDist = std::numeric_limits<float>::infinity();
-    int minVertex = -1;
+    std::size_t minVertex = std::numeric_limits<std::size_t>::max();
 
-    for (int j = 0; j < static_cast<int>(roadmap.size()); ++j) {
+    for (std::size_t j = 0U; j < roadmap.size(); ++j) {
       if (RVO::abs(roadmap[j].position - simulator->getAgentPosition(i)) +
                   roadmap[j].distToGoal[goals[i]] <
               minDist &&
@@ -297,7 +297,7 @@ void setPreferredVelocities(RVO::RVOSimulator *simulator,
       }
     }
 
-    if (minVertex == -1) {
+    if (minVertex == std::numeric_limits<std::size_t>::max()) {
       /* No roadmap vertex is visible; should not happen. */
       simulator->setAgentPrefVelocity(i, RVO::Vector2(0.0F, 0.0F));
     } else {
@@ -331,7 +331,7 @@ void setPreferredVelocities(RVO::RVOSimulator *simulator,
 
 bool reachedGoal(RVO::RVOSimulator *simulator,
                  const std::vector<RoadmapVertex> &roadmap,
-                 const std::vector<int> &goals) {
+                 const std::vector<std::size_t> &goals) {
   /* Check if all agents have reached their goals. */
   for (std::size_t i = 0U; i < simulator->getNumAgents(); ++i) {
     if (RVO::absSq(simulator->getAgentPosition(i) -
@@ -349,7 +349,7 @@ int main() {
   std::vector<RoadmapVertex> roadmap;
 
   /* Store the goals of the agents. */
-  std::vector<int> goals;
+  std::vector<std::size_t> goals;
 
   /* Create a new simulator instance. */
   RVO::RVOSimulator *simulator = new RVO::RVOSimulator();

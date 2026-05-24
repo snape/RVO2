@@ -39,25 +39,30 @@ module(
     version = "2.0.3",
 )
 
-bazel_dep(name = "toolchains_llvm", version = "1.7.0", dev_dependency = True)
+bazel_dep(name = "hermetic_cc_toolchain", version = "4.1.0", dev_dependency = True)
 
-llvm = use_extension(
-    "@toolchains_llvm//toolchain/extensions:llvm.bzl",
-    "llvm",
+hermetic_cc_toolchain = use_extension(
+    "@hermetic_cc_toolchain//toolchain:ext.bzl",
+    "toolchains",
     dev_dependency = True,
 )
-llvm.toolchain(
-    llvm_version = "20.1.4",
-    stdlib = {"": "builtin-libc++"},
-)
-use_repo(llvm, "llvm_toolchain")
+use_repo(hermetic_cc_toolchain, "zig_sdk")
 
 register_toolchains(
-    "@llvm_toolchain//:all",
+    "@zig_sdk//libc_aware/toolchain:all",
+    "@zig_sdk//toolchain:all",
     dev_dependency = True,
 )
 
 bazel_dep(name = "rules_cc", version = "0.2.18")
+
+cc_configure = use_extension(
+    "@rules_cc//cc:extensions.bzl",
+    "cc_configure_extension",
+    dev_dependency = True,
+)
+use_repo(cc_configure, "local_config_cc", "local_config_cc_toolchains")
+
 bazel_dep(name = "rules_license", version = "1.0.0")
 
 bazel_dep(name = "rules_python", version = "2.0.2", dev_dependency = True)
@@ -67,10 +72,10 @@ python = use_extension(
     "python",
 )
 python.toolchain(
-    ignore_root_user_error = True,
     is_default = True,
-    python_version = "3.14",
+    python_version = "3.14.4",
 )
+use_repo(python, "python_3_14_4")
 
 bazel_dep(name = "platforms", version = "1.1.0", dev_dependency = True)
 bazel_dep(name = "rules_pkg", version = "1.2.0", dev_dependency = True)

@@ -166,7 +166,7 @@ void setPreferredVelocities(RVO::RVOSimulator *simulator,
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif /* _OPENMP */
-  for (int i = 0; i < static_cast<int>(simulator->getNumAgents()); ++i) {
+  for (std::size_t i = 0U; i < simulator->getNumAgents(); ++i) {
     RVO::Vector2 goalVector = goals[i] - simulator->getAgentPosition(i);
 
     if (RVO::absSq(goalVector) > 1.0F) {
