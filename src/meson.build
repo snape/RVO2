@@ -67,7 +67,9 @@ default_library = get_option('default_library')
 # Keep inline-visibility tightening on the library target only: this is part of
 # the exported ABI/symbol policy for RVO itself, not a project-wide policy that
 # needs to affect example executables.
-compile_args += cpp_compiler.get_supported_arguments('-fvisibility-inlines-hidden')
+compile_args += cpp_compiler.get_supported_arguments(
+    '-fvisibility-inlines-hidden',
+)
 
 if host_os == 'windows'
     compile_args += ['-DNOMINMAX']
@@ -115,10 +117,7 @@ dep_rvo = declare_dependency(
 meson.override_dependency('rvo', dep_rvo)
 
 if not meson.is_subproject()
-    install_headers(
-        public_headers,
-        subdir: 'RVO',
-    )
+    install_headers(public_headers, subdir: 'RVO')
 
     pkgconfig = import('pkgconfig')
     pkgconfig.generate(

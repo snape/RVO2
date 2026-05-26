@@ -54,11 +54,15 @@ Checks: >
   -cert-msc50-cpp,
   -cert-msc51-cpp,
   -clang-analyzer-security.insecureAPI.rand,
+  -cppcoreguidelines-avoid-do-while,
   -cppcoreguidelines-avoid-magic-numbers,
+  -misc-include-cleaner,
   -misc-no-recursion,
   -readability-function-cognitive-complexity,
   -readability-identifier-length,
-  -readability-magic-numbers
+  -readability-magic-numbers,
+  -readability-math-missing-parentheses
+
 
 CheckOptions:
   - key: misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic

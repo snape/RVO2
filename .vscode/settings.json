@@ -1,4 +1,5 @@
 {
+  "$schema": "vscode://schemas/settings/workspace",
   "cmake.buildDirectory": "${workspaceFolder}/_build",
   "cmake.preferredGenerators": [
     "Ninja Multi-Config",

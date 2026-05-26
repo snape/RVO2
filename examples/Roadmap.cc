@@ -83,7 +83,7 @@ class RoadmapVertex {
 void setupScenario(
     RVO::RVOSimulator *simulator,
     std::vector<RoadmapVertex> &roadmap, /* NOLINT(runtime/references) */
-    std::vector<std::size_t> &goals) {           /* NOLINT(runtime/references) */
+    std::vector<std::size_t> &goals) {   /* NOLINT(runtime/references) */
 #if RVO_SEED_RANDOM_NUMBER_GENERATOR
   std::srand(static_cast<unsigned int>(std::time(NULL)));
 #endif /* RVO_SEED_RANDOM_NUMBER_GENERATOR */
@@ -214,7 +214,7 @@ void updateVisualization(RVO::RVOSimulator *simulator) {
 #endif /* RVO_OUTPUT_TIME_AND_POSITIONS */
 
 void buildRoadmap(
-    RVO::RVOSimulator *simulator,
+    const RVO::RVOSimulator *simulator,
     std::vector<RoadmapVertex> &roadmap) { /* NOLINT(runtime/references) */
   /* Connect the roadmap vertices by edges if mutually visible. */
 #ifdef _OPENMP
@@ -239,8 +239,8 @@ void buildRoadmap(
 #endif /* _OPENMP */
   for (std::size_t i = 0U; i < 4U; ++i) {
     std::multimap<float, std::size_t> Q;
-    std::vector<std::multimap<float, std::size_t>::iterator> posInQ(roadmap.size(),
-                                                                    Q.end());
+    std::vector<std::multimap<float, std::size_t>::iterator> posInQ(
+        roadmap.size(), Q.end());
 
     roadmap[i].distToGoal[i] = 0.0F;
     posInQ[i] = Q.insert(std::make_pair(0.0F, i));
@@ -316,12 +316,14 @@ void setPreferredVelocities(RVO::RVOSimulator *simulator,
                               simulator->getAgentPosition(i)));
       }
     }
+  }
 
+  for (std::size_t i = 0U; i < simulator->getNumAgents(); ++i) {
     /* Perturb a little to avoid deadlocks due to perfect symmetry. */
-    float angle = static_cast<float>(std::rand()) * RVO_TWO_PI /
-                  static_cast<float>(RAND_MAX);
-    float dist = static_cast<float>(std::rand()) * 0.0001F /
-                 static_cast<float>(RAND_MAX);
+    const float angle = static_cast<float>(std::rand()) * RVO_TWO_PI /
+                        static_cast<float>(RAND_MAX);
+    const float dist = static_cast<float>(std::rand()) * 0.0001F /
+                       static_cast<float>(RAND_MAX);
 
     simulator->setAgentPrefVelocity(
         i, simulator->getAgentPrefVelocity(i) +
@@ -329,7 +331,7 @@ void setPreferredVelocities(RVO::RVOSimulator *simulator,
   }
 }
 
-bool reachedGoal(RVO::RVOSimulator *simulator,
+bool reachedGoal(const RVO::RVOSimulator *simulator,
                  const std::vector<RoadmapVertex> &roadmap,
                  const std::vector<std::size_t> &goals) {
   /* Check if all agents have reached their goals. */

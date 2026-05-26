@@ -82,8 +82,6 @@ simulation is fully accessible and manipulable during runtime. The library
 exploits multiple processors if they are available using OpenMP for efficient
 parallelization of the simulation.
 
-![Build Status](https://github.com/snape/RVO2/actions/workflows/ci.yml/badge.svg?branch=main)
-
 <!-- REUSE-IgnoreStart -->
 SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill  
 SPDX-License-Identifier: Apache-2.0

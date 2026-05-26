@@ -43,7 +43,7 @@ on:  # yamllint disable-line rule:truthy
     branches:
       - main
   schedule:
-    - cron: '30 5 * * *'
+    - cron: '20 6 * * *'
 
 permissions:
   contents: read
@@ -77,10 +77,13 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           meson setup \
             --prefix "$(pwd)/_build/install" \
+            -Dbuildtype=release \
             -Db_lto=true \
             -Dopenmp=enabled \
             -Dwerror=true \
@@ -110,10 +113,13 @@ jobs:
         shell: sh
       - name: checkout
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           meson setup \
             --prefix "$(pwd)/_build/install" \
+            -Dbuildtype=release \
             -Db_lto=true \
             -Dopenmp=enabled \
             -Dwerror=true \
@@ -146,10 +152,13 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           meson setup \
             --prefix "$(pwd)/_build/install" \
+            -Dbuildtype=release \
             -Db_lto=true \
             -Dopenmp=enabled \
             -Dwerror=true \
@@ -183,10 +192,13 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           meson setup \
             --prefix "$(pwd)/_build/install" \
+            -Dbuildtype=release \
             -Db_lto=true \
             -Dopenmp=enabled \
             -Dwerror=true \
@@ -205,14 +217,16 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: cache homebrew
         uses: actions/cache@v5
         with:
           path: ~/Library/Caches/Homebrew/downloads
-          key: |
-            ${{ runner.os }}-${{ runner.arch }}-brew-${{ hashFiles('Brewfile') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-brew-
+          key: >-
+            ${{ runner.os }}-${{ runner.arch }}-brew-${{
+            hashFiles('Brewfile') }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-brew-
       - name: setup
         run: |
           brew update -q || (sleep 15; brew update -q)
@@ -228,6 +242,7 @@ jobs:
         run: |
           meson setup \
             --prefix "$(pwd)/_build/install" \
+            -Dbuildtype=release \
             -Db_lto=true \
             -Dopenmp=disabled \
             -Dwerror=true \
@@ -246,14 +261,16 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: cache homebrew
         uses: actions/cache@v5
         with:
           path: ~/Library/Caches/Homebrew/downloads
-          key: |
-            ${{ runner.os }}-${{ runner.arch }}-brew-${{ hashFiles('Brewfile') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-brew-
+          key: >-
+            ${{ runner.os }}-${{ runner.arch }}-brew-${{
+            hashFiles('Brewfile') }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-brew-
       - name: setup
         run: |
           brew update -q || (sleep 15; brew update -q)
@@ -269,6 +286,7 @@ jobs:
         run: |
           meson setup \
             --prefix "$(pwd)/_build/install" \
+            -Dbuildtype=release \
             -Db_lto=true \
             -Dopenmp=disabled \
             -Dwerror=true \
@@ -300,10 +318,13 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           meson setup \
             --prefix "$(pwd)/_build/install" \
+            -Dbuildtype=release \
             -Db_lto=true \
             -Dopenmp=enabled \
             -Dwerror=true \
@@ -340,10 +361,13 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           meson setup \
             --prefix "$(pwd)/_build/install" \
+            -Dbuildtype=release \
             -Db_lto=true \
             -Dopenmp=enabled \
             -Dwerror=true \
@@ -380,10 +404,13 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           meson setup \
             --prefix "$(pwd)/_build/install" \
+            -Dbuildtype=release \
             -Db_lto=true \
             -Dopenmp=enabled \
             -Dwerror=true \
@@ -406,28 +433,31 @@ jobs:
           path: |
             ~\AppData\Local\Microsoft\WinGet\Links
             ~\AppData\Local\Microsoft\WinGet\SourceData
-          key: |
-            ${{ runner.os }}-${{ runner.arch }}-winget-${{ hashFiles('.github/workflows/*.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-winget-
+          key: >-
+            ${{ runner.os }}-${{ runner.arch }}-winget-${{
+            hashFiles('.github/workflows/*.yml') }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-winget-
       - name: setup
         run: |
-          winget install -e --accept-package-agreements --accept-source-agreements `
-            --id Git.Git
-          winget install -e --accept-package-agreements --accept-source-agreements `
-            --id mesonbuild.meson
-          winget install -e --accept-package-agreements --accept-source-agreements `
-            --id Ninja-build.Ninja
+          winget install -e --accept-package-agreements `
+            --accept-source-agreements --id Git.Git
+          winget install -e --accept-package-agreements `
+            --accept-source-agreements --id mesonbuild.meson
+          winget install -e --accept-package-agreements `
+            --accept-source-agreements --id Ninja-build.Ninja
           Add-Content $env:GITHUB_PATH (
-            [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
-            [System.Environment]::GetEnvironmentVariable("Path", "User"))
+            [System.Environment]::GetEnvironmentVariable("Path", "Machine") + `
+            ";" + [System.Environment]::GetEnvironmentVariable("Path", "User"))
         shell: pwsh
       - name: checkout
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           meson setup `
             --prefix "${PWD}/_build/install" `
+            -Dbuildtype=release `
             -Db_lto=true `
             -Ddefault_library=static `
             -Dopenmp=disabled `
@@ -451,30 +481,33 @@ jobs:
           path: |
             ~\AppData\Local\Microsoft\WinGet\Links
             ~\AppData\Local\Microsoft\WinGet\SourceData
-          key: |
-            ${{ runner.os }}-${{ runner.arch }}-winget-${{ hashFiles('.github/workflows/*.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-winget-
+          key: >-
+            ${{ runner.os }}-${{ runner.arch }}-winget-${{
+            hashFiles('.github/workflows/*.yml') }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-winget-
       - name: setup
         run: |
           Install-Module -Force -Name Microsoft.WinGet.Client
           Repair-WinGetPackageManager -Force -Latest
-          winget install -e --accept-package-agreements --accept-source-agreements `
-            --id Git.Git
-          winget install -e --accept-package-agreements --accept-source-agreements `
-            --id mesonbuild.meson
-          winget install -e --accept-package-agreements --accept-source-agreements `
-            --id Ninja-build.Ninja
+          winget install -e --accept-package-agreements `
+            --accept-source-agreements --id Git.Git
+          winget install -e --accept-package-agreements `
+            --accept-source-agreements --id mesonbuild.meson
+          winget install -e --accept-package-agreements `
+            --accept-source-agreements --id Ninja-build.Ninja
           Add-Content $env:GITHUB_PATH (
-            [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
-            [System.Environment]::GetEnvironmentVariable("Path", "User"))
+            [System.Environment]::GetEnvironmentVariable("Path", "Machine") + `
+            ";" + [System.Environment]::GetEnvironmentVariable("Path", "User"))
         shell: pwsh
       - name: checkout
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           meson setup `
             --prefix "${PWD}/_build/install" `
+            -Dbuildtype=release `
             -Db_lto=true `
             -Ddefault_library=static `
             -Dopenmp=disabled `

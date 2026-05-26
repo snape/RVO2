@@ -115,23 +115,72 @@ maintainer [@snape](https://github.com/snape) before merging.
 ### Continuous Integration [2.iv]
 
 CI is performed via GitHub Actions on every push and pull request to `main`,
-and on a daily schedule:
+and on a daily or weekly schedule:
 
-- [`.github/workflows/ci.yml`](.github/workflows/ci.yml): builds and tests
-  with CMake and Bazel on AlmaLinux, Alpine Linux, Arch Linux, Fedora,
-  openSUSE, and Ubuntu (amd64 and arm64), macOS (arm64 and x86_64), and
-  Windows (amd64 and arm64).
-  CMake builds enable `BUILD_TESTING`, `ENABLE_HARDENING`,
+- [`.github/workflows/actionlint.yml`](.github/workflows/actionlint.yml):
+  validates GitHub Actions workflow files with actionlint.
+- [`.github/workflows/bazel.yml`](.github/workflows/bazel.yml): builds and
+  tests with Bazel on AlmaLinux, Alpine Linux, Arch Linux, Fedora, openSUSE,
+  and Ubuntu (amd64 and arm64), macOS (arm64 and x86_64), and Windows
+  (amd64 and arm64).
+- [`.github/workflows/buildifier.yml`](.github/workflows/buildifier.yml):
+  enforces Bazel file formatting with buildifier.
+- [`.github/workflows/check-jsonschema.yml`](.github/workflows/check-jsonschema.yml):
+  validates [`compose.yaml`](compose.yaml) and [`renovate.json`](renovate.json)
+  against their respective schemas.
+- [`.github/workflows/clang-format.yml`](.github/workflows/clang-format.yml):
+  enforces code formatting via clang-format.
+- [`.github/workflows/clang-tidy.yml`](.github/workflows/clang-tidy.yml):
+  runs clang-tidy static analysis with warnings as errors.
+- [`.github/workflows/cmake.yml`](.github/workflows/cmake.yml): builds and
+  tests with CMake on AlmaLinux, Alpine Linux, Arch Linux, Fedora, openSUSE
+  Leap, Ubuntu (amd64 and arm64), macOS (arm64 and x86_64), and Windows
+  (amd64 and arm64), enabling `BUILD_TESTING`, `ENABLE_HARDENING`,
   `ENABLE_INTERPROCEDURAL_OPTIMIZATION`, `ENABLE_OPENMP`, and
   `WARNINGS_AS_ERRORS`.
-- [`.github/workflows/meson.yml`](.github/workflows/meson.yml): builds and
-  tests with Meson on AlmaLinux, Arch Linux, Fedora, openSUSE, and Ubuntu
-  (amd64 and arm64), Alpine Linux, macOS (arm64 and x86_64), and Windows
-  (amd64 and arm64). Meson
-  builds enable LTO (`-Db_lto=true`), `openmp`, and `werror`.
 - [`.github/workflows/codeql.yml`](.github/workflows/codeql.yml): runs GitHub
-  CodeQL semantic code analysis for C++ on every push, pull request, and on
-  a weekly schedule.
+  CodeQL semantic code analysis for C++ on a weekly schedule.
+- [`.github/workflows/codespell.yml`](.github/workflows/codespell.yml):
+  checks spelling in source files and documentation with codespell.
+- [`.github/workflows/coverage.yml`](.github/workflows/coverage.yml):
+  measures code coverage with gcovr on Debian (amd64 and arm64), publishes
+  an XML report, and uploads results to DeepSource on each push to `main`.
+- [`.github/workflows/cppcheck.yml`](.github/workflows/cppcheck.yml): runs
+  cppcheck static analysis with all checks enabled and suppressions configured
+  via [`.cppcheck-suppressions.xml`](.cppcheck-suppressions.xml); results are
+  uploaded to GitHub Code Scanning as SARIF.
+- [`.github/workflows/cpplint.yml`](.github/workflows/cpplint.yml): enforces
+  Google C++ style with cpplint.
+- [`.github/workflows/detect-secrets.yml`](.github/workflows/detect-secrets.yml):
+  scans for accidentally committed secrets against a maintained baseline.
+- [`.github/workflows/docker.yml`](.github/workflows/docker.yml): builds the
+  development environment Docker image for amd64 and arm64 on a weekly
+  schedule.
+- [`.github/workflows/gersemi.yml`](.github/workflows/gersemi.yml): enforces
+  CMake file formatting with gersemi.
+- [`.github/workflows/hadolint.yml`](.github/workflows/hadolint.yml): lints
+  the Dockerfile with hadolint.
+- [`.github/workflows/iwyu.yml`](.github/workflows/iwyu.yml): checks include
+  hygiene with include-what-you-use.
+- [`.github/workflows/lizard.yml`](.github/workflows/lizard.yml): measures
+  cyclomatic complexity with lizard.
+- [`.github/workflows/meson.yml`](.github/workflows/meson.yml): builds and
+  tests with Meson on AlmaLinux, Alpine Linux, Arch Linux, Fedora, openSUSE
+  Leap, Ubuntu (amd64 and arm64), macOS (arm64 and x86_64), and Windows
+  (amd64 and arm64), enabling `hardening`, `openmp`, and `werror`.
+- [`.github/workflows/meson-format.yml`](.github/workflows/meson-format.yml):
+  enforces Meson build file formatting with `meson format`.
+- [`.github/workflows/reuse.yml`](.github/workflows/reuse.yml): verifies
+  REUSE license compliance.
+- [`.github/workflows/sanitizer.yml`](.github/workflows/sanitizer.yml):
+  builds and tests with AddressSanitizer, ThreadSanitizer, and
+  UndefinedBehaviorSanitizer on Debian (amd64 and arm64).
+- [`.github/workflows/valgrind.yml`](.github/workflows/valgrind.yml): runs
+  tests under Valgrind for memory error detection on Debian (amd64 and arm64).
+- [`.github/workflows/validate-cff.yml`](.github/workflows/validate-cff.yml):
+  validates [`CITATION.cff`](CITATION.cff) against the CFF schema.
+- [`.github/workflows/yamllint.yml`](.github/workflows/yamllint.yml): lints
+  all YAML files with yamllint.
 
 ### Documentation Policy [2.v]
 
@@ -167,14 +216,15 @@ Public License.
 The project uses the [REUSE Specification](https://reuse.software/) for license
 compliance. Every source file contains machine-readable SPDX license and
 copyright headers, and license texts are provided in the [`LICENSES/`](LICENSES/)
-directory. License compliance is verified by the `reuse` pre-commit hook.
+directory. License compliance is verified by the `reuse` pre-commit hook and
+by the [`.github/workflows/reuse.yml`](.github/workflows/reuse.yml) CI job.
 
 ### Copyright Statement [3.iv]
 
 Copyright is held by the University of North Carolina at Chapel Hill. All
 source files include the SPDX copyright notice:
 
-```
+```text
 SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
 ```
 
@@ -209,10 +259,13 @@ individual API functions are not currently present.
 
 ### Coverage [4.iii]
 
-Code coverage is not currently tracked. The three simulation scenarios provide
-broad functional coverage of the library, but no formal coverage measurement
-or policy is in place. This is a known gap relative to Quality Level 2
-requirements.
+Code coverage is measured in CI using `gcovr` via
+[`.github/workflows/coverage.yml`](.github/workflows/coverage.yml), which
+builds with `-Db_coverage=true` on Debian (amd64 and arm64) and produces an
+XML report. Coverage results are uploaded to
+[DeepSource](https://deepsource.com/) on each push to `main`. The three
+simulation scenarios provide broad functional coverage of the library, but no
+minimum coverage threshold is currently enforced.
 
 ### Performance [4.iv]
 
@@ -223,23 +276,65 @@ processing), but no automated performance benchmarks are run in CI.
 
 ### Linters and Static Analysis [4.v]
 
-The following linters and static analysis tools are enforced, with all warnings
-treated as errors in CI:
+The following formatters and linters are enforced in CI:
 
+- **actionlint**: GitHub Actions workflow validation via
+  [`.github/workflows/actionlint.yml`](.github/workflows/actionlint.yml)
+- **buildifier**: Bazel file formatting via [`.buildifier.json`](.buildifier.json)
+  and [`.github/workflows/buildifier.yml`](.github/workflows/buildifier.yml)
+- **check-jsonschema**: JSON schema validation of `compose.yaml` and
+  `renovate.json` via
+  [`.github/workflows/check-jsonschema.yml`](.github/workflows/check-jsonschema.yml)
 - **clang-format**: code formatting enforced via [`.clang-format`](.clang-format)
   (Google style with `PointerAlignment: Right`)
-- **clang-tidy**: static analysis via [`.clang-tidy`](.clang-tidy), enabling
-  `bugprone-*`, `cert-*`, `clang-analyzer-*`, `cppcoreguidelines-*`,
-  `google-*`, `performance-*`, `portability-*`, `readability-*`, and
-  `openmp-*` checks, with `WarningsAsErrors: '*'`
+- **codespell**: spell checking via
+  [`.github/workflows/codespell.yml`](.github/workflows/codespell.yml)
 - **cpplint**: Google C++ style enforcement via [`CPPLINT.cfg`](CPPLINT.cfg)
-- **buildifier**: Bazel file formatting via [`.buildifier.json`](.buildifier.json)
-- **CodeQL**: GitHub's semantic code analysis for C++ via
-  [`.github/workflows/codeql.yml`](.github/workflows/codeql.yml)
+  and [`.github/workflows/cpplint.yml`](.github/workflows/cpplint.yml)
+- **detect-secrets**: secret scanning against a maintained baseline via
+  [`.secrets.baseline`](.secrets.baseline) and
+  [`.github/workflows/detect-secrets.yml`](.github/workflows/detect-secrets.yml)
+- **gersemi**: CMake file formatting via [`.gersemirc`](.gersemirc) and
+  [`.github/workflows/gersemi.yml`](.github/workflows/gersemi.yml)
+- **hadolint**: Dockerfile linting via [`.hadolint.yaml`](.hadolint.yaml) and
+  [`.github/workflows/hadolint.yml`](.github/workflows/hadolint.yml)
+- **meson format**: Meson build file formatting enforced via
+  [`.github/workflows/meson-format.yml`](.github/workflows/meson-format.yml)
+- **validate-cff**: CFF schema validation via
+  [`.github/workflows/validate-cff.yml`](.github/workflows/validate-cff.yml)
+- **yamllint**: YAML file linting via
+  [`.github/workflows/yamllint.yml`](.github/workflows/yamllint.yml) and
+  [`.yamllint.yaml`](.yamllint.yaml)
 - **pre-commit hooks**: `codespell` (spell checking), `yamllint`, `actionlint`
   (workflow validation), REUSE compliance, case-conflict, JSON, YAML, and
   merge-conflict detection, end-of-file and trailing-whitespace normalization
   via [`.pre-commit-config.yaml`](.pre-commit-config.yaml)
+
+The following static analysis tools are enforced in CI:
+
+- **clang-tidy**: static analysis via [`.clang-tidy`](.clang-tidy), enabling
+  `bugprone-*`, `cert-*`, `clang-analyzer-*`, `cppcoreguidelines-*`,
+  `google-*`, `performance-*`, `portability-*`, `readability-*`, and
+  `openmp-*` checks, with `WarningsAsErrors: '*'`
+- **CodeQL**: GitHub's semantic code analysis for C++ via
+  [`.github/workflows/codeql.yml`](.github/workflows/codeql.yml)
+- **cppcheck**: static analysis with all checks enabled and suppressions
+  configured via [`.cppcheck-suppressions.xml`](.cppcheck-suppressions.xml);
+  results uploaded to GitHub Code Scanning as SARIF
+- **include-what-you-use**: include hygiene checked via
+  [`.iwyu_mappings.imp`](.iwyu_mappings.imp)
+- **lizard**: cyclomatic complexity analysis via
+  [`.github/workflows/lizard.yml`](.github/workflows/lizard.yml)
+
+The following dynamic analysis tools are run against the test suite in CI:
+
+- **AddressSanitizer, ThreadSanitizer, UndefinedBehaviorSanitizer**: enabled
+  via [`.github/workflows/sanitizer.yml`](.github/workflows/sanitizer.yml)
+  on Debian (amd64 and arm64) with `halt_on_error=1`
+- **Valgrind**: memory error detection via
+  [`.github/workflows/valgrind.yml`](.github/workflows/valgrind.yml) on
+  Debian (amd64 and arm64) with `--leak-check=full` and
+  `--errors-for-leak-kinds=definite,indirect`
 
 ## Dependencies [5]
 
@@ -264,16 +359,16 @@ None.
 `RVO2 Library` is built and tested continuously via GitHub Actions on the
 following platforms:
 
-| Platform       | Architecture | Build System        |
-|----------------|--------------|---------------------|
-| AlmaLinux      | amd64        | CMake, Bazel, Meson |
-| Alpine Linux   | amd64        | CMake, Bazel, Meson |
-| Arch Linux     | amd64        | CMake, Bazel, Meson |
-| Fedora         | amd64        | CMake, Bazel, Meson |
-| openSUSE Leap  | amd64        | CMake, Bazel, Meson |
-| Ubuntu         | amd64, arm64 | CMake, Bazel, Meson |
-| macOS          | arm64, x86_64        | CMake, Bazel, Meson |
-| Windows        | amd64, arm64         | CMake, Bazel, Meson |
+| Platform       | Architecture  | Build System        |
+|----------------|---------------|---------------------|
+| AlmaLinux      | amd64         | CMake, Bazel, Meson |
+| Alpine Linux   | amd64         | CMake, Bazel, Meson |
+| Arch Linux     | amd64         | CMake, Bazel, Meson |
+| Fedora         | amd64         | CMake, Bazel, Meson |
+| openSUSE Leap  | amd64         | CMake, Bazel, Meson |
+| Ubuntu         | amd64, arm64  | CMake, Bazel, Meson |
+| macOS          | arm64, x86_64 | CMake, Bazel, Meson |
+| Windows        | amd64, arm64  | CMake, Bazel, Meson |
 
 ## Security [7]
 

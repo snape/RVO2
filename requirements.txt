@@ -31,7 +31,12 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
-cffconvert
-cmakelang
-cpplint
-reuse
+cffconvert==2.0.0
+check-jsonschema==0.13.0
+codespell==2.4.2
+cpplint==2.0.2
+detect-secrets==1.5.0
+gersemi==0.27.6
+lizard==1.22.2
+reuse==6.2.0
+yamllint==1.38.0

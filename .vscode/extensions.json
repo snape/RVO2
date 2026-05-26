@@ -1,4 +1,5 @@
 {
+  "$schema": "vscode://schemas/vscode-extensions",
   "recommendations": [
     "bazelbuild.vscode-bazel",
     "editorconfig.editorconfig",
