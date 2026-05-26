@@ -48,8 +48,20 @@ trim_trailing_whitespace = true
 [*.bazel]
 indent_size = 4
 
+[*.build]
+indent_size = 4
+
 [*.md]
 trim_trailing_whitespace = false
+
+[*.options]
+indent_size = 4
+
+[*.yaml]
+max_line_length = 90
+
+[*.yml]
+max_line_length = 90
 
 [.bazelignore]
 indent_size = 4
@@ -58,10 +70,4 @@ indent_size = 4
 indent_size = 4
 
 [Brewfile]
-indent_size = 4
-
-[*.build]
-indent_size = 4
-
-[*.options]
 indent_size = 4

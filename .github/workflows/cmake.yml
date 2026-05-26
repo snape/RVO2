@@ -1,0 +1,611 @@
+#
+# cmake.yml
+# RVO2 Library
+#
+# SPDX-FileCopyrightText: 2008 University of North Carolina at Chapel Hill
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# Please send all bug reports to <geom@cs.unc.edu>.
+#
+# The authors may be contacted via:
+#
+# Jur van den Berg, Stephen J. Guy, Jamie Snape, Ming C. Lin, Dinesh Manocha
+# Dept. of Computer Science
+# 201 S. Columbia St.
+# Frederick P. Brooks, Jr. Computer Science Bldg.
+# Chapel Hill, N.C. 27599-3175
+# United States of America
+#
+# <https://gamma.cs.unc.edu/RVO2/>
+#
+
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+---
+name: cmake
+
+on:  # yamllint disable-line rule:truthy
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: '10 6 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cmake-almalinux:
+    name: almalinux amd64
+    runs-on: ubuntu-latest
+    container: almalinux:10
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          dnf makecache -q --refresh || (sleep 15; dnf makecache -q --refresh)
+          dnf install -q -y \
+            ca-certificates \
+            cmake \
+            dnf-plugins-core \
+            gcc-c++ \
+            git \
+            glibc-langpack-en \
+            graphviz \
+            make \
+            pkgconf-pkg-config \
+            rpm-build
+          dnf config-manager --set-enabled crb
+          dnf install -q -y doxygen
+          dnf clean all
+          rm -rf /var/cache/yum
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: build test package
+        run: |
+          mkdir _build
+          cd _build
+          cmake \
+            -DBUILD_DOCUMENTATION:BOOL=ON \
+            -DBUILD_TESTING:BOOL=ON \
+            -DCMAKE_INSTALL_PREFIX:PATH=install \
+            -DENABLE_HARDENING:BOOL=ON \
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
+            -DENABLE_OPENMP:BOOL=ON \
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
+            -DWARNINGS_AS_ERRORS:BOOL=ON \
+            --warn-uninitialized \
+            ..
+          cmake --build .
+          ctest . --repeat after-timeout:3
+          cmake --install .
+          cpack -G RPM
+          cpack -G RPM --config CPackSourceConfig.cmake
+        shell: bash
+
+  cmake-alpine:
+    name: alpine linux amd64
+    runs-on: ubuntu-latest
+    container: alpine:3
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          apk add -q --no-cache \
+            ca-certificates \
+            cmake \
+            doxygen \
+            g++ \
+            git \
+            graphviz \
+            make \
+            pkgconf
+        shell: sh
+      - name: checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: build test package
+        run: |
+          mkdir _build
+          cd _build
+          cmake \
+            -DBUILD_DOCUMENTATION:BOOL=ON \
+            -DBUILD_TESTING:BOOL=ON \
+            -DCMAKE_INSTALL_PREFIX:PATH=install \
+            -DENABLE_HARDENING:BOOL=ON \
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
+            -DENABLE_OPENMP:BOOL=ON \
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
+            -DWARNINGS_AS_ERRORS:BOOL=ON \
+            --warn-uninitialized \
+            ..
+          cmake --build .
+          ctest . --repeat after-timeout:3
+          cmake --install .
+          cpack -G TGZ
+          cpack -G TGZ --config CPackSourceConfig.cmake
+        shell: sh
+
+  cmake-arch:
+    name: arch linux amd64
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          pacman --needed --noconfirm --noprogressbar -Sy \
+            ca-certificates \
+            cmake \
+            doxygen \
+            gcc \
+            git \
+            graphviz \
+            make \
+            pkgconf
+          rm -rf \
+            /var/cache/pacman/pkg/* \
+            /var/lib/pacman/sync/*
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: build test package
+        run: |
+          mkdir _build
+          cd _build
+          cmake \
+            -DBUILD_DOCUMENTATION:BOOL=ON \
+            -DBUILD_TESTING:BOOL=ON \
+            -DCMAKE_INSTALL_PREFIX:PATH=install \
+            -DENABLE_HARDENING:BOOL=ON \
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
+            -DENABLE_OPENMP:BOOL=ON \
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
+            -DWARNINGS_AS_ERRORS:BOOL=ON \
+            --warn-uninitialized \
+            ..
+          cmake --build .
+          ctest . --repeat after-timeout:3
+          cmake --install .
+          cpack -G TGZ
+          cpack -G TGZ --config CPackSourceConfig.cmake
+        shell: bash
+
+  cmake-fedora:
+    name: fedora linux amd64
+    runs-on: ubuntu-latest
+    container: fedora:44
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          dnf makecache -q --refresh || (sleep 15; dnf makecache -q --refresh)
+          dnf install -q -y \
+            ca-certificates \
+            cmake \
+            doxygen \
+            gcc-c++ \
+            git \
+            glibc-langpack-en \
+            graphviz \
+            make \
+            pkgconf-pkg-config \
+            rpm-build
+          dnf clean all
+          rm -rf /var/cache/yum
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: build test package
+        run: |
+          mkdir _build
+          cd _build
+          cmake \
+            -DBUILD_DOCUMENTATION:BOOL=ON \
+            -DBUILD_TESTING:BOOL=ON \
+            -DCMAKE_INSTALL_PREFIX:PATH=install \
+            -DENABLE_HARDENING:BOOL=ON \
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
+            -DENABLE_OPENMP:BOOL=ON \
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
+            -DWARNINGS_AS_ERRORS:BOOL=ON \
+            --warn-uninitialized \
+            ..
+          cmake --build .
+          ctest . --repeat after-timeout:3
+          cmake --install .
+          cpack -G RPM
+          cpack -G RPM --config CPackSourceConfig.cmake
+        shell: bash
+
+  cmake-macos:
+    name: cmake macos arm64
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - name: checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: cache homebrew
+        uses: actions/cache@v5
+        with:
+          path: ~/Library/Caches/Homebrew/downloads
+          key: >-
+            ${{ runner.os }}-${{ runner.arch }}-brew-${{
+            hashFiles('Brewfile') }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-brew-
+      - name: setup
+        run: |
+          brew update -q || (sleep 15; brew update -q)
+          brew bundle install -q
+          brew cleanup -q -s
+        env:
+          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HOMEBREW_NO_ANALYTICS: 1
+          HOMEBREW_NO_AUTO_UPDATE: 1
+          HOMEBREW_NO_INSTALL_CLEANUP: 1
+        shell: zsh -efuo pipefail {0}
+      - name: build test package
+        run: |
+          mkdir _build
+          cd _build
+          cmake \
+            -DBUILD_DOCUMENTATION:BOOL=ON \
+            -DBUILD_TESTING:BOOL=ON \
+            -DCMAKE_INSTALL_PREFIX:PATH=install \
+            -DENABLE_HARDENING:BOOL=ON \
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
+            -DENABLE_OPENMP:BOOL=OFF \
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
+            -DWARNINGS_AS_ERRORS:BOOL=ON \
+            --warn-uninitialized \
+            ..
+          cmake --build .
+          ctest . --repeat after-timeout:3
+          cmake --install .
+          cpack -G TGZ
+          cpack -G TGZ --config CPackSourceConfig.cmake
+        shell: zsh -efuo pipefail {0}
+
+  cmake-macos-x86_64:
+    name: cmake macos x86_64
+    runs-on: macos-26-intel
+    steps:
+      - name: checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: cache
+        uses: actions/cache@v5
+        with:
+          path: ~/Library/Caches/Homebrew/downloads
+          key: >-
+            ${{ runner.os }}-${{ runner.arch }}-brew-${{
+            hashFiles('Brewfile') }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-brew-
+      - name: setup
+        run: |
+          brew update -q || (sleep 15; brew update -q)
+          brew bundle install -q
+          brew cleanup -q -s
+        env:
+          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HOMEBREW_NO_ANALYTICS: 1
+          HOMEBREW_NO_AUTO_UPDATE: 1
+          HOMEBREW_NO_INSTALL_CLEANUP: 1
+        shell: zsh -efuo pipefail {0}
+      - name: build test package
+        run: |
+          mkdir _build
+          cd _build
+          cmake \
+            -DBUILD_DOCUMENTATION:BOOL=ON \
+            -DBUILD_TESTING:BOOL=ON \
+            -DCMAKE_INSTALL_PREFIX:PATH=install \
+            -DENABLE_HARDENING:BOOL=ON \
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
+            -DENABLE_OPENMP:BOOL=OFF \
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
+            -DWARNINGS_AS_ERRORS:BOOL=ON \
+            --warn-uninitialized \
+            ..
+          cmake --build .
+          ctest . --repeat after-timeout:3
+          cmake --install .
+          cpack -G TGZ
+          cpack -G TGZ --config CPackSourceConfig.cmake
+        shell: zsh -efuo pipefail {0}
+
+  cmake-opensuse:
+    name: opensuse leap amd64
+    runs-on: ubuntu-latest
+    container: opensuse/leap:16.0
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          zypper -n -q ref || (sleep 15; zypper -n -q ref)
+          zypper -n -q in --no-recommends \
+            ca-certificates \
+            cmake \
+            doxygen \
+            gcc-c++ \
+            git \
+            graphviz \
+            make \
+            pkgconf \
+            rpm-build
+          zypper -n -q cc -a
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: build test package
+        run: |
+          mkdir _build
+          cd _build
+          cmake \
+            -DBUILD_DOCUMENTATION:BOOL=ON \
+            -DBUILD_TESTING:BOOL=ON \
+            -DCMAKE_INSTALL_PREFIX:PATH=install \
+            -DENABLE_HARDENING:BOOL=ON \
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
+            -DENABLE_OPENMP:BOOL=ON \
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
+            -DWARNINGS_AS_ERRORS:BOOL=ON \
+            --warn-uninitialized \
+            ..
+          cmake --build .
+          ctest . --repeat after-timeout:3
+          cmake --install .
+          cpack -G RPM
+          cpack -G RPM --config CPackSourceConfig.cmake
+        shell: bash
+
+  cmake-ubuntu:
+    name: ubuntu amd64
+    runs-on: ubuntu-latest
+    container: ubuntu:26.04
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          apt-get -qq -o APT::Acquire::Retries=4 update \
+            || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
+          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
+              --no-install-recommends install \
+            ca-certificates \
+            cmake \
+            doxygen \
+            dpkg-dev \
+            file \
+            g++ \
+            git \
+            graphviz \
+            make \
+            pkgconf
+          apt-get -qq -o Dpkg::Use-Pty=0 autoremove
+          rm -rf /var/lib/apt/lists/*
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: build test package
+        run: |
+          mkdir _build
+          cd _build
+          cmake \
+            -DBUILD_DOCUMENTATION:BOOL=ON \
+            -DBUILD_TESTING:BOOL=ON \
+            -DCMAKE_INSTALL_PREFIX:PATH=install \
+            -DENABLE_HARDENING:BOOL=ON \
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
+            -DENABLE_OPENMP:BOOL=ON \
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
+            -DWARNINGS_AS_ERRORS:BOOL=ON \
+            --warn-uninitialized \
+            ..
+          cmake --build .
+          ctest . --repeat after-timeout:3
+          cmake --install .
+          cpack -G DEB
+          cpack -G DEB --config CPackSourceConfig.cmake
+        shell: bash
+
+  cmake-ubuntu-arm64:
+    name: ubuntu arm64
+    runs-on: ubuntu-24.04-arm
+    container: ubuntu:26.04
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          apt-get -qq -o APT::Acquire::Retries=4 update \
+            || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
+          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
+              --no-install-recommends install \
+            ca-certificates \
+            cmake \
+            doxygen \
+            dpkg-dev \
+            file \
+            g++ \
+            git \
+            graphviz \
+            make \
+            pkgconf
+          apt-get -qq -o Dpkg::Use-Pty=0 autoremove
+          rm -rf /var/lib/apt/lists/*
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: build test package
+        run: |
+          mkdir _build
+          cd _build
+          cmake \
+            -DBUILD_DOCUMENTATION:BOOL=ON \
+            -DBUILD_TESTING:BOOL=ON \
+            -DCMAKE_INSTALL_PREFIX:PATH=install \
+            -DENABLE_HARDENING:BOOL=ON \
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
+            -DENABLE_OPENMP:BOOL=ON \
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
+            -DWARNINGS_AS_ERRORS:BOOL=ON \
+            --warn-uninitialized \
+            ..
+          cmake --build .
+          ctest . --repeat after-timeout:3
+          cmake --install .
+          cpack -G DEB
+          cpack -G DEB --config CPackSourceConfig.cmake
+        shell: bash
+
+  cmake-windows:
+    name: cmake windows x64
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~\AppData\Local\Microsoft\WinGet\Links
+            ~\AppData\Local\Microsoft\WinGet\SourceData
+          key: >-
+            ${{ runner.os }}-${{ runner.arch }}-winget-${{
+            hashFiles('.github/workflows/*.yml') }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-winget-
+      - name: setup
+        run: |
+          winget install -e --accept-package-agreements `
+            --accept-source-agreements --id Git.Git
+          winget install -e --accept-package-agreements `
+            --accept-source-agreements --id Kitware.CMake
+          Add-Content $env:GITHUB_PATH (
+            [System.Environment]::GetEnvironmentVariable("Path", "Machine") + `
+            ";" + [System.Environment]::GetEnvironmentVariable("Path", "User"))
+        shell: pwsh
+      - name: checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: build test package
+        run: |
+          mkdir _build
+          cd _build
+          cmake `
+            -DBUILD_DOCUMENTATION:BOOL=ON `
+            -DBUILD_TESTING:BOOL=ON `
+            -DCMAKE_INSTALL_PREFIX:PATH=install `
+            -DENABLE_HARDENING:BOOL=ON `
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON `
+            -DENABLE_OPENMP:BOOL=ON `
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF `
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF `
+            -DWARNINGS_AS_ERRORS:BOOL=ON `
+            --warn-uninitialized `
+            ..
+          cmake --build . --config Release
+          ctest . --build-config Release --repeat after-timeout:3
+          cmake --install .
+          cpack -C Release -G ZIP
+          cpack -C Release -G ZIP --config CPackSourceConfig.cmake
+        shell: pwsh
+
+  cmake-windows-arm64:
+    name: cmake windows arm64
+    runs-on: windows-11-arm
+    steps:
+      - name: cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~\AppData\Local\Microsoft\WinGet\Links
+            ~\AppData\Local\Microsoft\WinGet\SourceData
+          key: >-
+            ${{ runner.os }}-${{ runner.arch }}-winget-${{
+            hashFiles('.github/workflows/*.yml') }}
+          restore-keys: ${{ runner.os }}-${{ runner.arch }}-winget-
+      - name: setup
+        run: |
+          Install-Module -Force -Name Microsoft.WinGet.Client
+          Repair-WinGetPackageManager -Force -Latest
+          winget install -e --accept-package-agreements `
+            --accept-source-agreements --id Git.Git
+          winget install -e --accept-package-agreements `
+            --accept-source-agreements --id Kitware.CMake
+          Add-Content $env:GITHUB_PATH (
+            [System.Environment]::GetEnvironmentVariable("Path", "Machine") + `
+            ";" + [System.Environment]::GetEnvironmentVariable("Path", "User"))
+        shell: pwsh
+      - name: checkout
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: build test package
+        run: |
+          mkdir _build
+          cd _build
+          cmake `
+            -DBUILD_DOCUMENTATION:BOOL=ON `
+            -DBUILD_TESTING:BOOL=ON `
+            -DCMAKE_INSTALL_PREFIX:PATH=install `
+            -DENABLE_HARDENING:BOOL=ON `
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON `
+            -DENABLE_OPENMP:BOOL=ON `
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF `
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF `
+            -DWARNINGS_AS_ERRORS:BOOL=ON `
+            --warn-uninitialized `
+            ..
+          cmake --build . --config Release
+          ctest . --build-config Release --repeat after-timeout:3
+          cmake --install .
+          cpack -C Release -G ZIP
+          cpack -C Release -G ZIP --config CPackSourceConfig.cmake
+        shell: pwsh

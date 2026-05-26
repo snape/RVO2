@@ -1,0 +1,30 @@
+{
+  "problemMatcher": [
+    {
+      "owner": "hadolint-error",
+      "severity": "error",
+      "pattern": [
+        {
+          "regexp": "^(.+):(\\d+) (\\S+) error: (.+)$",
+          "file": 1,
+          "line": 2,
+          "code": 3,
+          "message": 4
+        }
+      ]
+    },
+    {
+      "owner": "hadolint-warning",
+      "severity": "warning",
+      "pattern": [
+        {
+          "regexp": "^(.+):(\\d+) (\\S+) (?:warning|info|style): (.+)$",
+          "file": 1,
+          "line": 2,
+          "code": 3,
+          "message": 4
+        }
+      ]
+    }
+  ]
+}

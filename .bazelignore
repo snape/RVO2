@@ -38,6 +38,7 @@ _build/
 .github/
 .idea/
 .reuse/
+.venv/
 cmake-build-debug/
 cmake-build-default/
 cmake-build-minsizerel/

@@ -1,8 +1,0 @@
-[
-  {
-    "include": ["@<__algorithm/.*>", "private", "<algorithm>", "public"]
-  },
-  {
-    "include": ["@<__utility/.*>", "private", "<utility>", "public"]
-  }
-]

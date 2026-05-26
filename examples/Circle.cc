@@ -111,7 +111,7 @@ void setPreferredVelocities(RVO::RVOSimulator *simulator,
   }
 }
 
-bool reachedGoal(RVO::RVOSimulator *simulator,
+bool reachedGoal(const RVO::RVOSimulator *simulator,
                  const std::vector<RVO::Vector2> &goals) {
   /* Check if all agents have reached their goals. */
   for (std::size_t i = 0U; i < simulator->getNumAgents(); ++i) {

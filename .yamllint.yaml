@@ -31,10 +31,25 @@
 # <https://gamma.cs.unc.edu/AVO/>
 #
 
+# yaml-language-server: $schema=https://json.schemastore.org/yamllint.json
 ---
 extends: default
 
+ignore:
+  - .venv/
+
+yaml-files:
+  - .clang-format
+  - .clang-tidy
+  - .gersemirc
+  - .yamllint
+  - CITATION.cff
+  - '*.yaml'
+  - '*.yml'
+
 rules:
   line-length:
-    max: 80
+    allow-non-breakable-inline-mappings: true
+    allow-non-breakable-words: true
     level: warning
+    max: 100

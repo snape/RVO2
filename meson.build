@@ -79,15 +79,23 @@ optimized_build = not get_option('debug') and get_option('optimization') != '0'
 if is_msvc
     hardening_compile_flags += cpp_compiler.get_supported_arguments('/GS')
 
-    if cpp_compiler.has_argument('/guard:cf') and cpp_compiler.has_link_argument('/DYNAMICBASE') and cpp_compiler.has_link_argument('/GUARD:CF')
+    if cpp_compiler.has_argument('/guard:cf') and cpp_compiler.has_link_argument(
+        '/DYNAMICBASE',
+    ) and cpp_compiler.has_link_argument(
+        '/GUARD:CF',
+    )
         hardening_compile_flags += ['/guard:cf']
         hardening_link_flags += ['/DYNAMICBASE', '/GUARD:CF']
     endif
 
-    hardening_link_flags += cpp_compiler.get_supported_link_arguments('/NXCOMPAT')
+    hardening_link_flags += cpp_compiler.get_supported_link_arguments(
+        '/NXCOMPAT',
+    )
 else
     if optimized_build
-        hardening_compile_flags += cpp_compiler.get_supported_arguments('-D_FORTIFY_SOURCE=2')
+        hardening_compile_flags += cpp_compiler.get_supported_arguments(
+            '-D_FORTIFY_SOURCE=2',
+        )
     endif
 
     hardening_compile_flags += cpp_compiler.get_supported_arguments(
@@ -103,7 +111,9 @@ else
     endif
 
     if optimized_build
-        if cpp_compiler.has_argument('-fsanitize=safe-stack') and cpp_compiler.has_link_argument('-fsanitize=safe-stack')
+        if cpp_compiler.has_argument('-fsanitize=safe-stack') and cpp_compiler.has_link_argument(
+            '-fsanitize=safe-stack',
+        )
             hardening_compile_flags += ['-fsanitize=safe-stack']
             hardening_link_flags += ['-fsanitize=safe-stack']
         endif
@@ -147,7 +157,11 @@ if host_os == 'windows' and get_option('default_library') == 'shared'
 endif
 
 examples_opt = get_option('examples')
-examples_enabled = not (examples_opt.disabled() or (examples_opt.auto() and meson.is_subproject()))
+examples_enabled = not (
+    examples_opt.disabled()
+    or (examples_opt.auto()
+    and meson.is_subproject())
+)
 
 # ---- Subdirectories ----------------------------------------------------------
 
