@@ -76,7 +76,7 @@ jobs:
           rm -rf /var/cache/yum
         shell: bash
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: build test package
         run: |
           meson setup \
@@ -109,7 +109,7 @@ jobs:
             pkgconf
         shell: sh
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: build test package
         run: |
           meson setup \
@@ -145,7 +145,7 @@ jobs:
             /var/lib/pacman/sync/*
         shell: bash
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: build test package
         run: |
           meson setup \
@@ -182,7 +182,7 @@ jobs:
           rm -rf /var/cache/yum
         shell: bash
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: build test package
         run: |
           meson setup \
@@ -204,7 +204,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: cache homebrew
         uses: actions/cache@v5
         with:
@@ -245,7 +245,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: cache homebrew
         uses: actions/cache@v5
         with:
@@ -299,7 +299,7 @@ jobs:
           zypper -n -q cc -a
         shell: bash
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: build test package
         run: |
           meson setup \
@@ -339,7 +339,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         shell: bash
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: build test package
         run: |
           meson setup \
@@ -379,7 +379,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         shell: bash
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: build test package
         run: |
           meson setup \
@@ -423,7 +423,7 @@ jobs:
             [System.Environment]::GetEnvironmentVariable("Path", "User"))
         shell: pwsh
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: build test package
         run: |
           meson setup `
@@ -470,7 +470,7 @@ jobs:
             [System.Environment]::GetEnvironmentVariable("Path", "User"))
         shell: pwsh
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: build test package
         run: |
           meson setup `
