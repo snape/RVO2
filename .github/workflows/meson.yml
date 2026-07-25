@@ -412,12 +412,33 @@ jobs:
             ${{ runner.os }}-${{ runner.arch }}-winget-
       - name: setup
         run: |
-          winget install -e --accept-package-agreements --accept-source-agreements `
-            --id Git.Git
-          winget install -e --accept-package-agreements --accept-source-agreements `
-            --id mesonbuild.meson
-          winget install -e --accept-package-agreements --accept-source-agreements `
-            --id Ninja-build.Ninja
+          Install-Module -Force -Name Microsoft.WinGet.Client
+          Repair-WinGetPackageManager -Force -Latest
+          $package = Get-WinGetPackage -Id Git.Git `
+            -MatchOption Equals -ErrorAction SilentlyContinue
+          if (-not $package) {
+            Install-WinGetPackage -Id Git.Git -MatchOption Equals -Mode Silent
+          } elseif ($package.IsUpdateAvailable) {
+            Update-WinGetPackage -Id Git.Git -MatchOption Equals -Mode Silent
+          }
+          $package = Get-WinGetPackage -Id mesonbuild.meson `
+            -MatchOption Equals -ErrorAction SilentlyContinue
+          if (-not $package) {
+            Install-WinGetPackage -Id mesonbuild.meson `
+              -MatchOption Equals -Mode Silent
+          } elseif ($package.IsUpdateAvailable) {
+            Update-WinGetPackage -Id mesonbuild.meson `
+              -MatchOption Equals -Mode Silent
+          }
+          $package = Get-WinGetPackage -Id Ninja-build.Ninja `
+            -MatchOption Equals -ErrorAction SilentlyContinue
+          if (-not $package) {
+            Install-WinGetPackage -Id Ninja-build.Ninja `
+              -MatchOption Equals -Mode Silent
+          } elseif ($package.IsUpdateAvailable) {
+            Update-WinGetPackage -Id Ninja-build.Ninja `
+              -MatchOption Equals -Mode Silent
+          }
           Add-Content $env:GITHUB_PATH (
             [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
             [System.Environment]::GetEnvironmentVariable("Path", "User"))
@@ -459,12 +480,31 @@ jobs:
         run: |
           Install-Module -Force -Name Microsoft.WinGet.Client
           Repair-WinGetPackageManager -Force -Latest
-          winget install -e --accept-package-agreements --accept-source-agreements `
-            --id Git.Git
-          winget install -e --accept-package-agreements --accept-source-agreements `
-            --id mesonbuild.meson
-          winget install -e --accept-package-agreements --accept-source-agreements `
-            --id Ninja-build.Ninja
+          $package = Get-WinGetPackage -Id Git.Git `
+            -MatchOption Equals -ErrorAction SilentlyContinue
+          if (-not $package) {
+            Install-WinGetPackage -Id Git.Git -MatchOption Equals -Mode Silent
+          } elseif ($package.IsUpdateAvailable) {
+            Update-WinGetPackage -Id Git.Git -MatchOption Equals -Mode Silent
+          }
+          $package = Get-WinGetPackage -Id mesonbuild.meson `
+            -MatchOption Equals -ErrorAction SilentlyContinue
+          if (-not $package) {
+            Install-WinGetPackage -Id mesonbuild.meson `
+              -MatchOption Equals -Mode Silent
+          } elseif ($package.IsUpdateAvailable) {
+            Update-WinGetPackage -Id mesonbuild.meson `
+              -MatchOption Equals -Mode Silent
+          }
+          $package = Get-WinGetPackage -Id Ninja-build.Ninja `
+            -MatchOption Equals -ErrorAction SilentlyContinue
+          if (-not $package) {
+            Install-WinGetPackage -Id Ninja-build.Ninja `
+              -MatchOption Equals -Mode Silent
+          } elseif ($package.IsUpdateAvailable) {
+            Update-WinGetPackage -Id Ninja-build.Ninja `
+              -MatchOption Equals -Mode Silent
+          }
           Add-Content $env:GITHUB_PATH (
             [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
             [System.Environment]::GetEnvironmentVariable("Path", "User"))

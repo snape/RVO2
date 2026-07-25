@@ -442,10 +442,26 @@ jobs:
             ${{ runner.os }}-${{ runner.arch }}-winget-
       - name: setup
         run: |
-          winget install -e --accept-package-agreements --accept-source-agreements `
-            --id Git.Git
-          winget install -e -r bazel --accept-package-agreements `
-            --accept-source-agreements --id Bazel.Bazelisk
+          Install-Module -Force -Name Microsoft.WinGet.Client
+          Repair-WinGetPackageManager -Force -Latest
+          $package = Get-WinGetPackage -Id Bazel.Bazelisk `
+            -MatchOption Equals -ErrorAction SilentlyContinue
+          if (-not $package) {
+            Install-WinGetPackage -Id Bazel.Bazelisk `
+              -MatchOption Equals -Mode Silent
+          } elseif ($package.IsUpdateAvailable) {
+            Update-WinGetPackage -Id Bazel.Bazelisk `
+              -MatchOption Equals -Mode Silent
+          }
+          $package = Get-WinGetPackage -Id Git.Git `
+            -MatchOption Equals -ErrorAction SilentlyContinue
+          if (-not $package) {
+            Install-WinGetPackage -Id Git.Git `
+              -MatchOption Equals -Mode Silent
+          } elseif ($package.IsUpdateAvailable) {
+            Update-WinGetPackage -Id Git.Git `
+              -MatchOption Equals -Mode Silent
+          }
           Add-Content $env:GITHUB_PATH (
             [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
             [System.Environment]::GetEnvironmentVariable("Path", "User"))
@@ -464,7 +480,7 @@ jobs:
             ${{ runner.os }}-${{ runner.arch }}-bazel-
       - name: build test package
         run: |
-          bazel test `
+          bazelisk test `
             --features=treat_warnings_as_errors `
             --flaky_test_attempts=3 `
             ...
@@ -489,10 +505,24 @@ jobs:
         run: |
           Install-Module -Force -Name Microsoft.WinGet.Client
           Repair-WinGetPackageManager -Force -Latest
-          winget install -e --accept-package-agreements --accept-source-agreements `
-            --id Git.Git
-          winget install -e -r bazel --accept-package-agreements `
-            --accept-source-agreements --id Bazel.Bazelisk
+          $package = Get-WinGetPackage -Id Bazel.Bazelisk `
+            -MatchOption Equals -ErrorAction SilentlyContinue
+          if (-not $package) {
+            Install-WinGetPackage -Id Bazel.Bazelisk `
+              -MatchOption Equals -Mode Silent
+          } elseif ($package.IsUpdateAvailable) {
+            Update-WinGetPackage -Id Bazel.Bazelisk `
+              -MatchOption Equals -Mode Silent
+          }
+          $package = Get-WinGetPackage -Id Git.Git `
+            -MatchOption Equals -ErrorAction SilentlyContinue
+          if (-not $package) {
+            Install-WinGetPackage -Id Git.Git `
+              -MatchOption Equals -Mode Silent
+          } elseif ($package.IsUpdateAvailable) {
+            Update-WinGetPackage -Id Git.Git `
+              -MatchOption Equals -Mode Silent
+          }
           Add-Content $env:GITHUB_PATH (
             [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
             [System.Environment]::GetEnvironmentVariable("Path", "User"))
@@ -511,7 +541,7 @@ jobs:
             ${{ runner.os }}-${{ runner.arch }}-bazel-
       - name: build test package
         run: |
-          bazel test `
+          bazelisk test `
             --features=treat_warnings_as_errors `
             --flaky_test_attempts=3 `
             ...
@@ -959,10 +989,26 @@ jobs:
             ${{ runner.os }}-${{ runner.arch }}-winget-
       - name: setup
         run: |
-          winget install -e --accept-package-agreements --accept-source-agreements `
-            --id Git.Git
-          winget install -e --accept-package-agreements --accept-source-agreements `
-            --id Kitware.CMake
+          Install-Module -Force -Name Microsoft.WinGet.Client
+          Repair-WinGetPackageManager -Force -Latest
+          $package = Get-WinGetPackage -Id Git.Git `
+            -MatchOption Equals -ErrorAction SilentlyContinue
+          if (-not $package) {
+            Install-WinGetPackage -Id Git.Git `
+              -MatchOption Equals -Mode Silent
+          } elseif ($package.IsUpdateAvailable) {
+            Update-WinGetPackage -Id Git.Git `
+              -MatchOption Equals -Mode Silent
+          }
+          $package = Get-WinGetPackage -Id Kitware.CMake `
+            -MatchOption Equals -ErrorAction SilentlyContinue
+          if (-not $package) {
+            Install-WinGetPackage -Id Kitware.CMake `
+              -MatchOption Equals -Mode Silent
+          } elseif ($package.IsUpdateAvailable) {
+            Update-WinGetPackage -Id Kitware.CMake `
+              -MatchOption Equals -Mode Silent
+          }
           Add-Content $env:GITHUB_PATH (
             [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
             [System.Environment]::GetEnvironmentVariable("Path", "User"))
@@ -1010,10 +1056,24 @@ jobs:
         run: |
           Install-Module -Force -Name Microsoft.WinGet.Client
           Repair-WinGetPackageManager -Force -Latest
-          winget install -e --accept-package-agreements --accept-source-agreements `
-            --id Git.Git
-          winget install -e --accept-package-agreements --accept-source-agreements `
-            --id Kitware.CMake
+          $package = Get-WinGetPackage -Id Git.Git `
+            -MatchOption Equals -ErrorAction SilentlyContinue
+          if (-not $package) {
+            Install-WinGetPackage -Id Git.Git `
+              -MatchOption Equals -Mode Silent
+          } elseif ($package.IsUpdateAvailable) {
+            Update-WinGetPackage -Id Git.Git `
+              -MatchOption Equals -Mode Silent
+          }
+          $package = Get-WinGetPackage -Id Kitware.CMake `
+            -MatchOption Equals -ErrorAction SilentlyContinue
+          if (-not $package) {
+            Install-WinGetPackage -Id Kitware.CMake `
+              -MatchOption Equals -Mode Silent
+          } elseif ($package.IsUpdateAvailable) {
+            Update-WinGetPackage -Id Kitware.CMake `
+              -MatchOption Equals -Mode Silent
+          }
           Add-Content $env:GITHUB_PATH (
             [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
             [System.Environment]::GetEnvironmentVariable("Path", "User"))
