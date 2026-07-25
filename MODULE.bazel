@@ -39,7 +39,7 @@ module(
     version = "2.0.3",
 )
 
-bazel_dep(name = "hermetic_cc_toolchain", version = "4.1.0", dev_dependency = True)
+bazel_dep(name = "hermetic_cc_toolchain", version = "4.2.0", dev_dependency = True)
 
 hermetic_cc_toolchain = use_extension(
     "@hermetic_cc_toolchain//toolchain:ext.bzl",
