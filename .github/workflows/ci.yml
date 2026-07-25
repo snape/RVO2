@@ -68,7 +68,7 @@ jobs:
           ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
         shell: bash
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: cache
         uses: actions/cache@v5
         with:
@@ -103,7 +103,7 @@ jobs:
             git
         shell: sh
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: cache
         uses: actions/cache@v5
         with:
@@ -143,7 +143,7 @@ jobs:
           ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
         shell: bash
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: cache
         uses: actions/cache@v5
         with:
@@ -185,7 +185,7 @@ jobs:
           ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
         shell: bash
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: cache
         uses: actions/cache@v5
         with:
@@ -210,7 +210,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: cache homebrew
         uses: actions/cache@v5
         with:
@@ -254,7 +254,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: cache homebrew
         uses: actions/cache@v5
         with:
@@ -314,7 +314,7 @@ jobs:
           ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
         shell: bash
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: cache
         uses: actions/cache@v5
         with:
@@ -360,7 +360,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         shell: bash
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: cache
         uses: actions/cache@v5
         with:
@@ -406,7 +406,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         shell: bash
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: cache
         uses: actions/cache@v5
         with:
@@ -451,7 +451,7 @@ jobs:
             [System.Environment]::GetEnvironmentVariable("Path", "User"))
         shell: pwsh
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: cache bazel
         uses: actions/cache@v5
         with:
@@ -498,7 +498,7 @@ jobs:
             [System.Environment]::GetEnvironmentVariable("Path", "User"))
         shell: pwsh
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: cache bazel
         uses: actions/cache@v5
         with:
@@ -542,7 +542,7 @@ jobs:
           rm -rf /var/cache/yum
         shell: bash
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: build test package
         run: |
           mkdir _build
@@ -584,7 +584,7 @@ jobs:
             pkgconf
         shell: sh
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: build test package
         run: |
           mkdir _build
@@ -629,7 +629,7 @@ jobs:
             /var/lib/pacman/sync/*
         shell: bash
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: build test package
         run: |
           mkdir _build
@@ -676,7 +676,7 @@ jobs:
           rm -rf /var/cache/yum
         shell: bash
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: build test package
         run: |
           mkdir _build
@@ -705,7 +705,7 @@ jobs:
     runs-on: macos-26
     steps:
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: cache
         uses: actions/cache@v5
         with:
@@ -753,7 +753,7 @@ jobs:
     runs-on: macos-26-intel
     steps:
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: cache
         uses: actions/cache@v5
         with:
@@ -817,7 +817,7 @@ jobs:
           zypper -n -q cc -a
         shell: bash
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: build test package
         run: |
           mkdir _build
@@ -868,7 +868,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         shell: bash
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: build test package
         run: |
           mkdir _build
@@ -919,7 +919,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         shell: bash
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: build test package
         run: |
           mkdir _build
@@ -968,7 +968,7 @@ jobs:
             [System.Environment]::GetEnvironmentVariable("Path", "User"))
         shell: pwsh
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: build test package
         run: |
           mkdir _build
@@ -1019,7 +1019,7 @@ jobs:
             [System.Environment]::GetEnvironmentVariable("Path", "User"))
         shell: pwsh
       - name: checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: build test package
         run: |
           mkdir _build
