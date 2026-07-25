@@ -70,7 +70,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v7
       - name: cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/bazel
@@ -105,7 +105,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v7
       - name: cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cache/bazel
           key: |
@@ -145,7 +145,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v7
       - name: cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/bazel
@@ -187,7 +187,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v7
       - name: cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/bazel
@@ -212,7 +212,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v7
       - name: cache homebrew
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/Library/Caches/Homebrew/downloads
           key: |
@@ -231,7 +231,7 @@ jobs:
           HOMEBREW_NO_INSTALL_CLEANUP: 1
         shell: zsh -efuo pipefail {0}
       - name: cache bazel
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/bazel
@@ -256,7 +256,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v7
       - name: cache homebrew
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/Library/Caches/Homebrew/downloads
           key: |
@@ -275,7 +275,7 @@ jobs:
           HOMEBREW_NO_INSTALL_CLEANUP: 1
         shell: zsh -efuo pipefail {0}
       - name: cache bazel
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/bazel
@@ -316,7 +316,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v7
       - name: cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/bazel
@@ -362,7 +362,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v7
       - name: cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/bazel
@@ -408,7 +408,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v7
       - name: cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/bazel
@@ -431,7 +431,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: cache winget
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~\AppData\Local\Microsoft\WinGet\Links
@@ -453,7 +453,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v7
       - name: cache bazel
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~\_bazel_RUNNERADMIN
@@ -476,7 +476,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: cache winget
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~\AppData\Local\Microsoft\WinGet\Links
@@ -500,7 +500,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v7
       - name: cache bazel
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~\_bazel_RUNNERADMIN
@@ -707,7 +707,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v7
       - name: cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/Library/Caches/Homebrew/downloads
           key: |
@@ -755,7 +755,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v7
       - name: cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/Library/Caches/Homebrew/downloads
           key: |
@@ -948,7 +948,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~\AppData\Local\Microsoft\WinGet\Links
@@ -997,7 +997,7 @@ jobs:
     runs-on: windows-11-arm
     steps:
       - name: cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~\AppData\Local\Microsoft\WinGet\Links
