@@ -65,7 +65,7 @@ use_repo(cc_configure, "local_config_cc", "local_config_cc_toolchains")
 
 bazel_dep(name = "rules_license", version = "1.0.0")
 
-bazel_dep(name = "rules_python", version = "2.0.2", dev_dependency = True)
+bazel_dep(name = "rules_python", version = "2.2.0", dev_dependency = True)
 
 python = use_extension(
     "@rules_python//python/extensions:python.bzl",
