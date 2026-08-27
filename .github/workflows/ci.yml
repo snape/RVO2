@@ -165,7 +165,7 @@ jobs:
   bazel-fedora:
     name: bazel fedora linux amd64
     runs-on: ubuntu-latest
-    container: fedora:44
+    container: fedora:46
     timeout-minutes: 30
     steps:
       - name: setup
@@ -686,7 +686,7 @@ jobs:
   cmake-fedora:
     name: cmake fedora linux amd64
     runs-on: ubuntu-latest
-    container: fedora:44
+    container: fedora:46
     steps:
       - name: setup
         run: |
