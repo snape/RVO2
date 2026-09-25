@@ -98,7 +98,7 @@ jobs:
           echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" \
             >> /etc/apk/repositories
           apk add --no-cache \
-            bazel8 \
+            bazel \
             ca-certificates \
             git
         shell: sh
