@@ -381,7 +381,7 @@ jobs:
 
   bazel-ubuntu-arm64:
     name: bazel ubuntu arm64
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-26.04-arm
     container: ubuntu:26.04
     timeout-minutes: 30
     steps:
@@ -924,7 +924,7 @@ jobs:
 
   cmake-ubuntu-arm64:
     name: cmake ubuntu arm64
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-26.04-arm
     container: ubuntu:26.04
     steps:
       - name: setup
