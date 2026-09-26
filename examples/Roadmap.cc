@@ -317,11 +317,14 @@ void setPreferredVelocities(RVO::RVOSimulator *simulator,
       }
     }
 
-    /* Perturb a little to avoid deadlocks due to perfect symmetry. */
-    float angle = static_cast<float>(std::rand()) * RVO_TWO_PI /
-                  static_cast<float>(RAND_MAX);
-    float dist = static_cast<float>(std::rand()) * 0.0001F /
-                 static_cast<float>(RAND_MAX);
+  }
+
+  /* Perturb a little to avoid deadlocks due to perfect symmetry. */
+  for (std::size_t i = 0U; i < simulator->getNumAgents(); ++i) {
+    const float angle = static_cast<float>(std::rand()) * RVO_TWO_PI /
+                        static_cast<float>(RAND_MAX);
+    const float dist = static_cast<float>(std::rand()) * 0.0001F /
+                       static_cast<float>(RAND_MAX);
 
     simulator->setAgentPrefVelocity(
         i, simulator->getAgentPrefVelocity(i) +
