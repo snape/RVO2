@@ -54,7 +54,7 @@ register_toolchains(
     dev_dependency = True,
 )
 
-bazel_dep(name = "rules_cc", version = "0.2.27")
+bazel_dep(name = "rules_cc", version = "0.2.28")
 
 cc_configure = use_extension(
     "@rules_cc//cc:extensions.bzl",
