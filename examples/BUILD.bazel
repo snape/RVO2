@@ -57,9 +57,18 @@ cc_test(
             "-Werror=conversion",
             "-Werror=format-security",
         ],
-        "@platforms//os:linux": [
+        "//conditions:linux_x86_64": [
             "-Wall",
             "-fcf-protection=full",
+            "-fno-common",
+            "-fstack-clash-protection",
+            "-fstack-protector-strong",
+            "-std=c++98",
+            "-Werror=conversion",
+            "-Werror=format-security",
+        ],
+        "@platforms//os:linux": [
+            "-Wall",
             "-fno-common",
             "-fstack-clash-protection",
             "-fstack-protector-strong",
@@ -125,9 +134,18 @@ cc_test(
             "-Werror=conversion",
             "-Werror=format-security",
         ],
-        "@platforms//os:linux": [
+        "//conditions:linux_x86_64": [
             "-Wall",
             "-fcf-protection=full",
+            "-fno-common",
+            "-fstack-clash-protection",
+            "-fstack-protector-strong",
+            "-std=c++98",
+            "-Werror=conversion",
+            "-Werror=format-security",
+        ],
+        "@platforms//os:linux": [
+            "-Wall",
             "-fno-common",
             "-fstack-clash-protection",
             "-fstack-protector-strong",
@@ -193,9 +211,18 @@ cc_test(
             "-Werror=conversion",
             "-Werror=format-security",
         ],
-        "@platforms//os:linux": [
+        "//conditions:linux_x86_64": [
             "-Wall",
             "-fcf-protection=full",
+            "-fno-common",
+            "-fstack-clash-protection",
+            "-fstack-protector-strong",
+            "-std=c++98",
+            "-Werror=conversion",
+            "-Werror=format-security",
+        ],
+        "@platforms//os:linux": [
+            "-Wall",
             "-fno-common",
             "-fstack-clash-protection",
             "-fstack-protector-strong",

@@ -85,6 +85,10 @@ if(WIN32)
   target_compile_definitions(${RVO_LIBRARY} PUBLIC NOMINMAX)
 endif()
 
+if(NOT BUILD_SHARED_LIBS)
+  target_compile_definitions(${RVO_LIBRARY} PUBLIC RVO_STATIC_DEFINE)
+endif()
+
 if(ENABLE_OPENMP AND OpenMP_FOUND)
   target_link_libraries(${RVO_LIBRARY} PRIVATE OpenMP::OpenMP_CXX)
 endif()

@@ -186,7 +186,7 @@ pkg_deb(
     homepage = "https://gamma.cs.unc.edu/RVO2/",
     license = "Apache-2",
     maintainer = "Jamie Snape",
-    package = "RVO",
+    package = "rvo",
     priority = "optional",
     section = "contrib/libdevel",
     target_compatible_with = ["@platforms//os:linux"],
@@ -194,11 +194,29 @@ pkg_deb(
     version = "2.0.3",
 )
 
+filegroup(
+    name = "implib",
+    srcs = [":RVO"],
+    output_group = "interface_library",
+    target_compatible_with = ["@platforms//os:windows"],
+)
+
+pkg_files(
+    name = "lib_windows",
+    srcs = [
+        ":RVO",
+        ":implib",
+    ],
+    attributes = pkg_attributes(mode = "0644"),
+    prefix = "usr/lib",
+    target_compatible_with = ["@platforms//os:windows"],
+)
+
 pkg_zip(
     name = "zip",
     srcs = [
         ":doc",
-        ":lib",
+        ":lib_windows",
         "//src:include",
     ],
     target_compatible_with = select({

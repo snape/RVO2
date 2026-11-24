@@ -85,7 +85,7 @@ endif()
 option(ENABLE_OPENMP "Enable OpenMP if available" OFF)
 
 if(ENABLE_OPENMP)
-  find_package(OpenMP MODULE)
+  find_package(OpenMP 3.0 MODULE)
 endif()
 
 option(ENABLE_INTERPROCEDURAL_OPTIMIZATION
@@ -137,6 +137,10 @@ if(ENABLE_HARDENING)
     endif()
   else()
     if(APPLE)
+      if(NOT DEFINED CMAKE_REQUIRED_FLAGS)
+        set(CMAKE_REQUIRED_FLAGS)
+      endif()
+
       set(RVO_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS}")
 
       check_cxx_compiler_flag(-Werror=unused-command-line-argument

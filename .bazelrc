@@ -32,6 +32,7 @@
 #
 
 build --@rules_python//python/config_settings:bootstrap_impl=script
+build --incompatible_default_to_explicit_init_py=true
 build --remote_upload_local_results=false
 build --sandbox_default_allow_network=false
 
