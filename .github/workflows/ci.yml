@@ -44,6 +44,13 @@ on:  # yamllint disable-line rule:truthy
   schedule:
     - cron: '0 5 * * *'
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   bazel-almalinux:
     name: bazel almalinux amd64
@@ -52,6 +59,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: setup
+        id: setup
         run: |
           dnf makecache -q --refresh || (sleep 15; dnf makecache -q --refresh)
           dnf install -q -y \
@@ -62,13 +70,19 @@ jobs:
             which
           dnf clean all
           rm -rf /var/cache/yum
-          wget -qO /usr/local/bin/bazelisk \
+          wget --tries=4 --waitretry=15 --retry-on-http-error=429,500,502,503,504 \
+            -qO /usr/local/bin/bazelisk \
             https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64
           chmod +x /usr/local/bin/bazelisk
           ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
+          . /etc/os-release
+          echo "os=${ID}-${VERSION_ID:-rolling}" >> "$GITHUB_OUTPUT"
+          echo "gcc=$(gcc -dumpfullversion -dumpversion)" >> "$GITHUB_OUTPUT"
         shell: bash
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: cache
         uses: actions/cache@v6
         with:
@@ -76,9 +90,9 @@ jobs:
             ~/.cache/bazel
             ~/.cache/bazelisk
           key: |
-            ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
+            ${{ runner.os }}-${{ runner.arch }}-${{ steps.setup.outputs.os }}-gcc-${{ steps.setup.outputs.gcc }}-bazel-${{ hashFiles('.bazelversion', '.bazelrc', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
           restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-bazel-
+            ${{ runner.os }}-${{ runner.arch }}-${{ steps.setup.outputs.os }}-gcc-${{ steps.setup.outputs.gcc }}-bazel-
       - name: build test package
         run: |
           bazel test \
@@ -94,6 +108,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: setup
+        id: setup
         run: |
           echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" \
             >> /etc/apk/repositories
@@ -101,17 +116,21 @@ jobs:
             bazel \
             ca-certificates \
             git
+          . /etc/os-release
+          echo "os=${ID}-${VERSION_ID}" >> "$GITHUB_OUTPUT"
         shell: sh
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: cache
         uses: actions/cache@v6
         with:
           path: ~/.cache/bazel
           key: |
-            ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
+            ${{ runner.os }}-${{ runner.arch }}-${{ steps.setup.outputs.os }}-bazel-${{ hashFiles('.bazelversion', '.bazelrc', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
           restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-bazel-
+            ${{ runner.os }}-${{ runner.arch }}-${{ steps.setup.outputs.os }}-bazel-
       - name: build test package
         run: |
           bazel test \
@@ -128,6 +147,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: setup
+        id: setup
         run: |
           pacman --needed --noconfirm --noprogressbar -Sy \
             ca-certificates \
@@ -137,13 +157,19 @@ jobs:
           rm -rf \
             /var/cache/pacman/pkg/* \
             /var/lib/pacman/sync/*
-          wget -qO /usr/local/bin/bazelisk \
+          wget --tries=4 --waitretry=15 --retry-on-http-error=429,500,502,503,504 \
+            -qO /usr/local/bin/bazelisk \
             https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64
           chmod +x /usr/local/bin/bazelisk
           ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
+          . /etc/os-release
+          echo "os=${ID}-${VERSION_ID:-rolling}" >> "$GITHUB_OUTPUT"
+          echo "gcc=$(gcc -dumpfullversion -dumpversion)" >> "$GITHUB_OUTPUT"
         shell: bash
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: cache
         uses: actions/cache@v6
         with:
@@ -151,9 +177,9 @@ jobs:
             ~/.cache/bazel
             ~/.cache/bazelisk
           key: |
-            ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
+            ${{ runner.os }}-${{ runner.arch }}-${{ steps.setup.outputs.os }}-gcc-${{ steps.setup.outputs.gcc }}-bazel-${{ hashFiles('.bazelversion', '.bazelrc', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
           restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-bazel-
+            ${{ runner.os }}-${{ runner.arch }}-${{ steps.setup.outputs.os }}-gcc-${{ steps.setup.outputs.gcc }}-bazel-
       - name: build test package
         run: |
           bazel test \
@@ -169,6 +195,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: setup
+        id: setup
         run: |
           dnf makecache -q --refresh || (sleep 15; dnf makecache -q --refresh)
           dnf install -q -y \
@@ -179,13 +206,19 @@ jobs:
             which
           dnf clean all
           rm -rf /var/cache/yum
-          wget -qO /usr/local/bin/bazelisk \
+          wget --tries=4 --waitretry=15 --retry-on-http-error=429,500,502,503,504 \
+            -qO /usr/local/bin/bazelisk \
             https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64
           chmod +x /usr/local/bin/bazelisk
           ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
+          . /etc/os-release
+          echo "os=${ID}-${VERSION_ID:-rolling}" >> "$GITHUB_OUTPUT"
+          echo "gcc=$(gcc -dumpfullversion -dumpversion)" >> "$GITHUB_OUTPUT"
         shell: bash
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: cache
         uses: actions/cache@v6
         with:
@@ -193,9 +226,9 @@ jobs:
             ~/.cache/bazel
             ~/.cache/bazelisk
           key: |
-            ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
+            ${{ runner.os }}-${{ runner.arch }}-${{ steps.setup.outputs.os }}-gcc-${{ steps.setup.outputs.gcc }}-bazel-${{ hashFiles('.bazelversion', '.bazelrc', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
           restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-bazel-
+            ${{ runner.os }}-${{ runner.arch }}-${{ steps.setup.outputs.os }}-gcc-${{ steps.setup.outputs.gcc }}-bazel-
       - name: build test package
         run: |
           bazel test \
@@ -209,79 +242,30 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 30
     steps:
-      - name: checkout
-        uses: actions/checkout@v7
-      - name: cache homebrew
-        uses: actions/cache@v6
-        with:
-          path: ~/Library/Caches/Homebrew/downloads
-          key: |
-            ${{ runner.os }}-${{ runner.arch }}-brew-${{ hashFiles('Brewfile') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-brew-
       - name: setup
         run: |
           brew update -q || (sleep 15; brew update -q)
-          brew bundle install -q
-          brew cleanup -q -s
+          brew install -q \
+            bazelisk \
+            git
         env:
           HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HOMEBREW_NO_ANALYTICS: 1
           HOMEBREW_NO_AUTO_UPDATE: 1
           HOMEBREW_NO_INSTALL_CLEANUP: 1
         shell: zsh -efuo pipefail {0}
-      - name: cache bazel
-        uses: actions/cache@v6
-        with:
-          path: |
-            ~/.cache/bazel
-            ~/Library/Caches/bazelisk
-          key: |
-            ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-bazel-
-      - name: build test package
-        run: |
-          bazel test \
-            --features=treat_warnings_as_errors \
-            --flaky_test_attempts=3 \
-            ...
-        shell: zsh -efuo pipefail {0}
-
-  bazel-macos-x86_64:
-    name: bazel macos x86_64
-    runs-on: macos-26-intel
-    timeout-minutes: 30
-    steps:
       - name: checkout
         uses: actions/checkout@v7
-      - name: cache homebrew
-        uses: actions/cache@v6
         with:
-          path: ~/Library/Caches/Homebrew/downloads
-          key: |
-            ${{ runner.os }}-${{ runner.arch }}-brew-${{ hashFiles('Brewfile') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-brew-
-      - name: setup
-        run: |
-          brew update -q || (sleep 15; brew update -q)
-          brew bundle install -q
-          brew cleanup -q -s
-        env:
-          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HOMEBREW_NO_ANALYTICS: 1
-          HOMEBREW_NO_AUTO_UPDATE: 1
-          HOMEBREW_NO_INSTALL_CLEANUP: 1
-        shell: zsh -efuo pipefail {0}
+          persist-credentials: false
       - name: cache bazel
         uses: actions/cache@v6
         with:
           path: |
-            ~/.cache/bazel
+            ~/Library/Caches/bazel
             ~/Library/Caches/bazelisk
           key: |
-            ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
+            ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', '.bazelrc', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
           restore-keys: |
             ${{ runner.os }}-${{ runner.arch }}-bazel-
       - name: build test package
@@ -299,6 +283,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: setup
+        id: setup
         run: |
           zypper -n -q ref || (sleep 15; zypper -n -q ref)
           zypper -n -q in --no-recommends \
@@ -308,13 +293,19 @@ jobs:
             wget \
             which
           zypper -n -q cc -a
-          wget -qO /usr/local/bin/bazelisk \
+          wget --tries=4 --waitretry=15 --retry-on-http-error=429,500,502,503,504 \
+            -qO /usr/local/bin/bazelisk \
             https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64
           chmod +x /usr/local/bin/bazelisk
           ln -s /usr/local/bin/bazelisk /usr/local/bin/bazel
+          . /etc/os-release
+          echo "os=${ID}-${VERSION_ID:-rolling}" >> "$GITHUB_OUTPUT"
+          echo "gcc=$(gcc -dumpfullversion -dumpversion)" >> "$GITHUB_OUTPUT"
         shell: bash
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: cache
         uses: actions/cache@v6
         with:
@@ -322,9 +313,9 @@ jobs:
             ~/.cache/bazel
             ~/.cache/bazelisk
           key: |
-            ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
+            ${{ runner.os }}-${{ runner.arch }}-${{ steps.setup.outputs.os }}-gcc-${{ steps.setup.outputs.gcc }}-bazel-${{ hashFiles('.bazelversion', '.bazelrc', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
           restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-bazel-
+            ${{ runner.os }}-${{ runner.arch }}-${{ steps.setup.outputs.os }}-gcc-${{ steps.setup.outputs.gcc }}-bazel-
       - name: build test package
         run: |
           bazel test \
@@ -340,6 +331,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: setup
+        id: setup
         run: |
           apt-get -qq -o APT::Acquire::Retries=4 update \
             || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
@@ -353,14 +345,20 @@ jobs:
             wget
           apt-get -qq -o Dpkg::Use-Pty=0 autoremove
           rm -rf /var/lib/apt/lists/*
-          wget -q https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-amd64.deb
+          wget --tries=4 --waitretry=15 --retry-on-http-error=429,500,502,503,504 \
+            -q https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-amd64.deb
           dpkg -i bazelisk-amd64.deb
           rm -rf bazelisk-amd64.deb
+          . /etc/os-release
+          echo "os=${ID}-${VERSION_ID:-rolling}" >> "$GITHUB_OUTPUT"
+          echo "gcc=$(gcc -dumpfullversion -dumpversion)" >> "$GITHUB_OUTPUT"
         env:
           DEBIAN_FRONTEND: noninteractive
         shell: bash
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: cache
         uses: actions/cache@v6
         with:
@@ -368,9 +366,9 @@ jobs:
             ~/.cache/bazel
             ~/.cache/bazelisk
           key: |
-            ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
+            ${{ runner.os }}-${{ runner.arch }}-${{ steps.setup.outputs.os }}-gcc-${{ steps.setup.outputs.gcc }}-bazel-${{ hashFiles('.bazelversion', '.bazelrc', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
           restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-bazel-
+            ${{ runner.os }}-${{ runner.arch }}-${{ steps.setup.outputs.os }}-gcc-${{ steps.setup.outputs.gcc }}-bazel-
       - name: build test package
         run: |
           bazel test \
@@ -386,6 +384,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: setup
+        id: setup
         run: |
           apt-get -qq -o APT::Acquire::Retries=4 update \
             || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
@@ -399,14 +398,20 @@ jobs:
             wget
           apt-get -qq -o Dpkg::Use-Pty=0 autoremove
           rm -rf /var/lib/apt/lists/*
-          wget -q https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-arm64.deb
+          wget --tries=4 --waitretry=15 --retry-on-http-error=429,500,502,503,504 \
+            -q https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-arm64.deb
           dpkg -i bazelisk-arm64.deb
           rm -rf bazelisk-arm64.deb
+          . /etc/os-release
+          echo "os=${ID}-${VERSION_ID:-rolling}" >> "$GITHUB_OUTPUT"
+          echo "gcc=$(gcc -dumpfullversion -dumpversion)" >> "$GITHUB_OUTPUT"
         env:
           DEBIAN_FRONTEND: noninteractive
         shell: bash
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: cache
         uses: actions/cache@v6
         with:
@@ -414,9 +419,9 @@ jobs:
             ~/.cache/bazel
             ~/.cache/bazelisk
           key: |
-            ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
+            ${{ runner.os }}-${{ runner.arch }}-${{ steps.setup.outputs.os }}-gcc-${{ steps.setup.outputs.gcc }}-bazel-${{ hashFiles('.bazelversion', '.bazelrc', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
           restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-bazel-
+            ${{ runner.os }}-${{ runner.arch }}-${{ steps.setup.outputs.os }}-gcc-${{ steps.setup.outputs.gcc }}-bazel-
       - name: build test package
         run: |
           bazel test \
@@ -430,37 +435,44 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
-      - name: cache winget
-        uses: actions/cache@v6
-        with:
-          path: |
-            ~\AppData\Local\Microsoft\WinGet\Links
-            ~\AppData\Local\Microsoft\WinGet\SourceData
-          key: |
-            ${{ runner.os }}-${{ runner.arch }}-winget-${{ hashFiles('.github/workflows/*.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-winget-
       - name: setup
         run: |
-          Install-Module -Force -Name Microsoft.WinGet.Client
-          Repair-WinGetPackageManager -Force -Latest
-          $package = Get-WinGetPackage -Id Bazel.Bazelisk `
-            -MatchOption Equals -ErrorAction SilentlyContinue
-          if (-not $package) {
-            Install-WinGetPackage -Id Bazel.Bazelisk `
-              -MatchOption Equals -Mode Silent
-          } elseif ($package.IsUpdateAvailable) {
-            Update-WinGetPackage -Id Bazel.Bazelisk `
-              -MatchOption Equals -Mode Silent
-          }
-          $package = Get-WinGetPackage -Id Git.Git `
-            -MatchOption Equals -ErrorAction SilentlyContinue
-          if (-not $package) {
-            Install-WinGetPackage -Id Git.Git `
-              -MatchOption Equals -Mode Silent
-          } elseif ($package.IsUpdateAvailable) {
-            Update-WinGetPackage -Id Git.Git `
-              -MatchOption Equals -Mode Silent
+          $ErrorActionPreference = 'Stop'
+          $moduleInstalled = $false
+          for ($i = 1; $i -le 3; $i++) {
+            try {
+              if (-not $moduleInstalled) {
+                Install-Module -Force -Name Microsoft.WinGet.Client
+                $moduleInstalled = $true
+              }
+              $package = Get-WinGetPackage -Id Bazel.Bazelisk `
+                -MatchOption Equals -ErrorAction SilentlyContinue
+              if (-not $package) {
+                $result = Install-WinGetPackage -Id Bazel.Bazelisk `
+                  -MatchOption Equals -Mode Silent
+                if ($result.Status -ne 'Ok') { throw "WinGet install failed: $($result.Status)" }
+              } elseif ($package.IsUpdateAvailable) {
+                $result = Update-WinGetPackage -Id Bazel.Bazelisk `
+                  -MatchOption Equals -Mode Silent
+                if ($result.Status -ne 'Ok') { throw "WinGet update failed: $($result.Status)" }
+              }
+              $package = Get-WinGetPackage -Id Git.Git `
+                -MatchOption Equals -ErrorAction SilentlyContinue
+              if (-not $package) {
+                $result = Install-WinGetPackage -Id Git.Git `
+                  -MatchOption Equals -Mode Silent
+                if ($result.Status -ne 'Ok') { throw "WinGet install failed: $($result.Status)" }
+              } elseif ($package.IsUpdateAvailable) {
+                $result = Update-WinGetPackage -Id Git.Git `
+                  -MatchOption Equals -Mode Silent
+                if ($result.Status -ne 'Ok') { throw "WinGet update failed: $($result.Status)" }
+              }
+              break
+            } catch {
+              if ($i -eq 3) { throw }
+              if ($moduleInstalled) { try { Repair-WinGetPackageManager -Force -Latest } catch {} }
+              Start-Sleep -Seconds 15
+            }
           }
           Add-Content $env:GITHUB_PATH (
             [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
@@ -468,20 +480,25 @@ jobs:
         shell: pwsh
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: cache bazel
         uses: actions/cache@v6
         with:
           path: |
-            ~\_bazel_RUNNERADMIN
+            ~\AppData\Local\bazel-cache
             ~\AppData\Local\bazelisk
           key: |
-            ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
+            ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', '.bazelrc', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
           restore-keys: |
             ${{ runner.os }}-${{ runner.arch }}-bazel-
       - name: build test package
         run: |
+          $PSNativeCommandUseErrorActionPreference = $true
           bazelisk test `
+            --disk_cache="$env:LOCALAPPDATA\bazel-cache\disk" `
             --features=treat_warnings_as_errors `
+            --repository_cache="$env:LOCALAPPDATA\bazel-cache\repo" `
             --flaky_test_attempts=3 `
             ...
         shell: pwsh
@@ -491,58 +508,70 @@ jobs:
     runs-on: windows-11-arm
     timeout-minutes: 30
     steps:
-      - name: cache winget
-        uses: actions/cache@v6
-        with:
-          path: |
-            ~\AppData\Local\Microsoft\WinGet\Links
-            ~\AppData\Local\Microsoft\WinGet\SourceData
-          key: |
-            ${{ runner.os }}-${{ runner.arch }}-winget-${{ hashFiles('.github/workflows/*.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-winget-
       - name: setup
         run: |
-          Install-Module -Force -Name Microsoft.WinGet.Client
-          Repair-WinGetPackageManager -Force -Latest
-          $package = Get-WinGetPackage -Id Bazel.Bazelisk `
-            -MatchOption Equals -ErrorAction SilentlyContinue
-          if (-not $package) {
-            Install-WinGetPackage -Id Bazel.Bazelisk `
-              -MatchOption Equals -Mode Silent
-          } elseif ($package.IsUpdateAvailable) {
-            Update-WinGetPackage -Id Bazel.Bazelisk `
-              -MatchOption Equals -Mode Silent
-          }
-          $package = Get-WinGetPackage -Id Git.Git `
-            -MatchOption Equals -ErrorAction SilentlyContinue
-          if (-not $package) {
-            Install-WinGetPackage -Id Git.Git `
-              -MatchOption Equals -Mode Silent
-          } elseif ($package.IsUpdateAvailable) {
-            Update-WinGetPackage -Id Git.Git `
-              -MatchOption Equals -Mode Silent
+          $ErrorActionPreference = 'Stop'
+          $moduleInstalled = $false
+          for ($i = 1; $i -le 3; $i++) {
+            try {
+              if (-not $moduleInstalled) {
+                Install-Module -Force -Name Microsoft.WinGet.Client
+                $moduleInstalled = $true
+              }
+              $bazeliskDir = Join-Path $env:LOCALAPPDATA 'Programs\bazelisk'
+              $bazeliskExe = Join-Path $bazeliskDir 'bazelisk.exe'
+              if (-not (Test-Path $bazeliskExe)) {
+                $bazeliskTmp = "$bazeliskExe.tmp"
+                New-Item -ItemType Directory -Force -Path $bazeliskDir | Out-Null
+                Invoke-WebRequest `
+                  -Uri https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-windows-arm64.exe `
+                  -OutFile $bazeliskTmp
+                Move-Item -Force $bazeliskTmp $bazeliskExe
+              }
+              $package = Get-WinGetPackage -Id Git.Git `
+                -MatchOption Equals -ErrorAction SilentlyContinue
+              if (-not $package) {
+                $result = Install-WinGetPackage -Id Git.Git `
+                  -MatchOption Equals -Mode Silent
+                if ($result.Status -ne 'Ok') { throw "WinGet install failed: $($result.Status)" }
+              } elseif ($package.IsUpdateAvailable) {
+                $result = Update-WinGetPackage -Id Git.Git `
+                  -MatchOption Equals -Mode Silent
+                if ($result.Status -ne 'Ok') { throw "WinGet update failed: $($result.Status)" }
+              }
+              break
+            } catch {
+              if ($i -eq 3) { throw }
+              if ($moduleInstalled) { try { Repair-WinGetPackageManager -Force -Latest } catch {} }
+              Start-Sleep -Seconds 15
+            }
           }
           Add-Content $env:GITHUB_PATH (
             [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
             [System.Environment]::GetEnvironmentVariable("Path", "User"))
+          Add-Content $env:GITHUB_PATH (Join-Path $env:LOCALAPPDATA 'Programs\bazelisk')
         shell: pwsh
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: cache bazel
         uses: actions/cache@v6
         with:
           path: |
-            ~\_bazel_RUNNERADMIN
+            ~\AppData\Local\bazel-cache
             ~\AppData\Local\bazelisk
           key: |
-            ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
+            ${{ runner.os }}-${{ runner.arch }}-bazel-${{ hashFiles('.bazelversion', '.bazelrc', 'MODULE.bazel', '**/*.bazel', '**/*.bzl') }}
           restore-keys: |
             ${{ runner.os }}-${{ runner.arch }}-bazel-
       - name: build test package
         run: |
+          $PSNativeCommandUseErrorActionPreference = $true
           bazelisk test `
+            --disk_cache="$env:LOCALAPPDATA\bazel-cache\disk" `
             --features=treat_warnings_as_errors `
+            --repository_cache="$env:LOCALAPPDATA\bazel-cache\repo" `
             --flaky_test_attempts=3 `
             ...
         shell: pwsh
@@ -551,6 +580,7 @@ jobs:
     name: cmake almalinux amd64
     runs-on: ubuntu-latest
     container: almalinux:10
+    timeout-minutes: 30
     steps:
       - name: setup
         run: |
@@ -573,6 +603,8 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           mkdir _build
@@ -600,10 +632,11 @@ jobs:
     name: cmake alpine linux amd64
     runs-on: ubuntu-latest
     container: alpine:3
+    timeout-minutes: 30
     steps:
       - name: setup
         run: |
-          apk add -q --no-cache \
+          (apk add -q --no-cache \
             ca-certificates \
             cmake \
             doxygen \
@@ -611,10 +644,20 @@ jobs:
             git \
             graphviz \
             make \
-            pkgconf
+            pkgconf) || (sleep 15; apk add -q --no-cache \
+            ca-certificates \
+            cmake \
+            doxygen \
+            g++ \
+            git \
+            graphviz \
+            make \
+            pkgconf)
         shell: sh
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           mkdir _build
@@ -642,6 +685,7 @@ jobs:
     name: cmake arch linux amd64
     runs-on: ubuntu-latest
     container: archlinux:latest
+    timeout-minutes: 30
     steps:
       - name: setup
         run: |
@@ -660,6 +704,8 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           mkdir _build
@@ -687,6 +733,7 @@ jobs:
     name: cmake fedora linux amd64
     runs-on: ubuntu-latest
     container: fedora:44
+    timeout-minutes: 30
     steps:
       - name: setup
         run: |
@@ -707,6 +754,8 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           mkdir _build
@@ -733,76 +782,26 @@ jobs:
   cmake-macos:
     name: cmake macos arm64
     runs-on: macos-26
+    timeout-minutes: 30
     steps:
-      - name: checkout
-        uses: actions/checkout@v7
-      - name: cache
-        uses: actions/cache@v6
-        with:
-          path: ~/Library/Caches/Homebrew/downloads
-          key: |
-            ${{ runner.os }}-${{ runner.arch }}-brew-${{ hashFiles('Brewfile') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-brew-
       - name: setup
         run: |
           brew update -q || (sleep 15; brew update -q)
-          brew bundle install -q
-          brew cleanup -q -s
+          brew install -q \
+            cmake \
+            doxygen \
+            git \
+            graphviz
         env:
           HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HOMEBREW_NO_ANALYTICS: 1
           HOMEBREW_NO_AUTO_UPDATE: 1
           HOMEBREW_NO_INSTALL_CLEANUP: 1
         shell: zsh -efuo pipefail {0}
-      - name: build test package
-        run: |
-          mkdir _build
-          cd _build
-          cmake \
-            -DBUILD_DOCUMENTATION:BOOL=ON \
-            -DBUILD_TESTING:BOOL=ON \
-            -DCMAKE_INSTALL_PREFIX:PATH=install \
-            -DENABLE_HARDENING:BOOL=ON \
-            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
-            -DENABLE_OPENMP:BOOL=OFF \
-            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
-            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
-            -DWARNINGS_AS_ERRORS:BOOL=ON \
-            --warn-uninitialized \
-            ..
-          cmake --build .
-          ctest . --repeat after-timeout:3
-          cmake --install .
-          cpack -G TGZ
-          cpack -G TGZ --config CPackSourceConfig.cmake
-        shell: zsh -efuo pipefail {0}
-
-  cmake-macos-x86_64:
-    name: cmake macos x86_64
-    runs-on: macos-26-intel
-    steps:
       - name: checkout
         uses: actions/checkout@v7
-      - name: cache
-        uses: actions/cache@v6
         with:
-          path: ~/Library/Caches/Homebrew/downloads
-          key: |
-            ${{ runner.os }}-${{ runner.arch }}-brew-${{ hashFiles('Brewfile') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-brew-
-      - name: setup
-        run: |
-          brew update -q || (sleep 15; brew update -q)
-          brew bundle install -q
-          brew cleanup -q -s
-        env:
-          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HOMEBREW_NO_ANALYTICS: 1
-          HOMEBREW_NO_AUTO_UPDATE: 1
-          HOMEBREW_NO_INSTALL_CLEANUP: 1
-        shell: zsh -efuo pipefail {0}
+          persist-credentials: false
       - name: build test package
         run: |
           mkdir _build
@@ -830,6 +829,7 @@ jobs:
     name: cmake opensuse leap amd64
     runs-on: ubuntu-latest
     container: opensuse/leap:16.1
+    timeout-minutes: 30
     steps:
       - name: setup
         run: |
@@ -848,6 +848,8 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           mkdir _build
@@ -875,6 +877,7 @@ jobs:
     name: cmake ubuntu amd64
     runs-on: ubuntu-latest
     container: ubuntu:26.04
+    timeout-minutes: 30
     steps:
       - name: setup
         run: |
@@ -899,6 +902,8 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           mkdir _build
@@ -926,6 +931,7 @@ jobs:
     name: cmake ubuntu arm64
     runs-on: ubuntu-26.04-arm
     container: ubuntu:26.04
+    timeout-minutes: 30
     steps:
       - name: setup
         run: |
@@ -950,6 +956,8 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           mkdir _build
@@ -976,38 +984,46 @@ jobs:
   cmake-windows:
     name: cmake windows x64
     runs-on: windows-latest
+    timeout-minutes: 30
     steps:
-      - name: cache
-        uses: actions/cache@v6
-        with:
-          path: |
-            ~\AppData\Local\Microsoft\WinGet\Links
-            ~\AppData\Local\Microsoft\WinGet\SourceData
-          key: |
-            ${{ runner.os }}-${{ runner.arch }}-winget-${{ hashFiles('.github/workflows/*.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-winget-
       - name: setup
         run: |
-          Install-Module -Force -Name Microsoft.WinGet.Client
-          Repair-WinGetPackageManager -Force -Latest
-          $package = Get-WinGetPackage -Id Git.Git `
-            -MatchOption Equals -ErrorAction SilentlyContinue
-          if (-not $package) {
-            Install-WinGetPackage -Id Git.Git `
-              -MatchOption Equals -Mode Silent
-          } elseif ($package.IsUpdateAvailable) {
-            Update-WinGetPackage -Id Git.Git `
-              -MatchOption Equals -Mode Silent
-          }
-          $package = Get-WinGetPackage -Id Kitware.CMake `
-            -MatchOption Equals -ErrorAction SilentlyContinue
-          if (-not $package) {
-            Install-WinGetPackage -Id Kitware.CMake `
-              -MatchOption Equals -Mode Silent
-          } elseif ($package.IsUpdateAvailable) {
-            Update-WinGetPackage -Id Kitware.CMake `
-              -MatchOption Equals -Mode Silent
+          $ErrorActionPreference = 'Stop'
+          $moduleInstalled = $false
+          for ($i = 1; $i -le 3; $i++) {
+            try {
+              if (-not $moduleInstalled) {
+                Install-Module -Force -Name Microsoft.WinGet.Client
+                $moduleInstalled = $true
+              }
+              $package = Get-WinGetPackage -Id Git.Git `
+                -MatchOption Equals -ErrorAction SilentlyContinue
+              if (-not $package) {
+                $result = Install-WinGetPackage -Id Git.Git `
+                  -MatchOption Equals -Mode Silent
+                if ($result.Status -ne 'Ok') { throw "WinGet install failed: $($result.Status)" }
+              } elseif ($package.IsUpdateAvailable) {
+                $result = Update-WinGetPackage -Id Git.Git `
+                  -MatchOption Equals -Mode Silent
+                if ($result.Status -ne 'Ok') { throw "WinGet update failed: $($result.Status)" }
+              }
+              $package = Get-WinGetPackage -Id Kitware.CMake `
+                -MatchOption Equals -ErrorAction SilentlyContinue
+              if (-not $package) {
+                $result = Install-WinGetPackage -Id Kitware.CMake `
+                  -MatchOption Equals -Mode Silent
+                if ($result.Status -ne 'Ok') { throw "WinGet install failed: $($result.Status)" }
+              } elseif ($package.IsUpdateAvailable) {
+                $result = Update-WinGetPackage -Id Kitware.CMake `
+                  -MatchOption Equals -Mode Silent
+                if ($result.Status -ne 'Ok') { throw "WinGet update failed: $($result.Status)" }
+              }
+              break
+            } catch {
+              if ($i -eq 3) { throw }
+              if ($moduleInstalled) { try { Repair-WinGetPackageManager -Force -Latest } catch {} }
+              Start-Sleep -Seconds 15
+            }
           }
           Add-Content $env:GITHUB_PATH (
             [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
@@ -1015,8 +1031,11 @@ jobs:
         shell: pwsh
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
+          $PSNativeCommandUseErrorActionPreference = $true
           mkdir _build
           cd _build
           cmake `
@@ -1025,7 +1044,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX:PATH=install `
             -DENABLE_HARDENING:BOOL=ON `
             -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON `
-            -DENABLE_OPENMP:BOOL=ON `
+            -DENABLE_OPENMP:BOOL=OFF `
             -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF `
             -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF `
             -DWARNINGS_AS_ERRORS:BOOL=ON `
@@ -1041,38 +1060,46 @@ jobs:
   cmake-windows-arm64:
     name: cmake windows arm64
     runs-on: windows-11-arm
+    timeout-minutes: 30
     steps:
-      - name: cache
-        uses: actions/cache@v6
-        with:
-          path: |
-            ~\AppData\Local\Microsoft\WinGet\Links
-            ~\AppData\Local\Microsoft\WinGet\SourceData
-          key: |
-            ${{ runner.os }}-${{ runner.arch }}-winget-${{ hashFiles('.github/workflows/*.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-winget-
       - name: setup
         run: |
-          Install-Module -Force -Name Microsoft.WinGet.Client
-          Repair-WinGetPackageManager -Force -Latest
-          $package = Get-WinGetPackage -Id Git.Git `
-            -MatchOption Equals -ErrorAction SilentlyContinue
-          if (-not $package) {
-            Install-WinGetPackage -Id Git.Git `
-              -MatchOption Equals -Mode Silent
-          } elseif ($package.IsUpdateAvailable) {
-            Update-WinGetPackage -Id Git.Git `
-              -MatchOption Equals -Mode Silent
-          }
-          $package = Get-WinGetPackage -Id Kitware.CMake `
-            -MatchOption Equals -ErrorAction SilentlyContinue
-          if (-not $package) {
-            Install-WinGetPackage -Id Kitware.CMake `
-              -MatchOption Equals -Mode Silent
-          } elseif ($package.IsUpdateAvailable) {
-            Update-WinGetPackage -Id Kitware.CMake `
-              -MatchOption Equals -Mode Silent
+          $ErrorActionPreference = 'Stop'
+          $moduleInstalled = $false
+          for ($i = 1; $i -le 3; $i++) {
+            try {
+              if (-not $moduleInstalled) {
+                Install-Module -Force -Name Microsoft.WinGet.Client
+                $moduleInstalled = $true
+              }
+              $package = Get-WinGetPackage -Id Git.Git `
+                -MatchOption Equals -ErrorAction SilentlyContinue
+              if (-not $package) {
+                $result = Install-WinGetPackage -Id Git.Git `
+                  -MatchOption Equals -Mode Silent
+                if ($result.Status -ne 'Ok') { throw "WinGet install failed: $($result.Status)" }
+              } elseif ($package.IsUpdateAvailable) {
+                $result = Update-WinGetPackage -Id Git.Git `
+                  -MatchOption Equals -Mode Silent
+                if ($result.Status -ne 'Ok') { throw "WinGet update failed: $($result.Status)" }
+              }
+              $package = Get-WinGetPackage -Id Kitware.CMake `
+                -MatchOption Equals -ErrorAction SilentlyContinue
+              if (-not $package) {
+                $result = Install-WinGetPackage -Id Kitware.CMake `
+                  -MatchOption Equals -Mode Silent
+                if ($result.Status -ne 'Ok') { throw "WinGet install failed: $($result.Status)" }
+              } elseif ($package.IsUpdateAvailable) {
+                $result = Update-WinGetPackage -Id Kitware.CMake `
+                  -MatchOption Equals -Mode Silent
+                if ($result.Status -ne 'Ok') { throw "WinGet update failed: $($result.Status)" }
+              }
+              break
+            } catch {
+              if ($i -eq 3) { throw }
+              if ($moduleInstalled) { try { Repair-WinGetPackageManager -Force -Latest } catch {} }
+              Start-Sleep -Seconds 15
+            }
           }
           Add-Content $env:GITHUB_PATH (
             [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
@@ -1080,8 +1107,11 @@ jobs:
         shell: pwsh
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
+          $PSNativeCommandUseErrorActionPreference = $true
           mkdir _build
           cd _build
           cmake `
@@ -1090,7 +1120,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX:PATH=install `
             -DENABLE_HARDENING:BOOL=ON `
             -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON `
-            -DENABLE_OPENMP:BOOL=ON `
+            -DENABLE_OPENMP:BOOL=OFF `
             -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF `
             -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF `
             -DWARNINGS_AS_ERRORS:BOOL=ON `

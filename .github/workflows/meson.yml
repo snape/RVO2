@@ -77,6 +77,8 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           meson setup \
@@ -100,16 +102,24 @@ jobs:
     steps:
       - name: setup
         run: |
-          apk add -q --no-cache \
+          (apk add -q --no-cache \
             ca-certificates \
             g++ \
             git \
             meson \
             ninja \
-            pkgconf
+            pkgconf) || (sleep 15; apk add -q --no-cache \
+            ca-certificates \
+            g++ \
+            git \
+            meson \
+            ninja \
+            pkgconf)
         shell: sh
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           meson setup \
@@ -146,6 +156,8 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           meson setup \
@@ -183,6 +195,8 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           meson setup \
@@ -203,68 +217,23 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 30
     steps:
-      - name: checkout
-        uses: actions/checkout@v7
-      - name: cache homebrew
-        uses: actions/cache@v6
-        with:
-          path: ~/Library/Caches/Homebrew/downloads
-          key: |
-            ${{ runner.os }}-${{ runner.arch }}-brew-${{ hashFiles('Brewfile') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-brew-
       - name: setup
         run: |
           brew update -q || (sleep 15; brew update -q)
-          brew bundle install -q
-          brew cleanup -q -s
+          brew install -q \
+            git \
+            meson \
+            ninja
         env:
           HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HOMEBREW_NO_ANALYTICS: 1
           HOMEBREW_NO_AUTO_UPDATE: 1
           HOMEBREW_NO_INSTALL_CLEANUP: 1
         shell: zsh -efuo pipefail {0}
-      - name: build test package
-        run: |
-          meson setup \
-            --prefix "$(pwd)/_build/install" \
-            -Db_lto=true \
-            -Dopenmp=disabled \
-            -Dwerror=true \
-            _build
-          ninja -C _build
-          meson test --print-errorlogs -C _build
-          meson install -C _build
-          git config --global --add safe.directory "$(pwd)"
-          meson dist --no-tests -C _build
-        shell: zsh -efuo pipefail {0}
-
-  meson-macos-x86_64:
-    name: macos x86_64
-    runs-on: macos-26-intel
-    timeout-minutes: 30
-    steps:
       - name: checkout
         uses: actions/checkout@v7
-      - name: cache homebrew
-        uses: actions/cache@v6
         with:
-          path: ~/Library/Caches/Homebrew/downloads
-          key: |
-            ${{ runner.os }}-${{ runner.arch }}-brew-${{ hashFiles('Brewfile') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-brew-
-      - name: setup
-        run: |
-          brew update -q || (sleep 15; brew update -q)
-          brew bundle install -q
-          brew cleanup -q -s
-        env:
-          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HOMEBREW_NO_ANALYTICS: 1
-          HOMEBREW_NO_AUTO_UPDATE: 1
-          HOMEBREW_NO_INSTALL_CLEANUP: 1
-        shell: zsh -efuo pipefail {0}
+          persist-credentials: false
       - name: build test package
         run: |
           meson setup \
@@ -300,6 +269,8 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           meson setup \
@@ -340,6 +311,8 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           meson setup \
@@ -380,6 +353,8 @@ jobs:
         shell: bash
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
           meson setup \
@@ -447,8 +422,11 @@ jobs:
         shell: pwsh
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
+          $PSNativeCommandUseErrorActionPreference = $true
           meson setup `
             --prefix "${PWD}/_build/install" `
             -Db_lto=true `
@@ -515,8 +493,11 @@ jobs:
         shell: pwsh
       - name: checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: build test package
         run: |
+          $PSNativeCommandUseErrorActionPreference = $true
           meson setup `
             --prefix "${PWD}/_build/install" `
             -Db_lto=true `

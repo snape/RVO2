@@ -119,14 +119,14 @@ and on a daily schedule:
 
 - [`.github/workflows/ci.yml`](.github/workflows/ci.yml): builds and tests
   with CMake and Bazel on AlmaLinux, Alpine Linux, Arch Linux, Fedora,
-  openSUSE, and Ubuntu (amd64 and arm64), macOS (arm64 and x86_64), and
+  openSUSE, and Ubuntu (amd64 and arm64), macOS (arm64), and
   Windows (amd64 and arm64).
   CMake builds enable `BUILD_TESTING`, `ENABLE_HARDENING`,
-  `ENABLE_INTERPROCEDURAL_OPTIMIZATION`, `ENABLE_OPENMP`, and
+  `ENABLE_INTERPROCEDURAL_OPTIMIZATION`, `ENABLE_OPENMP` (on Linux), and
   `WARNINGS_AS_ERRORS`.
 - [`.github/workflows/meson.yml`](.github/workflows/meson.yml): builds and
   tests with Meson on AlmaLinux, Arch Linux, Fedora, openSUSE, and Ubuntu
-  (amd64 and arm64), Alpine Linux, macOS (arm64 and x86_64), and Windows
+  (amd64 and arm64), Alpine Linux, macOS (arm64), and Windows
   (amd64 and arm64). Meson
   builds enable LTO (`-Db_lto=true`), `openmp`, and `werror`.
 - [`.github/workflows/codeql.yml`](.github/workflows/codeql.yml): runs GitHub
@@ -272,7 +272,7 @@ following platforms:
 | Fedora         | amd64        | CMake, Bazel, Meson |
 | openSUSE Leap  | amd64        | CMake, Bazel, Meson |
 | Ubuntu         | amd64, arm64 | CMake, Bazel, Meson |
-| macOS          | arm64, x86_64        | CMake, Bazel, Meson |
+| macOS          | arm64                | CMake, Bazel, Meson |
 | Windows        | amd64, arm64         | CMake, Bazel, Meson |
 
 ## Security [7]
