@@ -31,6 +31,7 @@
 # <https://gamma.cs.unc.edu/RVO2/>
 #
 
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 ---
 name: codeql
 
@@ -42,7 +43,16 @@ on:  # yamllint disable-line rule:truthy
     branches:
       - main
   schedule:
-    - cron: '0 6 * * 3'
+    - cron: '50 4 * * 3'
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   analyze:

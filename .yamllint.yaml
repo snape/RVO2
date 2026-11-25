@@ -36,5 +36,6 @@ extends: default
 
 rules:
   line-length:
-    max: 80
+    max: 88
+    allow-non-breakable-words: true
     level: warning

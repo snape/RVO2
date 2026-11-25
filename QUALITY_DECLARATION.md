@@ -117,10 +117,12 @@ maintainer [@snape](https://github.com/snape) before merging.
 CI is performed via GitHub Actions on every push and pull request to `main`,
 and on a daily schedule:
 
-- [`.github/workflows/ci.yml`](.github/workflows/ci.yml): builds and tests
-  with CMake and Bazel on AlmaLinux, Alpine Linux, Arch Linux, Fedora,
-  openSUSE, and Ubuntu (amd64 and arm64), macOS (arm64), and
-  Windows (amd64 and arm64).
+- [`.github/workflows/bazel.yml`](.github/workflows/bazel.yml): builds and tests
+  with Bazel on AlmaLinux, Alpine Linux, Arch Linux, Fedora, openSUSE, Ubuntu
+  (amd64 and arm64), macOS (arm64), and Windows (amd64 and arm64).
+- [`.github/workflows/cmake.yml`](.github/workflows/cmake.yml): builds and tests
+  with CMake on AlmaLinux, Alpine Linux, Arch Linux, Fedora, openSUSE, Ubuntu
+  (amd64 and arm64), macOS (arm64), and Windows (amd64 and arm64).
   CMake builds enable `BUILD_TESTING`, `ENABLE_HARDENING`,
   `ENABLE_INTERPROCEDURAL_OPTIMIZATION`, `ENABLE_OPENMP` (on Linux), and
   `WARNINGS_AS_ERRORS`.
