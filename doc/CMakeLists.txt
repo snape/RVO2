@@ -58,6 +58,10 @@ if(BUILD_DOCUMENTATION AND Doxygen_FOUND)
   set(DOXYGEN_DOT_IMAGE_FORMAT svg)
   set(DOXYGEN_INTERACTIVE_SVG YES)
 
+  if(WARNINGS_AS_ERRORS)
+    set(DOXYGEN_WARN_AS_ERROR FAIL_ON_WARNINGS)
+  endif()
+
   doxygen_add_docs(documentation
     "${PROJECT_BINARY_DIR}/src/Export.h"
     "${PROJECT_SOURCE_DIR}/src/Line.h"
