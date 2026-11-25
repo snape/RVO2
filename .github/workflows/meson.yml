@@ -50,7 +50,7 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   meson-almalinux:
@@ -381,8 +381,7 @@ jobs:
           path: |
             ~\AppData\Local\Microsoft\WinGet\Links
             ~\AppData\Local\Microsoft\WinGet\SourceData
-          key: |
-            ${{ runner.os }}-${{ runner.arch }}-winget-${{ hashFiles('.github/workflows/*.yml') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-winget-${{ hashFiles('.github/workflows/*.yml') }}  # yamllint disable-line rule:line-length
           restore-keys: |
             ${{ runner.os }}-${{ runner.arch }}-winget-
       - name: setup
@@ -452,8 +451,7 @@ jobs:
           path: |
             ~\AppData\Local\Microsoft\WinGet\Links
             ~\AppData\Local\Microsoft\WinGet\SourceData
-          key: |
-            ${{ runner.os }}-${{ runner.arch }}-winget-${{ hashFiles('.github/workflows/*.yml') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-winget-${{ hashFiles('.github/workflows/*.yml') }}  # yamllint disable-line rule:line-length
           restore-keys: |
             ${{ runner.os }}-${{ runner.arch }}-winget-
       - name: setup
