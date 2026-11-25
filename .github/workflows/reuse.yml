@@ -59,8 +59,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
       - name: reuse lint
-        uses: fsfe/reuse-action@v6
+        uses: fsfe/reuse-action@v6.0.0
