@@ -1,0 +1,16 @@
+{
+  "problemMatcher": [
+    {
+      "owner": "hadolint",
+      "pattern": [
+        {
+          "regexp": "^(.+):(\\d+) (\\S+) ((?:error|warning|info|style): .+)$",
+          "file": 1,
+          "line": 2,
+          "code": 3,
+          "message": 4
+        }
+      ]
+    }
+  ]
+}

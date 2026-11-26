@@ -39,9 +39,23 @@ on:  # yamllint disable-line rule:truthy
   push:
     branches:
       - main
+    paths:
+      - .github/actionlint-matcher.json
+      - .github/actionlint.yaml
+      - .github/actionlint.yml
+      - .github/workflows/*.yaml
+      - .github/workflows/*.yml
+      - .shellcheckrc
   pull_request:
     branches:
       - main
+    paths:
+      - .github/actionlint-matcher.json
+      - .github/actionlint.yaml
+      - .github/actionlint.yml
+      - .github/workflows/*.yaml
+      - .github/workflows/*.yml
+      - .shellcheckrc
   schedule:
     - cron: '40 7 * * *'
 

@@ -117,23 +117,38 @@ maintainer [@snape](https://github.com/snape) before merging.
 CI is performed via GitHub Actions on every push and pull request to `main`,
 and on a daily schedule:
 
+- [`.github/workflows/actionlint.yml`](.github/workflows/actionlint.yml):
+  validates GitHub Actions workflow files with actionlint.
+- [`.github/workflows/actions-lock.yml`](.github/workflows/actions-lock.yml):
+  verifies pinned GitHub Actions dependencies in
+  [`.github/workflows/actions.lock`](.github/workflows/actions.lock).
 - [`.github/workflows/bazel.yml`](.github/workflows/bazel.yml): builds and tests
   with Bazel on AlmaLinux, Alpine Linux, Arch Linux, Fedora, openSUSE, Ubuntu
   (amd64 and arm64), macOS (arm64), and Windows (amd64 and arm64).
+- [`.github/workflows/buildifier.yml`](.github/workflows/buildifier.yml):
+  enforces Bazel file formatting with buildifier.
 - [`.github/workflows/cmake.yml`](.github/workflows/cmake.yml): builds and tests
   with CMake on AlmaLinux, Alpine Linux, Arch Linux, Fedora, openSUSE, Ubuntu
   (amd64 and arm64), macOS (arm64), and Windows (amd64 and arm64).
   CMake builds enable `BUILD_TESTING`, `ENABLE_HARDENING`,
   `ENABLE_INTERPROCEDURAL_OPTIMIZATION`, `ENABLE_OPENMP` (on Linux), and
   `WARNINGS_AS_ERRORS`.
+- [`.github/workflows/codeql.yml`](.github/workflows/codeql.yml): runs GitHub
+  CodeQL semantic code analysis for C++ on every push, pull request, and on
+  a weekly schedule.
+- [`.github/workflows/docker.yml`](.github/workflows/docker.yml): builds the
+  development environment Docker image (amd64 and arm64) on a weekly schedule.
+- [`.github/workflows/hadolint.yml`](.github/workflows/hadolint.yml): lints
+  the Dockerfile with hadolint.
 - [`.github/workflows/meson.yml`](.github/workflows/meson.yml): builds and
   tests with Meson on AlmaLinux, Arch Linux, Fedora, openSUSE, and Ubuntu
   (amd64 and arm64), Alpine Linux, macOS (arm64), and Windows
   (amd64 and arm64). Meson
   builds enable LTO (`-Db_lto=true`), `openmp`, and `werror`.
-- [`.github/workflows/codeql.yml`](.github/workflows/codeql.yml): runs GitHub
-  CodeQL semantic code analysis for C++ on every push, pull request, and on
-  a weekly schedule.
+- [`.github/workflows/reuse.yml`](.github/workflows/reuse.yml): verifies
+  REUSE license compliance.
+- [`.github/workflows/yamllint.yml`](.github/workflows/yamllint.yml): lints
+  all YAML files with yamllint.
 
 ### Documentation Policy [2.v]
 
