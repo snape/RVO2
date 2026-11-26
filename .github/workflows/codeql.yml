@@ -58,6 +58,7 @@ jobs:
   analyze:
     name: analyze
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - name: checkout
         uses: actions/checkout@v7.0.1

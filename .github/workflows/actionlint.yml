@@ -70,7 +70,7 @@ jobs:
   actionlint:
     name: actionlint
     runs-on: ubuntu-latest
-    container: debian:trixie-slim
+    container: ubuntu:26.04
     timeout-minutes: 20
     steps:
       - name: setup

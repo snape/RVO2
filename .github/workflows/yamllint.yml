@@ -61,10 +61,10 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  yamllint-debian:
-    name: yamllint debian amd64
+  yamllint:
+    name: yamllint
     runs-on: ubuntu-latest
-    container: debian:trixie-slim
+    container: ubuntu:26.04
     timeout-minutes: 20
     steps:
       - name: setup
