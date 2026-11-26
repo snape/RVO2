@@ -39,9 +39,29 @@ on:  # yamllint disable-line rule:truthy
   push:
     branches:
       - main
+    paths:
+      - '**/*.bzl'
+      - '**/BUILD'
+      - '**/BUILD.bazel'
+      - '**/MODULE.bazel'
+      - '**/WORKSPACE'
+      - '**/WORKSPACE.bazel'
+      - '**/WORKSPACE.bzlmod'
+      - .buildifier.json
+      - .github/workflows/buildifier.yml
   pull_request:
     branches:
       - main
+    paths:
+      - '**/*.bzl'
+      - '**/BUILD'
+      - '**/BUILD.bazel'
+      - '**/MODULE.bazel'
+      - '**/WORKSPACE'
+      - '**/WORKSPACE.bazel'
+      - '**/WORKSPACE.bzlmod'
+      - .buildifier.json
+      - .github/workflows/buildifier.yml
   schedule:
     - cron: '50 7 * * *'
 

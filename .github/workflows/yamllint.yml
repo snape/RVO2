@@ -39,9 +39,17 @@ on:  # yamllint disable-line rule:truthy
   push:
     branches:
       - main
+    paths:
+      - '**/*.yaml'
+      - '**/*.yml'
+      - .yamllint
   pull_request:
     branches:
       - main
+    paths:
+      - '**/*.yaml'
+      - '**/*.yml'
+      - .yamllint
   schedule:
     - cron: '30 7 * * *'
 

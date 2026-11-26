@@ -49,6 +49,7 @@ ENV LANG=C.UTF-8
 ENV LOGNAME=root
 ENV USER=root
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+# hadolint ignore=DL3008,DL3013
 RUN export DEBIAN_FRONTEND=noninteractive \
   && apt-get update -qq \
   && apt-get install --no-install-recommends -o Dpkg::Use-Pty=0 -qy \
@@ -84,6 +85,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     ninja-build \
     openssh-client \
     pkgconf \
+    pipx \
     python3 \
     python3-click \
     python3-dateutil \
@@ -97,6 +99,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     python3-ruamel.yaml \
     python3-venv \
     reuse \
+    shellcheck \
     strace \
     sudo \
     valgrind \
@@ -112,24 +115,26 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && curl -fsSL \
     https://github.com/bazelbuild/buildtools/releases/latest/download/buildozer-linux-${TARGETARCH:-amd64} \
     -o /usr/local/bin/buildozer \
+  && curl -fsSL \
+    "https://github.com/hadolint/hadolint/releases/latest/download/hadolint-linux-$([ "${TARGETARCH:-amd64}" = "arm64" ] && echo arm64 || echo x86_64)" \
+    -o /usr/local/bin/hadolint \
   && chmod +x \
     /usr/local/bin/buildifier \
     /usr/local/bin/buildozer \
+    /usr/local/bin/hadolint \
   && curl -fsSL \
     https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash \
     | bash -s -- '' /usr/local/bin \
-  && python3 -m venv --system-site-packages /home/ubuntu/.venv \
-  && . /home/ubuntu/.venv/bin/activate \
-  && pip install --no-cache-dir -qq \
+  && pipx install --global \
     cffconvert \
+    check-jsonschema \
     lizard \
     pre-commit \
   && echo "ubuntu ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/ubuntu \
   && chmod 0440 /etc/sudoers.d/ubuntu
 ENV LOGNAME=ubuntu
-ENV PATH="/home/ubuntu/.venv/bin:${PATH}"
 ENV SHELL=/bin/bash
 ENV USER=ubuntu
-ENV VIRTUAL_ENV=/home/ubuntu/.venv
+# hadolint ignore=DL3066
 USER ubuntu
 WORKDIR /workspace
