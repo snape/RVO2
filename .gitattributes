@@ -51,6 +51,7 @@
 *.cmake.in           text whitespace-2
 *.css                text diff=css linguist-documentation whitespace=trailing-space
 *.h                  text diff=cpp linguist-language=c++ whitespace-2
+*.h.in               text diff=cpp linguist-language=c++ whitespace-2
 *.html               text diff=html linguist-documentation whitespace=trailing-space
 *.imp                text linguist-language=json whitespace-2
 *.json               text whitespace-2

@@ -166,7 +166,7 @@ jobs:
     steps:
       - name: setup
         run: |
-          pacman --needed --noconfirm --noprogressbar -Sy \
+          pacman --needed --noconfirm --noprogressbar -S -u -y \
             ca-certificates \
             cmake \
             doxygen \

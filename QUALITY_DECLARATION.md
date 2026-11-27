@@ -147,6 +147,8 @@ and on a daily schedule:
   the Dockerfile with hadolint.
 - [`.github/workflows/markdownlint.yml`](.github/workflows/markdownlint.yml):
   lints Markdown files with markdownlint.
+- [`.github/workflows/meson-format.yml`](.github/workflows/meson-format.yml):
+  enforces Meson file formatting with `meson format`.
 - [`.github/workflows/meson.yml`](.github/workflows/meson.yml): builds and
   tests with Meson on AlmaLinux, Arch Linux, Fedora, openSUSE, and Ubuntu
   (amd64 and arm64), Alpine Linux, macOS (arm64), and Windows

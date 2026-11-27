@@ -31,21 +31,21 @@
  * <https://gamma.cs.unc.edu/RVO2/>
  */
 
-#ifndef RVO_EXPORT_H_
-#define RVO_EXPORT_H_
+#ifndef @PREFIX@_EXPORT_H_
+#define @PREFIX@_EXPORT_H_
 
-#ifdef RVO_STATIC_DEFINE
-#  define RVO_EXPORT
+#ifdef @PREFIX@_STATIC_DEFINE
+#  define @PREFIX@_EXPORT
 #else
 #  ifdef _WIN32
-#    ifdef RVO_EXPORTS
-#      define RVO_EXPORT __declspec(dllexport)
+#    ifdef @PREFIX@_EXPORTS
+#      define @PREFIX@_EXPORT __declspec(dllexport)
 #    else
-#      define RVO_EXPORT __declspec(dllimport)
+#      define @PREFIX@_EXPORT __declspec(dllimport)
 #    endif
 #  else
-#    define RVO_EXPORT __attribute__((visibility("default")))
+#    define @PREFIX@_EXPORT __attribute__((visibility("default")))
 #  endif
 #endif
 
-#endif /* RVO_EXPORT_H_ */
+#endif /* @PREFIX@_EXPORT_H_ */
