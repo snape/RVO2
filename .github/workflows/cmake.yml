@@ -458,6 +458,122 @@ jobs:
           cpack -G DEB --config CPackSourceConfig.cmake
         shell: bash
 
+  cmake-ubuntu-clang:
+    name: cmake ubuntu clang amd64
+    runs-on: ubuntu-latest
+    container: ubuntu:26.04
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          apt-get -qq -o APT::Acquire::Retries=4 update \
+            || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
+          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
+              --no-install-recommends install \
+            ca-certificates \
+            clang \
+            cmake \
+            doxygen \
+            dpkg-dev \
+            file \
+            git \
+            graphviz \
+            libomp-dev \
+            lld \
+            llvm \
+            make \
+            pkgconf
+          apt-get -qq -o Dpkg::Use-Pty=0 autoremove
+          rm -rf /var/lib/apt/lists/*
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: build test package
+        run: |
+          mkdir _build
+          cd _build
+          cmake \
+            -DBUILD_DOCUMENTATION:BOOL=ON \
+            -DBUILD_TESTING:BOOL=ON \
+            -DCMAKE_CXX_COMPILER=clang++ \
+            -DCMAKE_INSTALL_PREFIX:PATH=install \
+            -DENABLE_HARDENING:BOOL=ON \
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
+            -DENABLE_OPENMP:BOOL=ON \
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
+            -DWARNINGS_AS_ERRORS:BOOL=ON \
+            --warn-uninitialized \
+            ..
+          cmake --build .
+          ctest . --repeat after-timeout:3
+          cmake --install .
+          cpack -G DEB
+          cpack -G DEB --config CPackSourceConfig.cmake
+        shell: bash
+
+  cmake-ubuntu-clang-arm64:
+    name: cmake ubuntu clang arm64
+    runs-on: ubuntu-26.04-arm
+    container: ubuntu:26.04
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          apt-get -qq -o APT::Acquire::Retries=4 update \
+            || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
+          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
+              --no-install-recommends install \
+            ca-certificates \
+            clang \
+            cmake \
+            doxygen \
+            dpkg-dev \
+            file \
+            git \
+            graphviz \
+            libomp-dev \
+            lld \
+            llvm \
+            make \
+            pkgconf
+          apt-get -qq -o Dpkg::Use-Pty=0 autoremove
+          rm -rf /var/lib/apt/lists/*
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: build test package
+        run: |
+          mkdir _build
+          cd _build
+          cmake \
+            -DBUILD_DOCUMENTATION:BOOL=ON \
+            -DBUILD_TESTING:BOOL=ON \
+            -DCMAKE_CXX_COMPILER=clang++ \
+            -DCMAKE_INSTALL_PREFIX:PATH=install \
+            -DENABLE_HARDENING:BOOL=ON \
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON \
+            -DENABLE_OPENMP:BOOL=ON \
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF \
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF \
+            -DWARNINGS_AS_ERRORS:BOOL=ON \
+            --warn-uninitialized \
+            ..
+          cmake --build .
+          ctest . --repeat after-timeout:3
+          cmake --install .
+          cpack -G DEB
+          cpack -G DEB --config CPackSourceConfig.cmake
+        shell: bash
+
   cmake-windows:
     name: cmake windows x64
     runs-on: windows-latest
@@ -628,4 +744,165 @@ jobs:
           cmake --install .
           cpack -C Release -G ZIP
           cpack -C Release -G ZIP --config CPackSourceConfig.cmake
+        shell: pwsh
+  cmake-windows-clang:
+    name: cmake windows clang x64
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $moduleInstalled = $false
+          for ($i = 1; $i -le 3; $i++) {
+            try {
+              if (-not $moduleInstalled) {
+                Install-Module -Force -Name Microsoft.WinGet.Client
+                $moduleInstalled = $true
+              }
+              foreach ($id in @('Git.Git', 'Kitware.CMake', 'LLVM.LLVM', 'Ninja-build.Ninja')) {  # yamllint disable-line rule:line-length
+                $package = Get-WinGetPackage -Id $id `
+                  -MatchOption Equals -ErrorAction SilentlyContinue
+                if (-not $package) {
+                  $result = Install-WinGetPackage -Id $id `
+                    -MatchOption Equals -Mode Silent
+                  if ($result.Status -ne 'Ok') {
+                    throw "WinGet install failed: $($result.Status)"
+                  }
+                } elseif ($package.IsUpdateAvailable) {
+                  $result = Update-WinGetPackage -Id $id `
+                    -MatchOption Equals -Mode Silent
+                  if ($result.Status -ne 'Ok') {
+                    throw "WinGet update failed: $($result.Status)"
+                  }
+                }
+              }
+              break
+            } catch {
+              if ($i -eq 3) { throw }
+              if ($moduleInstalled) {
+                try { Repair-WinGetPackageManager -Force -Latest } catch {}
+              }
+              Start-Sleep -Seconds 15
+            }
+          }
+          Add-Content $env:GITHUB_PATH (
+            [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
+            [System.Environment]::GetEnvironmentVariable("Path", "User"))
+        shell: pwsh
+      - name: checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: build test package
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"  # yamllint disable-line rule:line-length
+          $vsPath = & $vswhere -latest -property installationPath
+          Import-Module "$vsPath\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"  # yamllint disable-line rule:line-length
+          Enter-VsDevShell -VsInstallPath $vsPath -SkipAutomaticLocation -DevCmdArguments "-arch=amd64 -host_arch=amd64"  # yamllint disable-line rule:line-length
+          mkdir _build
+          cd _build
+          cmake `
+            -G Ninja `
+            -DBUILD_DOCUMENTATION:BOOL=ON `
+            -DBUILD_TESTING:BOOL=ON `
+            -DCMAKE_BUILD_TYPE:STRING=Release `
+            -DCMAKE_C_COMPILER=clang-cl `
+            -DCMAKE_CXX_COMPILER=clang-cl `
+            -DCMAKE_INSTALL_PREFIX:PATH=install `
+            -DENABLE_HARDENING:BOOL=ON `
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON `
+            -DENABLE_OPENMP:BOOL=OFF `
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF `
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF `
+            -DWARNINGS_AS_ERRORS:BOOL=ON `
+            --warn-uninitialized `
+            ..
+          cmake --build .
+          ctest . --repeat after-timeout:3
+          cmake --install .
+          cpack -G ZIP
+          cpack -G ZIP --config CPackSourceConfig.cmake
+        shell: pwsh
+
+  cmake-windows-clang-arm64:
+    name: cmake windows clang arm64
+    runs-on: windows-11-arm
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $moduleInstalled = $false
+          for ($i = 1; $i -le 3; $i++) {
+            try {
+              if (-not $moduleInstalled) {
+                Install-Module -Force -Name Microsoft.WinGet.Client
+                $moduleInstalled = $true
+              }
+              foreach ($id in @('Git.Git', 'Kitware.CMake', 'LLVM.LLVM', 'Ninja-build.Ninja')) {  # yamllint disable-line rule:line-length
+                $package = Get-WinGetPackage -Id $id `
+                  -MatchOption Equals -ErrorAction SilentlyContinue
+                if (-not $package) {
+                  $result = Install-WinGetPackage -Id $id `
+                    -MatchOption Equals -Mode Silent
+                  if ($result.Status -ne 'Ok') {
+                    throw "WinGet install failed: $($result.Status)"
+                  }
+                } elseif ($package.IsUpdateAvailable) {
+                  $result = Update-WinGetPackage -Id $id `
+                    -MatchOption Equals -Mode Silent
+                  if ($result.Status -ne 'Ok') {
+                    throw "WinGet update failed: $($result.Status)"
+                  }
+                }
+              }
+              break
+            } catch {
+              if ($i -eq 3) { throw }
+              if ($moduleInstalled) {
+                try { Repair-WinGetPackageManager -Force -Latest } catch {}
+              }
+              Start-Sleep -Seconds 15
+            }
+          }
+          Add-Content $env:GITHUB_PATH (
+            [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
+            [System.Environment]::GetEnvironmentVariable("Path", "User"))
+        shell: pwsh
+      - name: checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: build test package
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"  # yamllint disable-line rule:line-length
+          $vsPath = & $vswhere -latest -property installationPath
+          Import-Module "$vsPath\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"  # yamllint disable-line rule:line-length
+          Enter-VsDevShell -VsInstallPath $vsPath -SkipAutomaticLocation -DevCmdArguments "-arch=arm64 -host_arch=arm64"  # yamllint disable-line rule:line-length
+          mkdir _build
+          cd _build
+          cmake `
+            -G Ninja `
+            -DBUILD_DOCUMENTATION:BOOL=ON `
+            -DBUILD_TESTING:BOOL=ON `
+            -DCMAKE_BUILD_TYPE:STRING=Release `
+            -DCMAKE_C_COMPILER=clang-cl `
+            -DCMAKE_CXX_COMPILER=clang-cl `
+            -DCMAKE_INSTALL_PREFIX:PATH=install `
+            -DENABLE_HARDENING:BOOL=ON `
+            -DENABLE_INTERPROCEDURAL_OPTIMIZATION:BOOL=ON `
+            -DENABLE_OPENMP:BOOL=OFF `
+            -DOUTPUT_TIME_AND_POSITIONS:BOOL=OFF `
+            -DSEED_RANDOM_NUMBER_GENERATOR:BOOL=OFF `
+            -DWARNINGS_AS_ERRORS:BOOL=ON `
+            --warn-uninitialized `
+            ..
+          cmake --build .
+          ctest . --repeat after-timeout:3
+          cmake --install .
+          cpack -G ZIP
+          cpack -G ZIP --config CPackSourceConfig.cmake
         shell: pwsh
