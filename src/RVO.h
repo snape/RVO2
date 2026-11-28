@@ -214,7 +214,7 @@ bazel test ...
 git clone https://github.com/snape/RVO2.git
 cd RVO2
 meson setup _build
-ninja -C _build
+meson compile -C _build
 meson test -C _build
 meson install -C _build
 @endcode
@@ -222,7 +222,7 @@ meson install -C _build
 Enable optional OpenMP support with:
 
 @code{.sh}
-meson setup _build -Dopenmp=enabled
+meson configure _build -Dopenmp=enabled
 @endcode
 
 On Windows, configure Meson with a static default library:

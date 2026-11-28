@@ -42,6 +42,13 @@ package(default_package_metadata = [
     "//:package_info",
 ])
 
+genrule(
+    name = "export",
+    srcs = ["Export.h.in"],
+    outs = ["Export.h"],
+    cmd = "sed 's/@PREFIX@/RVO/g' $< > $@",
+)
+
 filegroup(
     name = "hdrs",
     srcs = [

@@ -146,7 +146,7 @@ jobs:
       - name: setup
         id: setup
         run: |
-          pacman --needed --noconfirm --noprogressbar -Sy \
+          pacman --needed --noconfirm --noprogressbar -S -u -y \
             ca-certificates \
             git \
             wget \

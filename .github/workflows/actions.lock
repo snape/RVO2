@@ -31,6 +31,8 @@ workflows:
         - 'actions/checkout@v7.0.1'
     '.github/workflows/markdownlint.yml':
         - 'actions/checkout@v7.0.1'
+    '.github/workflows/meson-format.yml':
+        - 'actions/checkout@v7.0.1'
     '.github/workflows/meson.yml':
         - 'actions/cache@v6.1.0'
         - 'actions/checkout@v7.0.1'

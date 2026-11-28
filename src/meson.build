@@ -1,7 +1,6 @@
 # -*- mode: meson; -*-
 # vi: set ft=meson:
 
-#
 # src/meson.build
 # RVO2 Library
 #
@@ -43,8 +42,13 @@ sources = files(
     'Vector2.cc',
 )
 
+export_h = configure_file(
+    input: 'Export.h.in',
+    output: 'Export.h',
+    configuration: {'PREFIX': 'RVO'},
+)
+
 public_headers = files(
-    'Export.h',
     'Line.h',
     'RVO.h',
     'RVOSimulator.h',
@@ -53,13 +57,6 @@ public_headers = files(
 
 inc = include_directories('.')
 
-# ---- ABI export / visibility defines ----------------------------------------
-#
-# On Windows, the shared library must be compiled with -DRVO_EXPORTS so that
-# RVO_EXPORT expands to __declspec(dllexport).  Static builds on any platform
-# need -DRVO_STATIC_DEFINE to suppress the visibility attribute entirely.
-# On non-Windows shared builds, gnu_symbol_visibility (below) handles it.
-
 compile_args = []
 dep_compile_args = []
 default_library = get_option('default_library')
@@ -67,7 +64,9 @@ default_library = get_option('default_library')
 # Keep inline-visibility tightening on the library target only: this is part of
 # the exported ABI/symbol policy for RVO itself, not a project-wide policy that
 # needs to affect example executables.
-compile_args += cpp_compiler.get_supported_arguments('-fvisibility-inlines-hidden')
+compile_args += cpp_compiler.get_supported_arguments(
+    '-fvisibility-inlines-hidden',
+)
 
 if host_os == 'windows'
     compile_args += ['-DNOMINMAX']
@@ -89,8 +88,6 @@ else
     endif
 endif
 
-# ---- Library target ----------------------------------------------------------
-
 lib_rvo = library(
     'RVO',
     sources: sources,
@@ -103,8 +100,6 @@ lib_rvo = library(
     install: not meson.is_subproject(),
 )
 
-# ---- Dependency object for in-tree consumers (examples, tests) ---------------
-
 dep_rvo = declare_dependency(
     link_with: lib_rvo,
     include_directories: inc,
@@ -112,11 +107,12 @@ dep_rvo = declare_dependency(
     dependencies: openmp_deps,
 )
 
-meson.override_dependency('rvo', dep_rvo)
+meson.override_dependency('RVO', dep_rvo)
 
 if not meson.is_subproject()
     install_headers(
         public_headers,
+        export_h,
         subdir: 'RVO',
     )
 
