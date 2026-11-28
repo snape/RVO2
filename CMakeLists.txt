@@ -157,8 +157,6 @@ if(ENABLE_HARDENING)
     check_cxx_compiler_flag(-fcf-protection
       RVO_COMPILER_SUPPORTS_FCF_PROTECTION)
     check_cxx_compiler_flag(-fno-common RVO_COMPILER_SUPPORTS_FNO_COMMON)
-    check_cxx_compiler_flag(-fsanitize=safe-stack
-      RVO_COMPILER_SUPPORTS_FSANITIZE_SAFE_STACK)
     check_cxx_compiler_flag(-fstack-clash-protection
       RVO_COMPILER_SUPPORTS_FSTACK_CLASH_PROTECTION)
     check_cxx_compiler_flag(-fstack-protector-strong
@@ -191,8 +189,6 @@ if(ENABLE_HARDENING)
 
     check_linker_flag(CXX -Wl,-Bsymbolic-functions
       RVO_LINKER_SUPPORTS_BSYMBOLIC_FUNCTIONS)
-    check_linker_flag(CXX -fsanitize=safe-stack
-      RVO_LINKER_SUPPORTS_FSANITIZE_SAFE_STACK)
     check_linker_flag(CXX -Wl,-z,defs RVO_LINKER_SUPPORTS_Z_DEFS)
     check_linker_flag(CXX -Wl,-z,noexecheap RVO_LINKER_SUPPORTS_Z_NOEXECHEAP)
     check_linker_flag(CXX -Wl,-z,noexecstack
@@ -203,11 +199,6 @@ if(ENABLE_HARDENING)
 
     if(RVO_LINKER_SUPPORTS_BSYMBOLIC_FUNCTIONS)
       add_link_options($<$<NOT:$<CONFIG:Debug>>:-Wl,-Bsymbolic-functions>)
-    endif()
-    if(RVO_COMPILER_SUPPORTS_FSANITIZE_SAFE_STACK
-        AND RVO_LINKER_SUPPORTS_FSANITIZE_SAFE_STACK)
-      add_compile_options($<$<NOT:$<CONFIG:Debug>>:-fsanitize=safe-stack>)
-      add_link_options($<$<NOT:$<CONFIG:Debug>>:-fsanitize=safe-stack>)
     endif()
     if(RVO_LINKER_SUPPORTS_Z_DEFS)
       add_link_options(-Wl,-z,defs)
