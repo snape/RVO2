@@ -370,6 +370,102 @@ jobs:
           meson dist --no-tests -C _build
         shell: bash
 
+  meson-ubuntu-clang:
+    name: meson ubuntu clang amd64
+    runs-on: ubuntu-latest
+    container: ubuntu:26.04
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          apt-get -qq -o APT::Acquire::Retries=4 update \
+            || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
+          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
+              --no-install-recommends install \
+            ca-certificates \
+            clang \
+            git \
+            libomp-dev \
+            lld \
+            llvm \
+            meson \
+            ninja-build \
+            pkgconf
+          apt-get -qq -o Dpkg::Use-Pty=0 autoremove
+          rm -rf /var/lib/apt/lists/*
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: build test package
+        env:
+          CC: clang
+          CXX: clang++
+        run: |
+          meson setup \
+            --prefix "$(pwd)/_build/install" \
+            -Db_lto=true \
+            -Dopenmp=enabled \
+            -Dwerror=true \
+            _build
+          meson compile -C _build
+          meson test --print-errorlogs -C _build
+          meson install -C _build
+          git config --global --add safe.directory "$(pwd)"
+          meson dist --no-tests -C _build
+        shell: bash
+
+  meson-ubuntu-clang-arm64:
+    name: meson ubuntu clang arm64
+    runs-on: ubuntu-26.04-arm
+    container: ubuntu:26.04
+    timeout-minutes: 30
+    steps:
+      - name: setup
+        run: |
+          apt-get -qq -o APT::Acquire::Retries=4 update \
+            || (sleep 15; apt-get -qq -o APT::Acquire::Retries=4 update)
+          apt-get -qq -o APT::Acquire::Retries=4 -o Dpkg::Use-Pty=0 \
+              --no-install-recommends install \
+            ca-certificates \
+            clang \
+            git \
+            libomp-dev \
+            lld \
+            llvm \
+            meson \
+            ninja-build \
+            pkgconf
+          apt-get -qq -o Dpkg::Use-Pty=0 autoremove
+          rm -rf /var/lib/apt/lists/*
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        shell: bash
+      - name: checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: build test package
+        env:
+          CC: clang
+          CXX: clang++
+        run: |
+          meson setup \
+            --prefix "$(pwd)/_build/install" \
+            -Db_lto=true \
+            -Dopenmp=enabled \
+            -Dwerror=true \
+            _build
+          meson compile -C _build
+          meson test --print-errorlogs -C _build
+          meson install -C _build
+          git config --global --add safe.directory "$(pwd)"
+          meson dist --no-tests -C _build
+        shell: bash
+
   meson-windows:
     name: meson windows x64
     runs-on: windows-latest
@@ -495,6 +591,121 @@ jobs:
         with:
           persist-credentials: false
       - name: build test package
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          meson setup `
+            --vsenv `
+            --prefix "${PWD}/_build/install" `
+            -Db_lto=true `
+            -Ddefault_library=static `
+            -Dopenmp=disabled `
+            -Dwerror=true `
+            _build
+          meson compile -C _build
+          meson test --print-errorlogs -C _build
+          meson install -C _build
+          git config --global --add safe.directory "${PWD}"
+          meson dist --no-tests -C _build
+        shell: pwsh
+  meson-windows-clang:
+    name: meson windows clang x64
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: cache
+        uses: actions/cache@v6.1.0
+        with:
+          path: |
+            ~\AppData\Local\Microsoft\WinGet\Links
+            ~\AppData\Local\Microsoft\WinGet\SourceData
+          key: ${{ runner.os }}-${{ runner.arch }}-winget-${{ hashFiles('.github/workflows/*.yml') }}  # yamllint disable-line rule:line-length
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-winget-
+      - name: setup
+        run: |
+          Install-Module -Force -Name Microsoft.WinGet.Client
+          Repair-WinGetPackageManager -Force -Latest
+          foreach ($id in @('Git.Git', 'LLVM.LLVM', 'mesonbuild.meson', 'Ninja-build.Ninja')) {  # yamllint disable-line rule:line-length
+            $package = Get-WinGetPackage -Id $id `
+              -MatchOption Equals -ErrorAction SilentlyContinue
+            if (-not $package) {
+              Install-WinGetPackage -Id $id `
+                -MatchOption Equals -Mode Silent
+            } elseif ($package.IsUpdateAvailable) {
+              Update-WinGetPackage -Id $id `
+                -MatchOption Equals -Mode Silent
+            }
+          }
+          Add-Content $env:GITHUB_PATH (
+            [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
+            [System.Environment]::GetEnvironmentVariable("Path", "User"))
+        shell: pwsh
+      - name: checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: build test package
+        env:
+          CC: clang-cl
+          CXX: clang-cl
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          meson setup `
+            --vsenv `
+            --prefix "${PWD}/_build/install" `
+            -Db_lto=true `
+            -Ddefault_library=static `
+            -Dopenmp=disabled `
+            -Dwerror=true `
+            _build
+          meson compile -C _build
+          meson test --print-errorlogs -C _build
+          meson install -C _build
+          git config --global --add safe.directory "${PWD}"
+          meson dist --no-tests -C _build
+        shell: pwsh
+
+  meson-windows-clang-arm64:
+    name: meson windows clang arm64
+    runs-on: windows-11-arm
+    timeout-minutes: 30
+    steps:
+      - name: cache
+        uses: actions/cache@v6.1.0
+        with:
+          path: |
+            ~\AppData\Local\Microsoft\WinGet\Links
+            ~\AppData\Local\Microsoft\WinGet\SourceData
+          key: ${{ runner.os }}-${{ runner.arch }}-winget-${{ hashFiles('.github/workflows/*.yml') }}  # yamllint disable-line rule:line-length
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-winget-
+      - name: setup
+        run: |
+          Install-Module -Force -Name Microsoft.WinGet.Client
+          Repair-WinGetPackageManager -Force -Latest
+          foreach ($id in @('Git.Git', 'LLVM.LLVM', 'mesonbuild.meson', 'Ninja-build.Ninja')) {  # yamllint disable-line rule:line-length
+            $package = Get-WinGetPackage -Id $id `
+              -MatchOption Equals -ErrorAction SilentlyContinue
+            if (-not $package) {
+              Install-WinGetPackage -Id $id `
+                -MatchOption Equals -Mode Silent
+            } elseif ($package.IsUpdateAvailable) {
+              Update-WinGetPackage -Id $id `
+                -MatchOption Equals -Mode Silent
+            }
+          }
+          Add-Content $env:GITHUB_PATH (
+            [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
+            [System.Environment]::GetEnvironmentVariable("Path", "User"))
+        shell: pwsh
+      - name: checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: build test package
+        env:
+          CC: clang-cl
+          CXX: clang-cl
         run: |
           $PSNativeCommandUseErrorActionPreference = $true
           meson setup `
